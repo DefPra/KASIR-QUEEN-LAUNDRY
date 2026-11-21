@@ -2273,19 +2273,27 @@
     }
 
     // ===== HEATMAP PENGHASILAN =====
-    var HM = { view: 'day', sel: '', y: new Date().getFullYear(), m: new Date().getMonth() };
+    var HM = { view: 'day', mode: 'om', sel: '', y: new Date().getFullYear(), m: new Date().getMonth() };
     var HM_MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
-    function hmSums() {
+    function hmSums(mode) {
       var d = {};
       state.orders.forEach(function (o) {
         if ((o.branch || state.meta.activeBranch) !== state.meta.activeBranch) return;
         var k = String(o.createdAt || '').slice(0, 10);
         if (k.length !== 10) return;
         var tot = Math.max(0, Number(o.total !== undefined ? o.total : o.subtotal) || 0);
-        d[k] = (d[k] || 0) + (o.paid ? tot : Math.max(0, Number(o.paidAmount) || 0));
+        var paid = o.paid ? tot : Math.min(tot, Math.max(0, Number(o.paidAmount) || 0));
+        d[k] = (d[k] || 0) + (mode === 'pm' ? paid : tot);
       });
       return d;
+    }
+
+    function hmVal(map, k) {
+      if (k.length === 10) return map[k] || 0;
+      var s = 0;
+      Object.keys(map).forEach(function (x) { if (x.indexOf(k + '-') === 0) s += map[x]; });
+      return s;
     }
 
     function hmColor(v, max) {
@@ -2314,10 +2322,12 @@
     function renderHeatmap() {
       var el = document.getElementById('hm-box');
       if (!el) return;
-      var sums = hmSums(), p2 = function (n) { return ('0' + n).slice(-2); };
+      var sums = hmSums(HM.mode), alt = hmSums(HM.mode === 'om' ? 'pm' : 'om'), p2 = function (n) { return ('0' + n).slice(-2); };
       var todayKey = getLocalDateStr(new Date());
       var tabs = [['day', 'Harian'], ['month', 'Bulanan'], ['year', 'Tahunan']].map(function (t) {
         return '<button type="button" onclick="hmSet({view:\'' + t[0] + '\',sel:\'\'})" class="flex-1 py-1.5 rounded-lg font-bold ' + (HM.view === t[0] ? 'bg-[#3b6ea5] text-white' : 'bg-slate-100 text-slate-600') + '">' + t[1] + '</button>';
+      }).join('') + '</div><div class="flex gap-1.5">' + [['om', 'Omset (semua order)'], ['pm', 'Pemasukan (dibayar)']].map(function (t) {
+        return '<button type="button" onclick="hmSet({mode:\'' + t[0] + '\'})" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold ' + (HM.mode === t[0] ? 'bg-[#1f4570] text-white' : 'bg-slate-100 text-slate-600') + '">' + t[1] + '</button>';
       }).join('');
       var cells = [], title = '', cols = 7;
       if (HM.view === 'day') {
@@ -2353,13 +2363,13 @@
       }).join('');
       var selCell = cells.filter(function (c) { return c && c.k === HM.sel; })[0];
       var detail = selCell
-        ? '<div class="p-2 rounded-lg bg-slate-50 border border-slate-200 text-center">' + esc(selCell.t) + ' : <b>' + formatRp(selCell.v) + '</b></div>'
+        ? '<div class="p-2 rounded-lg bg-slate-50 border border-slate-200 text-center">' + esc(selCell.t) + '<div>Omset : <b>' + formatRp(HM.mode === 'om' ? selCell.v : hmVal(alt, selCell.k)) + '</b></div><div>Pemasukan : <b>' + formatRp(HM.mode === 'pm' ? selCell.v : hmVal(alt, selCell.k)) + '</b></div></div>'
         : '<div class="text-center text-slate-400 text-[11px]">Tekan kotak untuk melihat penghasilan persisnya</div>';
       var head = HM.view === 'day' ? '<div class="grid grid-cols-7 gap-1 text-center text-[9px] text-slate-500">' + ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map(function (x) { return '<div>' + x + '</div>'; }).join('') + '</div>' : '';
       var nav = HM.view === 'year' ? '<div class="text-center font-bold">' + title + '</div>' : '<div class="flex items-center justify-between"><button type="button" onclick="hmNav(-1)" class="px-3 py-1 rounded-lg bg-slate-100 font-bold">&lsaquo;</button><div class="font-bold">' + title + '</div><button type="button" onclick="hmNav(1)" class="px-3 py-1 rounded-lg bg-slate-100 font-bold">&rsaquo;</button></div>';
       el.innerHTML = '<div class="p-3 rounded-xl border border-slate-200 space-y-2"><div class="font-bold text-[#2f5b8a]">Heatmap Penghasilan</div><div class="flex gap-1.5">' + tabs + '</div>' + nav + head +
         '<div class="grid gap-1" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr))">' + grid + '</div>' + detail +
-        '<div class="flex justify-between font-bold"><span>Total ' + title + '</span><span class="text-[#2f5b8a]">' + formatRp(total) + '</span></div></div>';
+        '<div class="flex justify-between font-bold"><span>Total ' + (HM.mode === 'om' ? 'Omset ' : 'Pemasukan ') + title + '</span><span class="text-[#2f5b8a]">' + formatRp(total) + '</span></div></div>';
     }
 
     function renderHeatmapLama() {
@@ -2409,10 +2419,11 @@
 
     function openIronModal() {
       var today = getLocalDateStr(new Date()), br = state.meta.activeBranch;
+      syncAllOrdersEstimation();
       var rows = [];
       state.orders.forEach(function (o) {
         if ((o.branch || br) !== br) return;
-        if (String(o.createdAt || '').slice(0, 10) !== today || o.skipIron) return;
+        if (o.estimatedFinishDate !== today || o.skipIron || o.status === 'Ambil') return;
         var its = (o.items || []).filter(isIronItem);
         if (its.length) rows.push({ o: o, its: its });
       });
@@ -2420,11 +2431,11 @@
         var lines = r.its.map(function (it) {
           return '<div class="text-slate-600">' + esc(it.name) + ' &bull; ' + formatQty(trunc2(it.qty)) + ' ' + esc(it.unit || '') + '</div>';
         }).join('');
-        return '<div class="flex items-start justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 break-words">' + esc(r.o.customer) + '</div><div class="text-[11px] text-slate-400">' + esc(r.o.id) + '</div>' + lines + '</div>' +
+        return '<div class="flex items-start justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 break-words">' + esc(r.o.customer) + '</div><div class="text-[11px] text-slate-400">' + esc(r.o.id) + ' &bull; ' + esc(r.o.estimation || '') + '</div>' + lines + '</div>' +
           '<button type="button" onclick="ironHide(\'' + esc(r.o.id) + '\')" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 font-bold border border-rose-200">Hapus</button></div>';
-      }).join('') || '<div class="text-center text-slate-500 py-6">Belum ada setrikaan hari ini</div>';
+      }).join('') || '<div class="text-center text-slate-500 py-6">Belum ada setrikaan yang jatuh tempo hari ini</div>';
       openModal('Setrika Hari Ini',
-        '<div class="space-y-2 text-xs"><div class="font-semibold text-slate-600">' + rows.length + ' order untuk disetrika (' + today + ')</div>' + html +
+        '<div class="space-y-2 text-xs"><div class="font-semibold text-slate-600">' + rows.length + ' order jatuh tempo hari ini (' + today + ')</div>' + html +
         '<div class="text-[11px] text-slate-400">Tombol Hapus hanya menghilangkan order dari daftar ini, order tidak terhapus.</div></div>');
     }
 
@@ -2832,7 +2843,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v8';
+    var APP_VERSION = 'Q.v9';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
