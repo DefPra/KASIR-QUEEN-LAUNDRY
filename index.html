@@ -1144,6 +1144,11 @@
       return 'Rp' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
+    // Potong (bukan bulatkan) menjadi maksimal 2 angka di belakang koma: 2,349 -> 2,34
+    function trunc2(n) {
+      return Math.floor(Number(((Number(n) || 0) * 100).toFixed(6))) / 100;
+    }
+
     function formatQty(q) {
       var n = Number(q) || 0;
       return Number.isInteger(n) ? String(n) : String(n).replace('.', ',');
@@ -1714,7 +1719,7 @@
 
       var summaryStripHtml =
         '<div class="px-3.5 py-2 bg-[#eef3f8] border-b border-slate-200 flex items-center justify-between text-[11.5px] text-slate-700">' +
-          '<span>Target Selesai: <strong>' + matching.length + ' Order</strong> (' + formatQty(totalEstKg) + ' Kg)</span>' +
+          '<span>Target Selesai: <strong>' + matching.length + ' Order</strong> (' + formatQty(trunc2(totalEstKg)) + ' Kg)</span>' +
           '<span class="font-bold text-[#2f5b8a]">' + formatRp(totalEstNominal) + '</span>' +
         '</div>';
 
@@ -2061,11 +2066,7 @@
               '</div>';
             }).join('') +
           '</div>'
-        : '<div class="p-6 text-center space-y-2.5 bg-white">' +
-            '<div class="text-sm font-medium text-slate-700">Belum ada mutasi kas hari ini</div>' +
-            '<div class="text-xs text-slate-500">Buat transaksi baru di tab Transaksi atau isi contoh transaksi hari ini untuk menguji tampilan.</div>' +
-            '<button type="button" onclick="seedSampleKasHariIni()" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white text-xs font-semibold">Isi Contoh Data Hari Ini</button>' +
-          '</div>';
+        : '';
 
       body.innerHTML =
         '<div class="p-3.5 bg-white">' +
@@ -2195,10 +2196,13 @@
       var orderEl = document.getElementById('ui-order-hari');
       var estEl = document.getElementById('ui-est-cucian');
       if (kasEl) kasEl.textContent = formatRp(kasHari);
-      if (orderEl) orderEl.textContent = String(todayOrders.length);
+      var todayKg = todayOrders.reduce(function (sum, o) {
+        return sum + (o.items || []).filter(function (i) { return String(i.unit).toLowerCase() === 'kg'; }).reduce(function (s, x) { return s + (Number(x.qty) || 0); }, 0);
+      }, 0);
+      if (orderEl) orderEl.textContent = todayOrders.length + (todayKg > 0 ? ' (' + formatQty(trunc2(todayKg)) + ' Kg)' : '');
       if (estEl) {
         estEl.textContent = dueOrders.length > 0
-          ? (dueOrders.length + ' Order' + (estKg > 0 ? ' (' + formatQty(estKg) + ' Kg)' : ''))
+          ? (dueOrders.length + ' Order' + (estKg > 0 ? ' (' + formatQty(trunc2(estKg)) + ' Kg)' : ''))
           : 'Estimasi';
       }
 
@@ -2617,7 +2621,7 @@
     function renderCartSummary() {
       var count = state.trx.cart.reduce(function (s, x) { return s + (Number(x.qty) || 0); }, 0);
       var total = state.trx.cart.reduce(function (s, x) { return s + (Number(x.subtotal) || 0); }, 0);
-      document.getElementById('cart-count').textContent = formatQty(count);
+      document.getElementById('cart-count').textContent = formatQty(trunc2(count));
       document.getElementById('cart-total').textContent = formatRp(total);
 
       var cust = state.customers.find(function (c) { return c.id === state.trx.customerId; });
@@ -2683,7 +2687,7 @@
       }
     }
 
-    var APP_VERSION = '2026.11.21-3';
+    var APP_VERSION = '2026.11.21-6';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -3230,9 +3234,10 @@
           '<div class="grid grid-cols-2 gap-2">' +
             '<div>' +
               '<label class="font-semibold block mb-1">Status Pembayaran</label>' +
-              '<select id="chk-paid" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-white">' +
+              '<select id="chk-paid" onchange="chkRecalc()" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-white">' +
                 '<option value="0">Belum Bayar</option>' +
                 '<option value="1">Lunas</option>' +
+                '<option value="2">DP (Bayar Sebagian)</option>' +
               '</select>' +
             '</div>' +
             '<div>' +
@@ -3242,6 +3247,23 @@
                 '<option value="QRIS">QRIS</option>' +
                 '<option value="Transfer">Transfer Bank</option>' +
               '</select>' +
+            '</div>' +
+          '</div>' +
+          '<div id="chk-dp-wrap" style="display:none">' +
+            '<label class="font-semibold block mb-1">Harga yang Dibayarkan (DP)</label>' +
+            '<input type="tel" id="chk-dp" oninput="chkRecalc()" placeholder="Rp0" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
+          '</div>' +
+          '<div class="grid grid-cols-2 gap-2">' +
+            '<div>' +
+              '<label class="font-semibold block mb-1">Jenis Diskon</label>' +
+              '<select id="chk-disc-type" onchange="chkRecalc()" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-white">' +
+                '<option value="harga">Harga</option>' +
+                '<option value="persen">Persentase</option>' +
+              '</select>' +
+            '</div>' +
+            '<div>' +
+              '<label id="chk-disc-label" class="font-semibold block mb-1">Diskon (Harga)</label>' +
+              '<input type="tel" id="chk-disc" oninput="chkRecalc()" placeholder="Rp0" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
             '</div>' +
           '</div>' +
           '<div>' +
@@ -3257,13 +3279,43 @@
             '<label class="font-semibold block mb-1">Catatan</label>' +
             '<input type="text" id="chk-note" placeholder="Catatan khusus cucian..." class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
           '</div>' +
-          '<div class="p-3 rounded-xl bg-[#eef3f8] border border-[#c6d6e6] flex justify-between font-bold text-sm">' +
-            '<span>Total Tagihan</span>' +
-            '<span class="text-[#2f5b8a]">' + formatRp(total) + '</span>' +
-          '</div>' +
+          '<div id="chk-sum" class="p-3 rounded-xl bg-[#eef3f8] border border-[#c6d6e6] space-y-1 font-bold text-sm"></div>' +
           '<button type="button" onclick="submitCheckout()" class="w-full py-2.5 rounded-xl bg-[#2b7a5b] text-white font-bold text-sm">Simpan Order</button>' +
         '</div>'
       );
+      chkRecalc();
+    }
+
+    function chkNum(v, dec) {
+      return dec ? (parseFloat(String(v).replace(',', '.')) || 0) : (parseInt(String(v).replace(/\D/g, ''), 10) || 0);
+    }
+
+    function chkCalcDiscount(sub) {
+      var type = document.getElementById('chk-disc-type').value;
+      var val = chkNum(document.getElementById('chk-disc').value, type === 'persen');
+      var amt = type === 'persen' ? Math.round(sub * Math.min(val, 100) / 100) : Math.min(val, sub);
+      return { amount: amt, type: type, value: val };
+    }
+
+    function chkRecalc() {
+      var sub = state.trx.cart.reduce(function (s, x) { return s + x.subtotal; }, 0);
+      var d = chkCalcDiscount(sub), net = sub - d.amount, isP = d.type === 'persen';
+      var mode = document.getElementById('chk-paid').value;
+      var dp = chkNum(document.getElementById('chk-dp').value, false);
+      document.getElementById('chk-dp-wrap').style.display = mode === '2' ? 'block' : 'none';
+      document.getElementById('chk-disc-label').textContent = isP ? 'Diskon (Persentase %)' : 'Diskon (Harga)';
+      document.getElementById('chk-disc').placeholder = isP ? '0' : 'Rp0';
+      var h = '';
+      if (d.amount > 0) {
+        h += '<div class="flex justify-between font-normal text-slate-600"><span>Subtotal</span><span>' + formatRp(sub) + '</span></div>' +
+          '<div class="flex justify-between font-normal text-slate-600"><span>Diskon' + (isP ? ' (' + d.value + '%)' : '') + '</span><span>-' + formatRp(d.amount) + '</span></div>';
+      }
+      h += '<div class="flex justify-between"><span>Total Tagihan</span><span class="text-[#2f5b8a]">' + formatRp(net) + '</span></div>';
+      if (mode === '2' && dp > 0) {
+        h += '<div class="flex justify-between font-normal text-slate-600"><span>DP dibayar</span><span>' + formatRp(dp) + '</span></div>' +
+          '<div class="flex justify-between"><span>Sisa Bayar</span><span class="text-rose-700">' + formatRp(Math.max(0, net - dp)) + '</span></div>';
+      }
+      document.getElementById('chk-sum').innerHTML = h;
     }
 
     function submitCheckout() {
@@ -3271,6 +3323,15 @@
       var phone = document.getElementById('chk-phone').value.trim() || '-';
       if (!name) {
         showToast('Nama pelanggan wajib diisi');
+        return;
+      }
+
+      var payMode0 = document.getElementById('chk-paid').value;
+      var sub0 = state.trx.cart.reduce(function (s, x) { return s + x.subtotal; }, 0);
+      var disc0 = chkCalcDiscount(sub0);
+      var dp0 = chkNum(document.getElementById('chk-dp').value, false);
+      if (payMode0 === '2' && (dp0 <= 0 || dp0 >= sub0 - disc0.amount)) {
+        showToast('Nominal DP harus lebih dari 0 dan kurang dari total tagihan');
         return;
       }
 
@@ -3282,7 +3343,7 @@
         existingCust.phone = phone;
       }
 
-      var isPaid = document.getElementById('chk-paid').value === '1';
+      var isPaid = payMode0 === '1';
       var method = document.getElementById('chk-method').value;
       var est = document.getElementById('chk-est').value;
       var note = document.getElementById('chk-note').value.trim();
@@ -3340,10 +3401,13 @@
         notes: note,
         status: 'Proses',
         subtotal: subtotal,
-        discount: 0,
-        total: subtotal,
+        discount: disc0.amount,
+        discountType: disc0.type,
+        discountValue: disc0.value,
+        total: subtotal - disc0.amount,
         paid: isPaid,
-        paidAmount: isPaid ? subtotal : 0,
+        paidAmount: isPaid ? subtotal - disc0.amount : (payMode0 === '2' ? dp0 : 0),
+        dpAmount: payMode0 === '2' ? dp0 : 0,
         priority: false,
         packageDays: tempDays,
         estimatedFinishDate: computedFinishDate,
@@ -3867,7 +3931,6 @@
 
     // Menyusun isi pesan nota WhatsApp standar atau alternatif
     function buildWhatsAppReceiptMessage(orderObj, isAlt, targetPhoneDisplay) {
-      if (isAlt) return buildWhatsAppReceiptMessageLama(orderObj, isAlt, targetPhoneDisplay);
       var o = orderObj || {};
       var outletName = state.meta.outlet || 'Queen Laundry';
       var subtotal = Number(o.subtotal || o.total || 0);
