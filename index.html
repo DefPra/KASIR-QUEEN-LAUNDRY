@@ -2518,6 +2518,7 @@
             '</div>' +
             '<div><label class="font-semibold block mb-1">Footer Print (teks akhir nota)</label><textarea id="cfg-print-footer" rows="3" placeholder="Terima Kasih!" class="w-full px-3 py-2 rounded-xl border border-slate-300">' + esc(p.footer === undefined ? 'Terima Kasih!' : p.footer) + '</textarea></div>' +
             '<button type="button" onclick="saveSettings()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold">Simpan Pengaturan</button>' +
+            '<div class="text-center text-[11px] text-slate-400 pt-1">Versi aplikasi: ' + APP_VERSION + '</div>' +
           '</div>'
         );
         return;
@@ -2682,6 +2683,7 @@
       }
     }
 
+    var APP_VERSION = '2026.11.21-3';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -2977,6 +2979,7 @@
 
     function custSearch(v) {
       custUI.q = String(v || '').trim().toLowerCase();
+      custUI.page = 1;
       renderCustScreen();
     }
 
@@ -3012,7 +3015,7 @@
         return !q || (String(c.name) + ' ' + String(c.phone)).toLowerCase().indexOf(q) > -1;
       }).sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
       var total = list.length;
-      list = list.slice(0, 300);
+      list = list.slice(0, (custUI.page || 1) * 200);
       var html = list.map(function (c) {
         var s = stats[c.id] || stats['n:' + c.name] || { rp: 0, kg: 0, last: '' };
         var id = esc(c.id);
@@ -3032,8 +3035,8 @@
         '</div>';
       }).join('');
       if (!total) html = '<div class="text-center py-10 text-sm text-slate-500">Pelanggan tidak ditemukan.</div>';
-      if (total > 300) html += '<div class="text-center py-3 text-xs text-slate-500">Menampilkan 300 dari ' + total + ' pelanggan. Gunakan pencarian.</div>';
-      document.getElementById('cust-body').innerHTML = html + '<div style="height:90px"></div>';
+      if (total > list.length) html += '<div class="p-3"><button type="button" onclick="custUI.page = (custUI.page || 1) + 1; renderCustScreen()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Tampilkan lebih banyak (' + list.length + ' dari ' + total + ')</button></div>';
+      document.getElementById('cust-body').innerHTML = '<div class="px-4 py-2 text-xs text-slate-500 border-b border-slate-200">Total ' + total + (q ? ' hasil pencarian dari ' + state.customers.length : '') + ' pelanggan</div>' + html + '<div style="height:90px"></div>';
       custUpdateDelLabel();
     }
 
@@ -3131,7 +3134,7 @@
           var p = line.split(/[,;\t]/).map(function (s) { return s.trim().replace(/^"|"$/g, ''); });
           if (!p[0] || (i === 0 && /^nama/i.test(p[0]))) return;
           var phone = p[1] || '-';
-          var dup = state.customers.some(function (c) { return c.name.toLowerCase() === p[0].toLowerCase() && c.phone === phone; });
+          var dup = state.customers.some(function (c) { return String(c.name).toLowerCase() === p[0].toLowerCase() && c.phone === phone; });
           if (dup) return;
           state.customers.push({ id: 'C' + Date.now() + '_' + added, name: p[0], phone: phone, address: p[2] || '-' });
           added++;
@@ -3864,6 +3867,47 @@
 
     // Menyusun isi pesan nota WhatsApp standar atau alternatif
     function buildWhatsAppReceiptMessage(orderObj, isAlt, targetPhoneDisplay) {
+      if (isAlt) return buildWhatsAppReceiptMessageLama(orderObj, isAlt, targetPhoneDisplay);
+      var o = orderObj || {};
+      var outletName = state.meta.outlet || 'Queen Laundry';
+      var subtotal = Number(o.subtotal || o.total || 0);
+      var discount = Number(o.discount || 0);
+      var total = Math.max(0, subtotal - discount);
+      var paidAmt = o.paid ? total : Number(o.paidAmount || 0);
+      var isPaid = Boolean(o.paid) && paidAmt >= total;
+      var phone = targetPhoneDisplay || ((o.phone && o.phone !== '-') ? o.phone : '');
+      var est = String(o.estimation || '').trim();
+      var em = est.match(/^\(\s*([^)]*?)\s*\)\s*(.*)$/);
+      var estText = em ? '*' + em[1] + '* ' + em[2] : (est || '-');
+      var L = [];
+      L.push(outletName);
+      L.push('------------------------------');
+      L.push('ID Pelanggan : ' + (o.id || ''));
+      L.push('Tanggal :' + (o.createdAt || ''));
+      L.push('Pembayaran : ' + extractPaymentMethod(o.paymentType));
+      L.push('Status : ' + (isPaid ? 'Lunas' : 'Belum Lunas'));
+      L.push('Nama : *' + (o.customer || '-') + '*' + (phone ? ' (' + phone + ')' : ''));
+      L.push('Est : ' + estText);
+      L.push('Note :' + (o.notes ? ' ' + o.notes : ''));
+      L.push('----------------------------');
+      (o.items || []).forEach(function (it) {
+        L.push(' *' + String(it.name).toUpperCase() + '* (' + formatRp(it.price) + ' x ' + formatQty(it.qty) + (it.unit || '') + ')');
+      });
+      (o.inventory || []).forEach(function (inv) {
+        L.push(' ' + inv.name + ' x' + inv.qty);
+      });
+      L.push('------------------------------');
+      L.push('SubTotal : ' + formatRp(subtotal));
+      if (discount > 0) L.push('Diskon : -' + formatRp(discount));
+      L.push('Total : *' + formatRp(total) + '*');
+      if (!isPaid && paidAmt > 0) L.push('Sisa Bayar : *' + formatRp(total - paidAmt) + '*');
+      L.push('');
+      L.push('------------------------------');
+      L.push(' _Terima kasih_ atas kepercayaan Anda menggunakan jasa laundry kami. Agar semua berjalan lancar mohon periksa kembali pesanan Anda saat pengambilan. Komplain mengenai kehilangan pakaian hanya berlaku maksimal _24 JAM_ setelah tanggal pengambilan dan Kami mohon maaf tidak dapat bertanggung jawab atas kelunturan pakaian jika pihak pelanggan tidak menyampaikan adanya potensi luntur pada pakaian tersebut (misalnya: _pakaian baru_ _kain khusus_ atau memiliki label _hand wash only_) saat serah terima di awal dan untuk estimasi waktu pengambilan untuk seluruh paket selain layanan Express adalah _MALAM HARI_. Terima kasih atas pengertiannya.');
+      return L.join('\n');
+    }
+
+    function buildWhatsAppReceiptMessageLama(orderObj, isAlt, targetPhoneDisplay) {
       var o = orderObj || {};
       var outletName = state.meta.outlet || 'Queen Laundry';
       var branchName = o.branch || state.meta.activeBranch || outletName;
@@ -4268,20 +4312,21 @@
         var FEED = ESC + 'J' + String.fromCharCode(14);
         var isPaidLbl = Boolean(o.paid) && Number(o.paidAmount || 0) >= Number(o.total || 0);
         var sisaLbl = Math.max(0, Number(o.total || 0) - Number(o.paidAmount || 0));
-        out += CENTER + line;
-        out += FONT_B + BIG_ON + BOLD_ON + o.id + '\n' + BIG_OFF + BOLD_OFF + FONT_A;
-        out += (o.createdAt || '').slice(0, 16).replace('T', ' ') + '\n';
-        out += FEED + BOLD_ON + labelName(String(o.customer || '-').toUpperCase(), w, GS) + BOLD_OFF;
+        out += CENTER + BOLD_ON + labelName(String(o.customer || '-').toUpperCase(), w, GS) + BOLD_OFF;
         if (o.phone && o.phone !== '-') out += 'HP: ' + o.phone + '\n';
-        out += FEED + FONT_B + BIG_ON + BOLD_ON + (isPaidLbl ? 'LUNAS' : 'BELUM LUNAS') + '\n' + BIG_OFF + BOLD_OFF + FONT_A;
-        out += BOLD_ON + (isPaidLbl ? 'Total: ' + formatRp(o.total) : 'Harus Bayar: ' + formatRp(sisaLbl)) + '\n' + BOLD_OFF;
-        out += line + LEFT;
-        (o.items || []).forEach(function (it) {
-          out += it.name + ' (' + formatQty(it.qty) + ' ' + it.unit + ')\n';
-        });
-        out += line + 'Est: ' + (o.estimation || '-') + '\n';
+        out += FEED + FONT_B + BIG_ON + BOLD_ON + o.id + '\n' + BIG_OFF + BOLD_OFF + FONT_A;
+        out += (o.createdAt || '').slice(0, 16).replace('T', ' ') + '\n';
+        out += BOLD_ON + 'Tgl Selesai:\n' + (o.estimation || '-') + '\n' + BOLD_OFF;
         if (o.priority) out += BOLD_ON + '*** PRIORITAS ***\n' + BOLD_OFF;
-        if (o.notes) out += 'Cat: ' + o.notes + '\n';
+        out += FEED + FONT_B + BIG_ON + BOLD_ON + (isPaidLbl ? 'LUNAS' : 'BELUM LUNAS') + '\n' + BIG_OFF + BOLD_OFF + FONT_A;
+        out += line;
+        out += BOLD_ON + (isPaidLbl ? 'Total: ' + formatRp(o.total) : 'Harus Bayar: ' + formatRp(sisaLbl)) + '\n' + BOLD_OFF;
+        out += 'Note: ' + (o.notes || '') + '\n';
+        out += line + LEFT + BOLD_ON;
+        (o.items || []).forEach(function (it) {
+          out += String(it.name).toUpperCase() + ' x' + formatQty(it.qty) + (it.unit || '') + '\n';
+        });
+        out += BOLD_OFF + line + 'Item Lainnya :\n\n' + line;
         out += '\n\n\n';
         return out;
       }
