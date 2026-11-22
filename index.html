@@ -945,6 +945,10 @@
     // Menyimpan seluruh state ke localStorage
     // ===== SINKRONISASI CLOUD (FIREBASE FIRESTORE) =====
     var CLOUD_KEY = 'ql_clean_v6_firebase';
+    // Config Firebase bawaan (boleh dipublikasikan: keamanan data ada di aturan Firestore + login Google).
+    // Isi dengan { apiKey: "...", authDomain: "...", projectId: "...", storageBucket: "...", messagingSenderId: "...", appId: "..." }
+    var CLOUD_DEFAULT_CONFIG = null;
+    function cloudCfg() { return loadJSON(CLOUD_KEY, null) || CLOUD_DEFAULT_CONFIG; }
     var CLOUD = { db: null, uid: null, user: null, auth: null, authBound: false, known: { customers: {}, orders: {}, expenses: {}, products: {} }, ready: {}, unsubs: [], pushT: null, uiT: null, status: 'Belum tersambung' };
 
     function cloudStable(o) {
@@ -986,7 +990,7 @@
     }
 
     function cloudConnect(silent) {
-      var cfg = loadJSON(CLOUD_KEY, null);
+      var cfg = cloudCfg();
       if (!cfg) { cloudSetStatus('Belum tersambung'); return; }
       if (typeof firebase === 'undefined') { cloudSetStatus('SDK Firebase tidak termuat (butuh internet)'); return; }
       try {
@@ -1043,7 +1047,7 @@
     function cloudRefreshAuthUI() {
       var el = document.getElementById('cloud-auth');
       if (!el) return;
-      var has = !!loadJSON(CLOUD_KEY, null);
+      var has = !!cloudCfg();
       if (CLOUD.user) {
         el.innerHTML = '<div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200">Masuk sebagai <b>' + esc(CLOUD.user.email || CLOUD.user.displayName || 'akun Google') + '</b></div>' +
           '<button type="button" onclick="cloudLogout()" class="w-full py-2.5 rounded-xl bg-slate-200 text-slate-800 font-bold text-sm">Keluar</button>';
@@ -1133,7 +1137,7 @@
     }
 
     function openCloudModal() {
-      var has = !!loadJSON(CLOUD_KEY, null);
+      var has = !!cloudCfg();
       openModal('Sinkronisasi Cloud (Firebase)',
         '<div class="space-y-3 text-xs">' +
           '<div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">Status: <b id="cloud-status">' + esc(CLOUD.status) + '</b></div>' +
@@ -3132,7 +3136,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v15';
+    var APP_VERSION = 'Q.v17';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -4823,10 +4827,11 @@
         if (cur) lines.push(cur);
         return lines;
       }
-      var maxLines = { 3: 1, 2: 2 };
-      for (var m = 3; m >= 2; m--) {
-        var l = wrap(name, Math.floor(w / m), true);
-        if (l && l.length <= maxLines[m]) {
+      // Nama dibuat besar (maks 3x) agar mudah dicari di rak
+      var rules = [[3, 3], [2, 3]];
+      for (var ri = 0; ri < rules.length; ri++) {
+        var m = rules[ri][0], l = wrap(name, Math.floor(w / m), true);
+        if (l && l.length <= rules[ri][1]) {
           return GS + '!' + String.fromCharCode((m - 1) * 17) + l.join('\n') + '\n' + GS + '!' + String.fromCharCode(0);
         }
       }
@@ -4854,7 +4859,8 @@
         var FEED = ESC + 'J' + String.fromCharCode(14);
         var isPaidLbl = Boolean(o.paid) && Number(o.paidAmount || 0) >= Number(o.total || 0);
         var sisaLbl = Math.max(0, Number(o.total || 0) - Number(o.paidAmount || 0));
-        out += CENTER + BOLD_ON + labelName(String(o.customer || '-').toUpperCase(), w, GS) + BOLD_OFF;
+        var HLINE = new Array(w + 1).join('=') + '\n';
+        out += CENTER + HLINE + BOLD_ON + labelName(String(o.customer || '-').toUpperCase(), w, GS) + BOLD_OFF + HLINE;
         if (o.phone && o.phone !== '-') out += 'HP: ' + o.phone + '\n';
         out += FEED + FONT_B + BIG_ON + BOLD_ON + o.id + '\n' + BIG_OFF + BOLD_OFF + FONT_A;
         out += (o.createdAt || '').slice(0, 16).replace('T', ' ') + '\n';
