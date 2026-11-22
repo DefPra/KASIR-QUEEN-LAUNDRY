@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Queen Laundry — POS &amp; Kasir</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#3b6ea5" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -334,6 +337,10 @@
           <button type="button" onclick="openIronModal()" class="w-full bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition">
             Lihat Setrika Hari Ini
           </button>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button type="button" onclick="openPiutangModal()" class="w-full bg-white border border-[#3b6ea5] text-[#2f5b8a] font-semibold text-[13px] py-2 rounded-xl">Piutang</button>
+            <button type="button" onclick="openTutupKasModal()" class="w-full bg-white border border-[#3b6ea5] text-[#2f5b8a] font-semibold text-[13px] py-2 rounded-xl">Tutup Kas</button>
+          </div>
         </section>
 
         <!-- Grid Menu 4x2 dengan Ikon 3D -->
@@ -1885,6 +1892,20 @@
         });
       });
 
+      state.orders.forEach(function (o) {
+        if ((o.branch || activeBranch) !== activeBranch) return;
+        if (String(o.createdAt || '').slice(0, 10) === todayStr) return;
+        (o.payments || []).forEach(function (p) {
+          if (String(p.at || '').slice(0, 10) !== todayStr) return;
+          var amt = Math.max(0, Number(p.amount) || 0);
+          var nt = /qris|transfer|non|ewallet|debit/.test(String(p.method || '').toLowerCase());
+          pemasukan += amt;
+          bayarPiutang += amt;
+          if (nt) bayarNonTunai += amt; else bayarTunai += amt;
+          entries.push({ type: 'income', amount: amt, sign: '', isExpense: false, desc: 'bayar piutang (' + (nt ? 'non tunai' : 'tunai') + ') order ' + (o.id || '-') + ' (' + (o.customer || 'Pelanggan') + ')', timestamp: p.at });
+        });
+      });
+
       var pengeluaran = 0;
       branchExpensesToday.forEach(function (ex) {
         var amt = Math.max(0, Number(ex.amount) || 0);
@@ -2283,8 +2304,14 @@
         var k = String(o.createdAt || '').slice(0, 10);
         if (k.length !== 10) return;
         var tot = Math.max(0, Number(o.total !== undefined ? o.total : o.subtotal) || 0);
-        var paid = o.paid ? tot : Math.min(tot, Math.max(0, Number(o.paidAmount) || 0));
-        d[k] = (d[k] || 0) + (mode === 'pm' ? paid : tot);
+        if (mode === 'pm') {
+          payEntries(o).forEach(function (p) {
+            var pk = String(p.at || o.createdAt || '').slice(0, 10);
+            if (pk.length === 10) d[pk] = (d[pk] || 0) + (Number(p.amount) || 0);
+          });
+          return;
+        }
+        d[k] = (d[k] || 0) + tot;
       });
       return d;
     }
@@ -2414,6 +2441,241 @@
         '<div class="flex justify-between font-bold"><span>Total ' + title + '</span><span class="text-[#2f5b8a]">' + formatRp(total) + '</span></div></div>';
     }
 
+    // ===== PEMBAYARAN BERTAHAP, PIUTANG, TUTUP KAS, GAJI, OFFLINE =====
+    function pNow() {
+      var d = new Date(), p = function (n) { return ('0' + n).slice(-2); };
+      return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+    }
+
+    function orderTotal(o) { return Math.max(0, Number(o.total !== undefined ? o.total : o.subtotal) || 0); }
+
+    function payEntries(o) {
+      if (Array.isArray(o.payments) && o.payments.length) return o.payments;
+      var tot = orderTotal(o), p = o.paid ? tot : Math.min(tot, Math.max(0, Number(o.paidAmount) || 0));
+      return p > 0 ? [{ at: o.createdAt || '', amount: p, method: extractPaymentMethod(o.paymentType) }] : [];
+    }
+
+    function orderPaid(o) { return payEntries(o).reduce(function (s, p) { return s + (Number(p.amount) || 0); }, 0); }
+
+    function orderSisa(o) { var t = orderTotal(o); return Math.max(0, t - Math.min(t, orderPaid(o))); }
+
+    function applyPayment(o, amount, method) {
+      var list = payEntries(o).slice();
+      list.push({ at: pNow(), amount: amount, method: method });
+      o.payments = list;
+      var sum = list.reduce(function (s, p) { return s + (Number(p.amount) || 0); }, 0), tot = orderTotal(o);
+      o.paidAmount = Math.min(sum, tot);
+      o.paid = sum >= tot;
+      o.paymentType = (o.paid ? 'lunas ' : 'belum_bayar ') + method;
+    }
+
+    function payRemainder(o, method) {
+      var rem = orderSisa(o);
+      if (rem > 0) applyPayment(o, rem, method);
+    }
+
+    function payMethodOptions() {
+      return '<option value="cash/tunai">Tunai / Cash</option><option value="transfer">Transfer</option><option value="qris">QRIS</option>';
+    }
+
+    function openPayModal(idx, fromPiutang) {
+      var o = state.orders[idx];
+      if (!o) return;
+      var tot = orderTotal(o), paid = Math.min(tot, orderPaid(o)), sisa = tot - paid;
+      var hist = payEntries(o).map(function (p) {
+        return '<div class="flex justify-between text-slate-600"><span>' + esc(String(p.at || '').slice(0, 16)) + ' &bull; ' + esc(p.method || '') + '</span><b>' + formatRp(p.amount) + '</b></div>';
+      }).join('') || '<div class="text-slate-400">Belum ada pembayaran</div>';
+      openModal('Bayar Sisa - ' + o.customer,
+        '<div class="space-y-3 text-xs">' +
+          '<div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1"><div class="flex justify-between"><span>Total</span><b>' + formatRp(tot) + '</b></div><div class="flex justify-between"><span>Terbayar</span><b>' + formatRp(paid) + '</b></div><div class="flex justify-between text-rose-700"><span>Sisa</span><b>' + formatRp(sisa) + '</b></div></div>' +
+          (sisa > 0
+            ? '<div><label class="font-semibold block mb-1">Nominal dibayar</label><input type="tel" id="pay-amt" value="' + sisa + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold" /></div>' +
+              '<div><label class="font-semibold block mb-1">Metode</label><select id="pay-method" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-white">' + payMethodOptions() + '</select></div>' +
+              '<button type="button" onclick="doPay(' + idx + ',' + (fromPiutang ? 1 : 0) + ')" class="w-full py-2.5 rounded-xl bg-[#2b7a5b] text-white font-bold text-sm">Simpan Pembayaran</button>'
+            : '<div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold text-center">Order sudah LUNAS</div>') +
+          '<div class="font-semibold text-slate-600">Riwayat pembayaran</div><div class="space-y-1">' + hist + '</div>' +
+        '</div>');
+    }
+
+    function doPay(idx, fromPiutang) {
+      var o = state.orders[idx];
+      if (!o) return;
+      var sisa = orderSisa(o), amt = chkNum(document.getElementById('pay-amt').value, false);
+      if (amt <= 0) { showToast('Isi nominal pembayaran'); return; }
+      if (amt > sisa) { showToast('Nominal melebihi sisa tagihan (' + formatRp(sisa) + ')'); return; }
+      applyPayment(o, amt, document.getElementById('pay-method').value);
+      persistAll();
+      renderDashboard();
+      renderOrdersLists();
+      if (document.getElementById('arsip-screen').classList.contains('open')) arsipRender();
+      closeModal();
+      if (fromPiutang) openPiutangModal(); else openDetailScreenByIndex(idx);
+      showToast(o.paid ? 'Pembayaran tercatat, order LUNAS' : 'Pembayaran tercatat, sisa ' + formatRp(orderSisa(o)));
+    }
+
+    function waNotifyDone(idx) {
+      var o = state.orders[idx];
+      if (!o) return;
+      var ph = normalizeWhatsAppNumber(o.phone);
+      if (!ph) { showToast('Nomor HP pelanggan belum valid'); return; }
+      var sisa = orderSisa(o);
+      var msg = 'Halo kak *' + o.customer + '*, cucian Anda dengan nota *' + o.id + '* di *' + (state.meta.activeBranch || 'Queen Laundry') + '* sudah *SELESAI* dan siap diambil.' +
+        (sisa > 0 ? '\nSisa pembayaran: *' + formatRp(sisa) + '*' : '\nPembayaran sudah lunas.') + '\nTerima kasih.';
+      launchWhatsAppUrl(ph, msg, o);
+    }
+
+    function waRemindDebt(idx) {
+      var o = state.orders[idx];
+      if (!o) return;
+      var ph = normalizeWhatsAppNumber(o.phone);
+      if (!ph) { showToast('Nomor HP pelanggan belum valid'); return; }
+      var msg = 'Halo kak *' + o.customer + '*, mengingatkan nota *' + o.id + '* (' + String(o.createdAt || '').slice(0, 10) + ') di *' + (state.meta.activeBranch || 'Queen Laundry') + '* masih ada sisa tagihan *' + formatRp(orderSisa(o)) + '*. Mohon dilunasi saat pengambilan. Terima kasih.';
+      launchWhatsAppUrl(ph, msg, o);
+    }
+
+    function openPiutangModal() {
+      var br = state.meta.activeBranch, rows = [], total = 0;
+      state.orders.forEach(function (o, idx) {
+        if ((o.branch || br) !== br) return;
+        var s = orderSisa(o);
+        if (s > 0) { rows.push({ o: o, idx: idx, s: s }); total += s; }
+      });
+      rows.sort(function (a, b) { return String(a.o.createdAt).localeCompare(String(b.o.createdAt)); });
+      var html = rows.map(function (r) {
+        return '<div class="p-2.5 rounded-xl border border-slate-200 space-y-1.5"><div class="flex justify-between gap-2"><div class="min-w-0"><div class="font-bold text-slate-900 break-words">' + esc(r.o.customer) + '</div><div class="text-[11px] text-slate-400">' + esc(r.o.id) + ' &bull; ' + esc(String(r.o.createdAt || '').slice(0, 10)) + '</div></div>' +
+          '<div class="text-right shrink-0"><div class="font-bold text-rose-700">' + formatRp(r.s) + '</div><div class="text-[11px] text-slate-400">dari ' + formatRp(orderTotal(r.o)) + '</div></div></div>' +
+          '<div class="grid grid-cols-2 gap-2"><button type="button" onclick="openPayModal(' + r.idx + ',1)" class="py-1.5 rounded-lg bg-[#2b7a5b] text-white font-bold">Bayar</button><button type="button" onclick="waRemindDebt(' + r.idx + ')" class="py-1.5 rounded-lg bg-slate-100 text-slate-700 font-bold border border-slate-200">WA Tagih</button></div></div>';
+      }).join('') || '<div class="text-center text-slate-500 py-6">Tidak ada piutang. Semua order sudah lunas.</div>';
+      openModal('Piutang Pelanggan',
+        '<div class="space-y-2 text-xs"><div class="p-2.5 rounded-xl bg-rose-50 border border-rose-200 flex justify-between font-bold text-rose-800"><span>Total piutang (' + rows.length + ' order)</span><span>' + formatRp(total) + '</span></div>' + html + '</div>');
+    }
+
+    var TK = { tunai: 0, non: 0, keluar: 0 };
+
+    function openTutupKasModal() {
+      var d = computeKasHariIniData(), today = d.todayStr;
+      var list = state.meta.tutupKas = state.meta.tutupKas || [];
+      var prev = list.filter(function (x) { return x.date < today; }).sort(function (a, b) { return a.date.localeCompare(b.date); }).pop();
+      var cur = list.find(function (x) { return x.date === today; });
+      TK.tunai = d.bayarTunai; TK.non = d.bayarNonTunai; TK.keluar = d.pengeluaran;
+      var hist = list.slice().sort(function (a, b) { return b.date.localeCompare(a.date); }).slice(0, 7).map(function (x) {
+        var sel = x.selisih === 0 ? 'Pas' : (x.selisih > 0 ? 'Lebih ' : 'Kurang ') + formatRp(Math.abs(x.selisih));
+        return '<div class="flex justify-between text-slate-600"><span>' + esc(x.date) + '</span><span>' + formatRp(x.fisik) + ' &bull; ' + sel + '</span></div>';
+      }).join('') || '<div class="text-slate-400">Belum ada riwayat tutup kas</div>';
+      openModal('Tutup Kas ' + today,
+        '<div class="space-y-2.5 text-xs">' +
+          '<div><label class="font-semibold block mb-1">Kas awal (uang di laci pagi)</label><input type="tel" id="tk-awal" oninput="tkRecalc()" value="' + (cur ? cur.awal : (prev ? prev.fisik : 0)) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
+          '<div class="flex justify-between"><span>+ Pemasukan tunai</span><b>' + formatRp(d.bayarTunai) + '</b></div>' +
+          '<div class="flex justify-between"><span>- Pengeluaran</span><b>' + formatRp(d.pengeluaran) + '</b></div>' +
+          '<div class="flex justify-between font-bold"><span>Kas seharusnya</span><span id="tk-exp"></span></div>' +
+          '<div class="flex justify-between text-slate-500"><span>Non tunai (tidak masuk laci)</span><span>' + formatRp(d.bayarNonTunai) + '</span></div>' +
+          '<div><label class="font-semibold block mb-1">Uang fisik di laci sekarang</label><input type="tel" id="tk-fisik" oninput="tkRecalc()" value="' + (cur ? cur.fisik : '') + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold" /></div>' +
+          '<div class="flex justify-between font-bold"><span>Selisih</span><span id="tk-diff"></span></div>' +
+          '<div><label class="font-semibold block mb-1">Catatan</label><input type="text" id="tk-note" value="' + esc(cur ? cur.note : '') + '" placeholder="Mis. kembalian kurang" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
+          '<button type="button" onclick="tkSave()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Simpan Tutup Kas</button>' +
+          '<div class="font-semibold text-slate-600 pt-1">Riwayat terbaru</div><div class="space-y-1">' + hist + '</div>' +
+        '</div>');
+      tkRecalc();
+    }
+
+    function tkRecalc() {
+      var exp = chkNum(document.getElementById('tk-awal').value, false) + TK.tunai - TK.keluar;
+      document.getElementById('tk-exp').textContent = (exp < 0 ? '-' : '') + formatRp(Math.abs(exp));
+      var fs = document.getElementById('tk-fisik').value, el = document.getElementById('tk-diff');
+      if (fs === '') { el.textContent = '-'; el.style.color = ''; return; }
+      var diff = chkNum(fs, false) - exp;
+      el.textContent = diff === 0 ? 'Pas' : (diff > 0 ? 'Lebih ' : 'Kurang ') + formatRp(Math.abs(diff));
+      el.style.color = diff === 0 ? '#047857' : (diff > 0 ? '#b45309' : '#be123c');
+    }
+
+    function tkSave() {
+      var fs = document.getElementById('tk-fisik').value;
+      if (fs === '') { showToast('Isi uang fisik di laci'); return; }
+      var awal = chkNum(document.getElementById('tk-awal').value, false), fisik = chkNum(fs, false), exp = awal + TK.tunai - TK.keluar;
+      var today = getLocalDateStr(new Date());
+      var rec = { date: today, awal: awal, tunai: TK.tunai, nonTunai: TK.non, keluar: TK.keluar, seharusnya: exp, fisik: fisik, selisih: fisik - exp, note: document.getElementById('tk-note').value.trim(), at: pNow() };
+      var list = (state.meta.tutupKas = state.meta.tutupKas || []).filter(function (x) { return x.date !== today; });
+      list.push(rec);
+      state.meta.tutupKas = list;
+      persistAll();
+      showToast('Tutup kas tersimpan');
+      openTutupKasModal();
+    }
+
+    var GJ = { month: '', names: [] };
+
+    function openGajiModal() {
+      var now = new Date();
+      var m = GJ.month || (now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2));
+      openModal('Gaji & Komisi',
+        '<div class="space-y-3 text-xs"><input type="month" id="gj-month" value="' + m + '" onchange="renderGaji()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />' +
+        '<div id="gj-body" class="space-y-2"></div>' +
+        '<div class="text-[11px] text-slate-400">Gaji pokok = jumlah hari hadir x gaji per hari. Komisi = persen dari omset (total order masuk) pada hari karyawan hadir, dibagi rata antar karyawan yang hadir hari itu.</div></div>');
+      renderGaji();
+    }
+
+    function renderGaji() {
+      var m = document.getElementById('gj-month').value;
+      GJ.month = m;
+      var cfg = state.meta.gaji = state.meta.gaji || {};
+      var att = {}, byDate = {};
+      (state.meta.absensi || []).forEach(function (r) {
+        if (String(r.date).slice(0, 7) !== m) return;
+        (att[r.name] = att[r.name] || {})[r.date] = 1;
+        (byDate[r.date] = byDate[r.date] || {})[r.name] = 1;
+      });
+      var br = state.meta.activeBranch, omDay = {};
+      state.orders.forEach(function (o) {
+        if ((o.branch || br) !== br) return;
+        var k = String(o.createdAt || '').slice(0, 10);
+        if (k.slice(0, 7) === m) omDay[k] = (omDay[k] || 0) + orderTotal(o);
+      });
+      var share = {};
+      Object.keys(byDate).forEach(function (dt) {
+        var ns = Object.keys(byDate[dt]);
+        ns.forEach(function (n) { share[n] = (share[n] || 0) + (omDay[dt] || 0) / ns.length; });
+      });
+      var names = Object.keys(att), totAll = 0;
+      GJ.names = names;
+      var html = names.map(function (n, i) {
+        var c = cfg[n] || { harian: 0, komisi: 0 }, hadir = Object.keys(att[n]).length;
+        var pokok = hadir * (Number(c.harian) || 0), kom = Math.round((share[n] || 0) * (Number(c.komisi) || 0) / 100), tot = pokok + kom;
+        totAll += tot;
+        return '<div class="p-2.5 rounded-xl border border-slate-200 space-y-2"><div class="flex justify-between"><b class="text-slate-900">' + esc(n) + '</b><span class="text-slate-500">Hadir ' + hadir + ' hari</span></div>' +
+          '<div class="grid grid-cols-2 gap-2"><div><div class="text-[11px] text-slate-500 mb-0.5">Gaji per hari (Rp)</div><input type="tel" value="' + (Number(c.harian) || 0) + '" onchange="gajiSet(' + i + ',\'harian\',this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300" /></div>' +
+          '<div><div class="text-[11px] text-slate-500 mb-0.5">Komisi (%)</div><input type="tel" value="' + (Number(c.komisi) || 0) + '" onchange="gajiSet(' + i + ',\'komisi\',this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300" /></div></div>' +
+          '<div class="flex justify-between text-slate-600"><span>Gaji pokok</span><span>' + formatRp(pokok) + '</span></div>' +
+          '<div class="flex justify-between text-slate-600"><span>Komisi (dari omset ' + formatRp(Math.round(share[n] || 0)) + ')</span><span>' + formatRp(kom) + '</span></div>' +
+          '<div class="flex justify-between font-bold"><span>Total</span><span class="text-[#2f5b8a]">' + formatRp(tot) + '</span></div></div>';
+      }).join('') || '<div class="text-center text-slate-400 py-4">Belum ada absensi pada bulan ini</div>';
+      document.getElementById('gj-body').innerHTML = html + (names.length ? '<div class="flex justify-between font-bold p-2.5 rounded-xl bg-[#eef3f8] border border-[#c6d6e6]"><span>Total gaji & komisi</span><span class="text-[#2f5b8a]">' + formatRp(totAll) + '</span></div>' : '');
+    }
+
+    function gajiSet(i, field, val) {
+      var n = GJ.names[i];
+      if (n === undefined) return;
+      var cfg = state.meta.gaji = state.meta.gaji || {};
+      cfg[n] = cfg[n] || { harian: 0, komisi: 0 };
+      cfg[n][field] = chkNum(val, field === 'komisi');
+      persistAll();
+      renderGaji();
+    }
+
+    // Mode offline: daftarkan service worker (butuh file sw.js di folder yang sama) + penanda status offline
+    window.addEventListener('load', function () {
+      try {
+        if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(function () {});
+      } catch (e) {}
+      var b = document.createElement('div');
+      b.style.cssText = 'position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:60;background:#7a1230;color:#fff;font:600 11px Inter,sans-serif;padding:5px 12px;border-radius:999px;display:none;max-width:92%;text-align:center';
+      b.textContent = 'Mode offline: data tersimpan di HP dan disinkron saat online';
+      document.body.appendChild(b);
+      var upd = function () { b.style.display = navigator.onLine ? 'none' : 'block'; };
+      window.addEventListener('online', upd);
+      window.addEventListener('offline', upd);
+      upd();
+    });
+
     // ===== SETRIKA HARI INI =====
     function isIronItem(it) { return /komplit|setrika|seprai|satuan/i.test(String(it.name || '')); }
 
@@ -2488,6 +2750,7 @@
           '<input id="abs-name" list="abs-names" value="' + esc(keepName || '') + '" placeholder="Nama karyawan" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />' +
           '<datalist id="abs-names">' + names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
           '<div class="grid grid-cols-2 gap-2"><button type="button" onclick="absAction(\'in\')" class="py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Absen Masuk</button><button type="button" onclick="absAction(\'out\')" class="py-2.5 rounded-xl bg-[#1f4570] text-white font-bold text-sm">Absen Pulang</button></div>' +
+          '<button type="button" onclick="openGajiModal()" class="w-full py-2.5 rounded-xl bg-[#1f4570] text-white font-bold text-sm">Gaji & Komisi</button>' +
           '<div class="font-semibold text-slate-600">Riwayat terbaru</div><div class="space-y-2">' + rows + '</div>' +
         '</div>');
     }
@@ -2843,7 +3106,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v9';
+    var APP_VERSION = 'Q.v10';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -3093,6 +3356,7 @@
     function arsipMarkPaid(o) {
       var total = Math.max(0, Number(o.subtotal || o.total || 0) - Number(o.discount || 0));
       o.total = total;
+      payRemainder(o, extractPaymentMethod(o.paymentType));
       o.paid = true;
       o.paidAmount = total;
       o.paymentType = 'lunas ' + extractPaymentMethod(o.paymentType);
@@ -3824,7 +4088,7 @@
           '<div class="grid grid-cols-3 gap-1">' +
             '<button type="button" onclick="openPrintPreview(' + idx + ',\'pdf\')" class="bg-[#825836] hover:bg-[#69462a] py-2.5 px-1 text-center leading-tight rounded-xs">Nota PDF</button>' +
             '<button type="button" onclick="openPrintPreview(' + idx + ',\'qr\')" class="bg-[#3b6ea5] hover:bg-[#2f5b8a] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Label<br>(QRCode)</button>' +
-            '<div></div>' +
+            '<button type="button" onclick="openPayModal(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Bayar Sisa<br>(Cicilan)</button>' +
           '</div>' +
           '<div class="grid grid-cols-3 gap-1 pt-1">' +
             '<button type="button" onclick="openPrintPreview(' + idx + ',\'nota\')" class="bg-[#3c7ea6] hover:bg-[#2f6687] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Nota</button>' +
@@ -3834,7 +4098,7 @@
           '<div class="grid grid-cols-3 gap-1">' +
             '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Kirim Nota WA</button>' +
             '<button type="button" onclick="copyOrderPhone(' + idx + ')" class="bg-[#6c427a] hover:bg-[#573463] py-2.5 px-1 text-center leading-tight rounded-xs">Copy No HP</button>' +
-            '<div></div>' +
+            '<button type="button" onclick="waNotifyDone(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Kabari Selesai<br>(WA)</button>' +
           '</div>' +
         '</div>';
 
@@ -3904,6 +4168,7 @@
         o.subtotal = subtotal;
         o.discount = discount;
         o.total = total;
+        payRemainder(o, method);
         o.paid = true;
         o.paidAmount = total;
         o.paymentType = 'lunas ' + method;
@@ -3961,9 +4226,12 @@
       var o = state.orders[idx];
       if (!o) return;
       var amt = Math.max(0, parseInt(document.getElementById('inp-paid').value, 10) || 0);
+      var cur = orderPaid(o), meth = extractPaymentMethod(o.paymentType);
+      if (amt > cur) applyPayment(o, amt - cur, meth);
+      else if (amt < cur) o.payments = amt > 0 ? [{ at: o.createdAt, amount: amt, method: meth }] : [];
       o.paidAmount = amt;
-      o.paid = amt >= o.total;
-      o.paymentType = o.paid ? 'lunas cash/tunai' : 'belum_bayar cash/tunai';
+      o.paid = amt >= orderTotal(o);
+      o.paymentType = (o.paid ? 'lunas ' : 'belum_bayar ') + meth;
       persistAll();
       renderDashboard();
       closeModal();
@@ -4011,8 +4279,10 @@
       if (currentlyPaid) {
         o.paid = false;
         o.paidAmount = 0;
+        o.payments = [];
         o.paymentType = 'belum_bayar ' + method;
       } else {
+        payRemainder(o, method);
         o.paid = true;
         o.paidAmount = total;
         o.paymentType = 'lunas ' + method;
