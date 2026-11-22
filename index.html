@@ -3132,7 +3132,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v14';
+    var APP_VERSION = 'Q.v15';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -5111,9 +5111,8 @@
           '<div class="flex justify-between font-bold text-sm"><span>TOTAL</span><span>' + formatRp(o.total) + '</span></div>' +
           qrBlock +
         '</div>' +
-        '<div class="mt-3 grid grid-cols-2 gap-2 no-print">' +
-          '<button type="button" onclick="printOrderNow(' + idx + ',\'' + esc(mode) + '\',true)" class="py-2.5 rounded-xl bg-[#2f6690] text-white font-bold text-xs">Cetak via RawBT / Thermal</button>' +
-          '<button type="button" onclick="printOrderNow(' + idx + ',\'' + esc(mode) + '\',false)" class="py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-xs">Print Sekarang</button>' +
+        '<div class="mt-3 no-print">' +
+          '<button type="button" onclick="printOrderNow(' + idx + ',\'' + esc(mode) + '\',true)" class="w-full py-3 rounded-xl bg-[#2f6690] text-white font-bold text-sm">Cetak ke Printer Thermal</button>' +
         '</div>'
       );
     }
