@@ -1014,12 +1014,26 @@
 
     function cloudLogin() {
       if (!CLOUD.auth) { showToast('Simpan config Firebase dulu'); return; }
+      if (window.AndroidAuth) {
+        cloudSetStatus('Membuka login Google...');
+        window.AndroidAuth.googleSignIn();
+        return;
+      }
       var p = new firebase.auth.GoogleAuthProvider();
       CLOUD.auth.signInWithPopup(p).catch(function (e) {
         if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') CLOUD.auth.signInWithRedirect(p);
         else cloudSetStatus('Login gagal: ' + e.code);
       });
     }
+
+    // Dipanggil oleh aplikasi APK setelah login Google bawaan Android berhasil
+    window.onNativeGoogleToken = function (idToken) {
+      if (!CLOUD.auth) { showToast('Simpan config Firebase dulu'); return; }
+      CLOUD.auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(idToken)).catch(function (e) {
+        cloudSetStatus('Login gagal: ' + (e.code || e.message));
+      });
+    };
+    window.onNativeGoogleError = function (msg) { cloudSetStatus('Login gagal: ' + msg); };
 
     function cloudLogout() {
       if (CLOUD.auth) CLOUD.auth.signOut();
@@ -2904,6 +2918,7 @@
                 '<button type="button" onclick="printerSearch(true).catch(function(){})" class="py-2 rounded-xl bg-slate-200 text-slate-800 font-bold">Semua perangkat</button>' +
               '</div>' +
               '<button type="button" onclick="printerTest()" class="w-full py-2 rounded-xl bg-[#3b6ea5] text-white font-bold">Tes Cetak</button>' +
+              (window.AndroidPrinter ? '<button type="button" onclick="window.AndroidPrinter.choosePrinter()" class="w-full py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Pilih Printer Bluetooth (APK)</button>' : '') +
             '</div>' +
             '<div>' +
               '<label class="font-semibold block mb-1">Jalur Cetak Thermal</label>' +
@@ -3117,7 +3132,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v12';
+    var APP_VERSION = 'Q.v14';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -3494,12 +3509,16 @@
       var q = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
       var rows = [['nama', 'telepon', 'alamat']].concat(state.customers.map(function (c) { return [c.name, c.phone, c.address]; }));
       var csv = '\ufeff' + rows.map(function (r) { return r.map(q).join(','); }).join('\r\n');
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-      a.download = 'pelanggan-queen-laundry.csv';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      if (window.AndroidFiles) {
+        window.AndroidFiles.saveFile('pelanggan-queen-laundry.csv', btoa(unescape(encodeURIComponent(csv))), 'text/csv');
+      } else {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        a.download = 'pelanggan-queen-laundry.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
       showToast(state.customers.length + ' pelanggan diexport');
     }
 
@@ -5002,7 +5021,9 @@
 
     function printerTest() {
       var E = String.fromCharCode(27);
-      printerSend(E + '@' + E + 'a' + String.fromCharCode(1) + 'TES CETAK\nQueen Laundry\nPrinter terhubung\n\n\n\n');
+      var s = E + '@' + E + 'a' + String.fromCharCode(1) + 'TES CETAK\nQueen Laundry\nPrinter terhubung\n\n\n\n';
+      if (window.AndroidPrinter) window.AndroidPrinter.printEscPos(encodeRawBase64(s));
+      else printerSend(s);
     }
 
     function printOrderNow(idx, mode, forceThermal) {
