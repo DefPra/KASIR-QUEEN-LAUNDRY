@@ -103,6 +103,12 @@
     .arsip-sel { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 12px; font-size: 14px; color: #0f172a; outline: none; }
     .arsip-pill:focus, .arsip-sel:focus { border-color: #3b6ea5; }
     body #detail-screen.open { z-index: 47; }
+    #detail-body { padding-bottom: 0 !important; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
+    .act-dock { position: sticky; bottom: 0; z-index: 6; margin-top: 10px; background: rgba(241, 244, 248, 0.97); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.14); border-top-left-radius: 14px; border-top-right-radius: 14px; padding-bottom: env(safe-area-inset-bottom, 0px); transform: translateZ(0); }
+    .act-handle { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 7px 0 3px; font-size: 10px; color: #64748b; }
+    .act-bar { width: 38px; height: 4px; border-radius: 4px; background: #94a3b8; }
+    .act-wrap { overflow: hidden; max-height: 440px; transition: max-height 0.28s ease; padding-bottom: 8px; }
+    .act-dock.collapsed .act-wrap { max-height: 0; padding-bottom: 0; }
     .cust-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; }
     .cust-btn { background: #2f6fb5; color: #fff; font-weight: 600; font-size: 12px; letter-spacing: .04em; padding: 7px 16px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,.25); }
     #detail-screen {
@@ -337,10 +343,6 @@
           <button type="button" onclick="openIronModal()" class="w-full bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition">
             Lihat Setrika Hari Ini
           </button>
-          <div class="grid grid-cols-2 gap-2 mt-2">
-            <button type="button" onclick="openPiutangModal()" class="w-full bg-white border border-[#3b6ea5] text-[#2f5b8a] font-semibold text-[13px] py-2 rounded-xl">Piutang</button>
-            <button type="button" onclick="openTutupKasModal()" class="w-full bg-white border border-[#3b6ea5] text-[#2f5b8a] font-semibold text-[13px] py-2 rounded-xl">Tutup Kas</button>
-          </div>
         </section>
 
         <!-- Grid Menu 4x2 dengan Ikon 3D -->
@@ -2518,9 +2520,18 @@
       if (!o) return;
       var ph = normalizeWhatsAppNumber(o.phone);
       if (!ph) { showToast('Nomor HP pelanggan belum valid'); return; }
-      var sisa = orderSisa(o);
-      var msg = 'Halo kak *' + o.customer + '*, cucian Anda dengan nota *' + o.id + '* di *' + (state.meta.activeBranch || 'Queen Laundry') + '* sudah *SELESAI* dan siap diambil.' +
-        (sisa > 0 ? '\nSisa pembayaran: *' + formatRp(sisa) + '*' : '\nPembayaran sudah lunas.') + '\nTerima kasih.';
+      var msg = [
+        '======================',
+        state.meta.outlet || 'Queen Laundry',
+        'ID Pelanggan : #' + o.id,
+        'Nama : ' + o.customer,
+        'Total :' + orderTotal(o),
+        'Pembayaran : ' + (orderSisa(o) > 0 ? 'belum_bayar' : 'lunas'),
+        'Status : ' + (o.status || 'Selesai'),
+        '',
+        '=====================',
+        'Laundry anda sudah selesai'
+      ].join('\n');
       launchWhatsAppUrl(ph, msg, o);
     }
 
@@ -3106,7 +3117,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v10';
+    var APP_VERSION = 'Q.v12';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -4074,7 +4085,8 @@
           '<button type="button" onclick="openPaidModal(' + idx + ')" class="w-full flex justify-between items-center text-left hover:bg-white/60 py-0.5 rounded"><span>Bayar</span><span>' + formatRp(paidAmt) + '</span></button>' +
         '</div>' +
 
-        '<div class="px-3 pt-2 space-y-1.5 text-white text-[13px] font-medium">' +
+        '<div id="act-dock" class="act-dock' + (state.actCollapsed ? ' collapsed' : '') + '"><button type="button" onclick="toggleActDock()" class="act-handle"><span class="act-bar"></span><span>Aksi order</span></button><div class="act-wrap">' +
+        '<div class="px-3 pt-1 space-y-1.5 text-white text-[13px] font-medium">' +
           '<div class="grid grid-cols-3 gap-1">' +
             '<button type="button" onclick="deleteOrder(' + idx + ')" class="bg-[#b83b3b] hover:bg-[#9c2f2f] py-2.5 px-1 text-center leading-tight rounded-xs">Hapus<br>Transaksi</button>' +
             '<button type="button" onclick="toggleOrderPriority(' + idx + ',true)" class="bg-[#8e4b96] hover:bg-[#763c7d] py-2.5 px-1 text-center leading-tight rounded-xs">Set Prioritas</button>' +
@@ -4098,13 +4110,21 @@
           '<div class="grid grid-cols-3 gap-1">' +
             '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Kirim Nota WA</button>' +
             '<button type="button" onclick="copyOrderPhone(' + idx + ')" class="bg-[#6c427a] hover:bg-[#573463] py-2.5 px-1 text-center leading-tight rounded-xs">Copy No HP</button>' +
-            '<button type="button" onclick="waNotifyDone(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Kabari Selesai<br>(WA)</button>' +
+            (o.status === 'Selesai'
+              ? '<button type="button" onclick="waNotifyDone(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Kabari Selesai<br>(WA)</button>'
+              : '<div></div>') +
           '</div>' +
-        '</div>';
+        '</div></div></div>';
 
       var screen = document.getElementById('detail-screen');
       screen.classList.add('open');
       body.scrollTop = 0;
+    }
+
+    function toggleActDock() {
+      state.actCollapsed = !state.actCollapsed;
+      var d = document.getElementById('act-dock');
+      if (d) d.classList.toggle('collapsed', !!state.actCollapsed);
     }
 
     function closeDetailScreen() {
