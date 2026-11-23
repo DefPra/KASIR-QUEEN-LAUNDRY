@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
   <style>
+    :root{--p:#3b6ea5;--p-rgb:59 110 165;--pd:#2f5b8a;--pd-rgb:47 91 138;--pdd:#23466b;--pdd-rgb:35 70 107;--pm:#4e7fb3;--pm-rgb:78 127 179;--pa:#89b4de;--pa-rgb:137 180 222;--t1:#eef3f8;--t1-rgb:238 243 248;--t2:#dce6f1;--t2-rgb:220 230 241;--bg:#f1f4f8;--bg-rgb:241 244 248;--bg2:#dce3eb;--bg2-rgb:220 227 235}
     /* Reset dasar dan pengaturan tata letak mobile-first */
     * {
       box-sizing: border-box;
@@ -23,13 +24,13 @@
     html, body {
       margin: 0;
       padding: 0;
-      background: #dce3eb;
+      background: var(--bg2);
       font-family: 'Inter', sans-serif;
       color: #1e293b;
       overflow-x: hidden;
     }
     #ui-outlet {
-      background-image: linear-gradient(100deg, #284e78 0%, #3b6ea5 38%, #d6ecff 50%, #3b6ea5 62%, #284e78 100%) !important;
+      background-image: linear-gradient(100deg, var(--pdd) 0%, var(--p) 38%, var(--t2) 50%, var(--p) 62%, var(--pdd) 100%) !important;
       background-size: 250% 100%;
       animation: logoShine 3.8s ease-in-out infinite;
     }
@@ -46,7 +47,7 @@
       width: 100%;
       margin: 0 auto;
       min-height: 100vh;
-      background: #f1f4f8;
+      background: var(--bg);
       position: relative;
       box-shadow: 0 12px 32px rgba(27, 46, 68, 0.14);
       padding-bottom: 76px;
@@ -64,7 +65,7 @@
       transform: translateX(-50%);
       width: 100%;
       max-width: 440px;
-      background: linear-gradient(180deg, #4375a8 0%, #335f8c 100%);
+      background: linear-gradient(180deg, var(--pm) 0%, var(--pd) 100%);
       z-index: 40;
       box-shadow: 0 -3px 12px rgba(24, 43, 64, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.22);
     }
@@ -92,16 +93,16 @@
     #cust-screen, #cust-screen button, #cust-screen input { font-family: 'Inter', sans-serif; }
     #arsip-screen {
       position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
-      width: 100%; max-width: 440px; background: #f1f4f8; z-index: 45;
+      width: 100%; max-width: 440px; background: var(--bg); z-index: 45;
       display: none; flex-direction: column; font-family: 'Inter', sans-serif;
     }
     #arsip-screen.open { display: flex; }
     #arsip-screen button, #arsip-screen input, #arsip-screen select { font-family: 'Inter', sans-serif; }
     .arsip-act { background: #ffffff; color: #0f172a; border-radius: 12px; padding: 12px 4px; font-size: 11.5px; font-weight: 500; line-height: 1.25; border: 1px solid rgba(148, 169, 193, 0.22); box-shadow: 0 2px 6px rgba(30, 58, 90, 0.05), 0 1px 2px rgba(15, 23, 42, 0.04); }
-    .arsip-act:active { background: #eef3f8; }
+    .arsip-act:active { background: var(--t1); }
     .arsip-pill { background: #f8fafc; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 12px; font-size: 14px; width: 100%; outline: none; }
     .arsip-sel { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 12px; font-size: 14px; color: #0f172a; outline: none; }
-    .arsip-pill:focus, .arsip-sel:focus { border-color: #3b6ea5; }
+    .arsip-pill:focus, .arsip-sel:focus { border-color: var(--p); }
     body #detail-screen.open { z-index: 47; }
     #detail-body { padding-bottom: 0 !important; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
     .act-dock { position: sticky; bottom: 0; z-index: 6; margin-top: 10px; background: rgba(241, 244, 248, 0.97); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.14); border-top-left-radius: 14px; border-top-right-radius: 14px; padding-bottom: env(safe-area-inset-bottom, 0px); transform: translateZ(0); }
@@ -110,9 +111,9 @@
     .act-wrap { overflow: hidden; max-height: 440px; transition: max-height 0.28s ease; padding-bottom: 8px; }
     .act-dock.collapsed .act-wrap { max-height: 0; padding-bottom: 0; }
     .cust-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; }
-    .cust-btn { background: #2f6fb5; color: #fff; font-weight: 600; font-size: 12px; letter-spacing: .04em; padding: 7px 16px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,.25); }
+    .cust-btn { background: var(--p); color: #fff; font-weight: 600; font-size: 12px; letter-spacing: .04em; padding: 7px 16px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,.25); }
     #detail-screen {
-      background: #f1f4f8;
+      background: var(--bg);
     }
     #detail-screen.open,
     #kas-hari-screen.open,
@@ -120,7 +121,7 @@
       display: flex;
     }
     .kas-blue-panel {
-      background: linear-gradient(180deg, #2f6690 0%, #27557a 100%);
+      background: linear-gradient(180deg, var(--pd) 0%, var(--pdd) 100%);
       color: #ffffff;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
     }
@@ -128,7 +129,7 @@
       border-color: rgba(255, 255, 255, 0.22);
     }
     .status-tile {
-      background: linear-gradient(180deg, #e7ecf2 0%, #d5dde6 100%);
+      background: linear-gradient(180deg, var(--t2) 0%, var(--t2) 100%);
       color: #3d5269;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -2px 0 rgba(30, 54, 80, 0.08);
       transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease;
@@ -137,7 +138,7 @@
       transform: translateY(1px);
     }
     .status-tile.active {
-      background: linear-gradient(180deg, #4f84b8 0%, #356494 100%);
+      background: linear-gradient(180deg, var(--pm) 0%, var(--pd) 100%);
       color: #ffffff;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34), 0 4px 10px rgba(47, 91, 138, 0.28);
     }
@@ -148,7 +149,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(145deg, #f8fbff 0%, #e4ecf5 62%, #d4e0ed 100%);
+      background: linear-gradient(145deg, var(--t1) 0%, var(--t2) 62%, var(--t2) 100%);
       box-shadow:
         0 4px 8px rgba(34, 62, 92, 0.12),
         0 1px 2px rgba(24, 42, 62, 0.08),
@@ -235,9 +236,9 @@
         <svg id="analog-clock-widget" class="analog-clock-svg" viewBox="0 0 64 64" role="img" aria-label="Jam Analog">
           <defs>
             <radialGradient id="clockBezel3d" cx="35%" cy="28%" r="70%">
-              <stop offset="0%" stop-color="#6b9bc9" />
-              <stop offset="65%" stop-color="#3b6ea5" />
-              <stop offset="100%" stop-color="#274d75" />
+              <stop offset="0%" stop-color="var(--pm)" />
+              <stop offset="65%" stop-color="var(--p)" />
+              <stop offset="100%" stop-color="var(--pdd)" />
             </radialGradient>
             <radialGradient id="clockFace3d" cx="38%" cy="32%" r="68%">
               <stop offset="0%" stop-color="#ffffff" />
@@ -251,29 +252,29 @@
             </linearGradient>
           </defs>
           <circle cx="32" cy="33.5" r="29" fill="rgba(39, 77, 117, 0.16)" />
-          <circle cx="32" cy="32" r="29" fill="url(#clockBezel3d)" stroke="#2f5b8a" stroke-width="1.4" />
+          <circle cx="32" cy="32" r="29" fill="url(#clockBezel3d)" stroke="var(--pd)" stroke-width="1.4" />
           <circle cx="32" cy="32" r="25.5" fill="url(#clockFace3d)" stroke="#c7d6e6" stroke-width="1" />
           <!-- 12 Penanda Jam -->
           <g id="clock-ticks" stroke="#5b728a" stroke-linecap="round">
-            <line x1="32" y1="6.5" x2="32" y2="10.5" stroke="#3b6ea5" stroke-width="2.4" />
+            <line x1="32" y1="6.5" x2="32" y2="10.5" stroke="var(--p)" stroke-width="2.4" />
             <line x1="44.75" y1="9.92" x2="42.75" y2="13.38" stroke-width="1.5" />
             <line x1="54.08" y1="19.25" x2="50.62" y2="21.25" stroke-width="1.5" />
-            <line x1="57.5" y1="32" x2="53.5" y2="32" stroke="#3b6ea5" stroke-width="2.4" />
+            <line x1="57.5" y1="32" x2="53.5" y2="32" stroke="var(--p)" stroke-width="2.4" />
             <line x1="54.08" y1="44.75" x2="50.62" y2="42.75" stroke-width="1.5" />
             <line x1="44.75" y1="54.08" x2="42.75" y2="50.62" stroke-width="1.5" />
-            <line x1="32" y1="57.5" x2="32" y2="53.5" stroke="#3b6ea5" stroke-width="2.4" />
+            <line x1="32" y1="57.5" x2="32" y2="53.5" stroke="var(--p)" stroke-width="2.4" />
             <line x1="19.25" y1="54.08" x2="21.25" y2="50.62" stroke-width="1.5" />
             <line x1="9.92" y1="44.75" x2="13.38" y2="42.75" stroke-width="1.5" />
-            <line x1="6.5" y1="32" x2="10.5" y2="32" stroke="#3b6ea5" stroke-width="2.4" />
+            <line x1="6.5" y1="32" x2="10.5" y2="32" stroke="var(--p)" stroke-width="2.4" />
             <line x1="9.92" y1="19.25" x2="13.38" y2="21.25" stroke-width="1.5" />
             <line x1="19.25" y1="9.92" x2="21.25" y2="13.38" stroke-width="1.5" />
           </g>
           <!-- Jarum Jam, Menit, Detik & Titik Pusat 3D -->
           <line id="clock-hour-hand" class="clock-hand" x1="32" y1="32" x2="32" y2="18.5" stroke="#1e293b" stroke-width="3.2" stroke-linecap="round" />
-          <line id="clock-minute-hand" class="clock-hand" x1="32" y1="32" x2="32" y2="12.5" stroke="#3b6ea5" stroke-width="2.4" stroke-linecap="round" />
+          <line id="clock-minute-hand" class="clock-hand" x1="32" y1="32" x2="32" y2="12.5" stroke="var(--p)" stroke-width="2.4" stroke-linecap="round" />
           <line id="clock-second-hand" class="clock-second-hand" x1="32" y1="35.5" x2="32" y2="10" stroke="#c85a53" stroke-width="1.5" stroke-linecap="round" />
           <path d="M9.5 29 A23 23 0 0 1 54.5 29 C46 21 18 21 9.5 29 Z" fill="url(#clockGloss3d)" pointer-events="none" />
-          <circle cx="32" cy="32" r="3.2" fill="#3b6ea5" stroke="#24466b" stroke-width="0.8" />
+          <circle cx="32" cy="32" r="3.2" fill="var(--p)" stroke="var(--pdd)" stroke-width="0.8" />
           <circle cx="31.3" cy="31.3" r="1.2" fill="#ffffff" />
         </svg>
         <span id="tab-context-badge" class="text-[12px] font-bold text-slate-700 truncate max-w-[82px]"></span>
@@ -283,8 +284,8 @@
       <div class="flex items-center gap-1.5 min-w-0">
         <div class="flex flex-col items-end min-w-0">
           <span id="live-clock" class="text-[10.5px] font-medium text-slate-600 leading-tight truncate max-w-[225px]">Sabtu, 21 November 2026, 00.35 WITA</span>
-          <button type="button" id="live-location-btn" onclick="openLocationModal()" title="Lokasi Real-Time (Klik untuk refresh atau atur lokasi)" class="mt-0.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#eef3f8] hover:bg-[#dce6f1] text-[#2f5b8a] border border-[#c6d6e6] text-[10px] font-semibold leading-none max-w-[225px]">
-            <svg class="w-2.5 h-2.5 text-[#3b6ea5] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+          <button type="button" id="live-location-btn" onclick="openLocationModal()" title="Lokasi Real-Time (Klik untuk refresh atau atur lokasi)" class="mt-0.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[color:var(--t1)] hover:bg-[color:var(--t2)] text-[color:var(--pd)] border border-[color:var(--t2)] text-[10px] font-semibold leading-none max-w-[225px]">
+            <svg class="w-2.5 h-2.5 text-[color:var(--p)] shrink-0" viewBox="0 0 24 24" fill="currentColor">
               <path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
             </svg>
             <span id="live-location-text" class="truncate">Makassar</span>
@@ -297,14 +298,14 @@
     <!-- 2. HALAMAN HOME -->
     <main id="tab-home" class="flex-1 flex flex-col">
       <!-- Banner Estetik Queen Laundry -->
-      <section class="relative overflow-hidden bg-gradient-to-br from-white via-[#f4f7fb] to-[#e7eff7] px-4 py-5 border-b border-slate-200/80 text-center">
+      <section class="relative overflow-hidden bg-gradient-to-br from-white via-[color:var(--t1)] to-[color:var(--t1)] px-4 py-5 border-b border-slate-200/80 text-center">
         <div class="flex flex-col items-center justify-center">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#3b6ea5]/15 to-[#4e7fb3]/20 flex items-center justify-center mb-1.5 shadow-xs border border-[#3b6ea5]/15">
-            <svg class="w-5 h-5 text-[#3b6ea5]" viewBox="0 0 24 24" fill="currentColor">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[rgb(var(--p-rgb)/0.15)] to-[rgb(var(--pm-rgb)/0.2)] flex items-center justify-center mb-1.5 shadow-xs border border-[rgb(var(--p-rgb)/0.15)]">
+            <svg class="w-5 h-5 text-[color:var(--p)]" viewBox="0 0 24 24" fill="currentColor">
               <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
             </svg>
           </div>
-          <h2 id="ui-outlet" class="font-aesthetic text-[42px] leading-tight bg-gradient-to-r from-[#284e78] via-[#3b6ea5] to-[#4e7fb3] bg-clip-text text-transparent drop-shadow-2xs select-none">
+          <h2 id="ui-outlet" class="font-aesthetic text-[42px] leading-tight bg-gradient-to-r from-[color:var(--pdd)] via-[color:var(--p)] to-[color:var(--pm)] bg-clip-text text-transparent drop-shadow-2xs select-none">
             Queen Laundry
           </h2>
         </div>
@@ -313,12 +314,12 @@
       <div class="p-3.5 space-y-3.5">
         <!-- Tambah Cabang & Dropdown -->
         <section class="card-box p-3.5 space-y-2.5">
-          <button type="button" onclick="openBranchModal()" class="w-full bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition">
+          <button type="button" onclick="openBranchModal()" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition">
             Tambah Cabang
           </button>
           <div class="relative">
-            <select id="branch-select" onchange="changeBranch(this.value)" class="w-full appearance-none bg-transparent text-[#2f5b8a] font-medium text-[13.5px] py-1 pr-7 outline-none"></select>
-            <svg class="w-4 h-4 text-[#4e7fb3] absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" fill="currentColor" viewBox="0 0 20 20">
+            <select id="branch-select" onchange="changeBranch(this.value)" class="w-full appearance-none bg-transparent text-[color:var(--pd)] font-medium text-[13.5px] py-1 pr-7 outline-none"></select>
+            <svg class="w-4 h-4 text-[color:var(--pm)] absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
             </svg>
           </div>
@@ -340,27 +341,27 @@
               <span id="ui-est-cucian" class="text-[12.5px] text-slate-900 underline underline-offset-2 mt-0.5">Estimasi</span>
             </button>
           </div>
-          <button type="button" onclick="openIronModal()" class="w-full bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition">
+          <button type="button" onclick="openIronModal()" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition">
             Lihat Setrika Hari Ini
           </button>
         </section>
 
         <!-- Grid Menu 4x2 dengan Ikon 3D -->
         <section class="grid grid-cols-4 gap-2.5">
-          <button type="button" onclick="openMenuModal('produk')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[#eef3f8]/70 transition">
+          <button type="button" onclick="openMenuModal('produk')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="prodShirt3d" x1="12" y1="8" x2="34" y2="36" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#6b9ed1" />
-                    <stop offset="100%" stop-color="#2f5b8a" />
+                    <stop offset="100%" stop-color="var(--pd)" />
                   </linearGradient>
                   <linearGradient id="prodTag3d" x1="22" y1="22" x2="40" y2="40" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#8bb6e0" />
-                    <stop offset="100%" stop-color="#3b6ea5" />
+                    <stop offset="100%" stop-color="var(--p)" />
                   </linearGradient>
                 </defs>
-                <path d="M12 11l6-3.5h8l6 3.5 4.5 7-5 3-2.5-4v18H15V17l-2.5 4-5-3 4.5-7z" fill="url(#prodShirt3d)" stroke="#23466b" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M12 11l6-3.5h8l6 3.5 4.5 7-5 3-2.5-4v18H15V17l-2.5 4-5-3 4.5-7z" fill="url(#prodShirt3d)" stroke="var(--pdd)" stroke-width="1.6" stroke-linejoin="round"/>
                 <path d="M14 11l4.5-2.5h7L30 11l-6 4-6-4z" fill="#ffffff" fill-opacity="0.35"/>
                 <path d="M24 23h15l1.5 15h-6.5l-1.5-8.5-1.5 8.5h-6.5L24 23z" fill="url(#prodTag3d)" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round"/>
                 <circle cx="31.5" cy="26.5" r="1.4" fill="#ffffff"/>
@@ -369,36 +370,36 @@
             <span class="text-[11.5px] font-medium text-slate-900">Produk</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('pelanggan')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[#eef3f8]/70 transition">
+          <button type="button" onclick="openMenuModal('pelanggan')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="custBack3d" x1="24" y1="10" x2="38" y2="35" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#89b4de" />
-                    <stop offset="100%" stop-color="#4e7fb3" />
+                    <stop offset="0%" stop-color="var(--pa)" />
+                    <stop offset="100%" stop-color="var(--pm)" />
                   </linearGradient>
                   <linearGradient id="custFront3d" x1="11" y1="11" x2="27" y2="37" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#6598cc" />
-                    <stop offset="100%" stop-color="#2f5b8a" />
+                    <stop offset="100%" stop-color="var(--pd)" />
                   </linearGradient>
                 </defs>
-                <circle cx="30" cy="15.5" r="5" fill="url(#custBack3d)" stroke="#2b5480" stroke-width="1.4"/>
-                <path d="M24 27c5.2.4 9.5 4.2 10 9.2H23" fill="url(#custBack3d)" stroke="#2b5480" stroke-width="1.4" stroke-linecap="round"/>
-                <circle cx="18.5" cy="16" r="6" fill="url(#custFront3d)" stroke="#224468" stroke-width="1.5"/>
+                <circle cx="30" cy="15.5" r="5" fill="url(#custBack3d)" stroke="var(--pd)" stroke-width="1.4"/>
+                <path d="M24 27c5.2.4 9.5 4.2 10 9.2H23" fill="url(#custBack3d)" stroke="var(--pd)" stroke-width="1.4" stroke-linecap="round"/>
+                <circle cx="18.5" cy="16" r="6" fill="url(#custFront3d)" stroke="var(--pdd)" stroke-width="1.5"/>
                 <circle cx="16.8" cy="14" r="1.8" fill="#ffffff" fill-opacity="0.45"/>
-                <path d="M8.5 36.5c0-5.5 4.5-10 10-10s10 4.5 10 10h-20z" fill="url(#custFront3d)" stroke="#224468" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M8.5 36.5c0-5.5 4.5-10 10-10s10 4.5 10 10h-20z" fill="url(#custFront3d)" stroke="var(--pdd)" stroke-width="1.5" stroke-linejoin="round"/>
               </svg>
             </span>
             <span class="text-[11.5px] font-medium text-slate-900">Pelanggan</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('pengeluaran')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[#eef3f8]/70 transition">
+          <button type="button" onclick="openMenuModal('pengeluaran')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="expBox3d" x1="11" y1="9" x2="36" y2="21" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#76a6d6" />
-                    <stop offset="100%" stop-color="#3b6ea5" />
+                    <stop offset="0%" stop-color="var(--pa)" />
+                    <stop offset="100%" stop-color="var(--p)" />
                   </linearGradient>
                   <linearGradient id="expArrow3d" x1="24" y1="20" x2="24" y2="39" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#c47a74" />
@@ -413,35 +414,35 @@
             <span class="text-[11.5px] font-medium text-slate-900">Pengeluaran</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('absensi')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[#eef3f8]/70 transition">
+          <button type="button" onclick="openMenuModal('absensi')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="accTileA3d" x1="10" y1="10" x2="24" y2="24" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#72a3d4" />
-                    <stop offset="100%" stop-color="#3b6ea5" />
+                    <stop offset="100%" stop-color="var(--p)" />
                   </linearGradient>
                   <linearGradient id="accTileB3d" x1="24" y1="24" x2="38" y2="38" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#8ab5e0" />
-                    <stop offset="100%" stop-color="#2f5b8a" />
+                    <stop offset="100%" stop-color="var(--pd)" />
                   </linearGradient>
                 </defs>
-                <rect x="10" y="10" width="14" height="14" rx="3.2" fill="url(#accTileA3d)" stroke="#23466b" stroke-width="1.5"/>
+                <rect x="10" y="10" width="14" height="14" rx="3.2" fill="url(#accTileA3d)" stroke="var(--pdd)" stroke-width="1.5"/>
                 <path d="M17 13.8v6.4M13.8 17h6.4" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
-                <rect x="24" y="24" width="14" height="14" rx="3.2" fill="url(#accTileB3d)" stroke="#23466b" stroke-width="1.5"/>
+                <rect x="24" y="24" width="14" height="14" rx="3.2" fill="url(#accTileB3d)" stroke="var(--pdd)" stroke-width="1.5"/>
                 <path d="M27.8 31h6.4" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
               </svg>
             </span>
             <span class="text-[11.5px] font-medium text-slate-900">Absensi</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('pengaturan')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[#eef3f8]/70 transition">
+          <button type="button" onclick="openMenuModal('pengaturan')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="setRail3d" x1="10" y1="12" x2="38" y2="36" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#699bd0" />
-                    <stop offset="100%" stop-color="#2f5b8a" />
+                    <stop offset="100%" stop-color="var(--pd)" />
                   </linearGradient>
                   <linearGradient id="setKnob3d" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stop-color="#ffffff" />
@@ -451,64 +452,64 @@
                 <rect x="10" y="13" width="28" height="4" rx="2" fill="url(#setRail3d)"/>
                 <rect x="10" y="22" width="28" height="4" rx="2" fill="url(#setRail3d)"/>
                 <rect x="10" y="31" width="28" height="4" rx="2" fill="url(#setRail3d)"/>
-                <circle cx="18.5" cy="15" r="4.2" fill="url(#setKnob3d)" stroke="#2f5b8a" stroke-width="1.8"/>
-                <circle cx="29.5" cy="24" r="4.2" fill="url(#setKnob3d)" stroke="#2f5b8a" stroke-width="1.8"/>
-                <circle cx="16.5" cy="33" r="4.2" fill="url(#setKnob3d)" stroke="#2f5b8a" stroke-width="1.8"/>
+                <circle cx="18.5" cy="15" r="4.2" fill="url(#setKnob3d)" stroke="var(--pd)" stroke-width="1.8"/>
+                <circle cx="29.5" cy="24" r="4.2" fill="url(#setKnob3d)" stroke="var(--pd)" stroke-width="1.8"/>
+                <circle cx="16.5" cy="33" r="4.2" fill="url(#setKnob3d)" stroke="var(--pd)" stroke-width="1.8"/>
               </svg>
             </span>
             <span class="text-[11.5px] font-medium text-slate-900">Pengaturan</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('mutasi')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[#eef3f8]/70 transition">
+          <button type="button" onclick="openMenuModal('mutasi')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="mutBar3d" x1="11" y1="12" x2="37" y2="36" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#75a5d5" />
-                    <stop offset="100%" stop-color="#2f5b8a" />
+                    <stop offset="100%" stop-color="var(--pd)" />
                   </linearGradient>
                 </defs>
-                <rect x="11" y="13" width="26" height="4.5" rx="2.25" fill="url(#mutBar3d)" stroke="#23466b" stroke-width="1.1"/>
-                <rect x="11" y="21.75" width="26" height="4.5" rx="2.25" fill="url(#mutBar3d)" stroke="#23466b" stroke-width="1.1"/>
-                <rect x="11" y="30.5" width="26" height="4.5" rx="2.25" fill="url(#mutBar3d)" stroke="#23466b" stroke-width="1.1"/>
+                <rect x="11" y="13" width="26" height="4.5" rx="2.25" fill="url(#mutBar3d)" stroke="var(--pdd)" stroke-width="1.1"/>
+                <rect x="11" y="21.75" width="26" height="4.5" rx="2.25" fill="url(#mutBar3d)" stroke="var(--pdd)" stroke-width="1.1"/>
+                <rect x="11" y="30.5" width="26" height="4.5" rx="2.25" fill="url(#mutBar3d)" stroke="var(--pdd)" stroke-width="1.1"/>
               </svg>
             </span>
             <span class="text-[11.5px] font-medium text-slate-900">Arsip Queen</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('pembukuan')" class="card-box relative py-3 px-1 flex flex-col items-center gap-2 hover:bg-[#eef3f8]/70 transition">
+          <button type="button" onclick="openMenuModal('pembukuan')" class="card-box relative py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-[#c96a46] text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-2xs">Fitur Baru!</span>
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="bookCover3d" x1="13" y1="9" x2="35" y2="39" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#76a6d6" />
-                    <stop offset="100%" stop-color="#2f5b8a" />
+                    <stop offset="0%" stop-color="var(--pa)" />
+                    <stop offset="100%" stop-color="var(--pd)" />
                   </linearGradient>
                 </defs>
-                <rect x="13.5" y="9.5" width="21" height="29" rx="3" fill="url(#bookCover3d)" stroke="#224468" stroke-width="1.5"/>
+                <rect x="13.5" y="9.5" width="21" height="29" rx="3" fill="url(#bookCover3d)" stroke="var(--pdd)" stroke-width="1.5"/>
                 <rect x="17" y="13" width="14" height="22" rx="1.5" fill="#f7fafe"/>
-                <path d="M20 18.5h8M20 24h8M20 29.5h5.5" stroke="#3b6ea5" stroke-width="2" stroke-linecap="round"/>
+                <path d="M20 18.5h8M20 24h8M20 29.5h5.5" stroke="var(--p)" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </span>
             <span class="text-[11.5px] font-medium text-slate-900">Pembukuan</span>
           </button>
 
-          <button type="button" onclick="openStatsModal()" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[#eef3f8]/70 transition">
+          <button type="button" onclick="openStatsModal()" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="barCol3d" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stop-color="#75a6d7" />
-                    <stop offset="100%" stop-color="#2f5b8a" />
+                    <stop offset="100%" stop-color="var(--pd)" />
                   </linearGradient>
                 </defs>
-                <rect x="11.5" y="27" width="4.5" height="10" rx="1.5" fill="url(#barCol3d)" stroke="#23466b" stroke-width="1.1"/>
-                <rect x="18.5" y="23" width="4.5" height="14" rx="1.5" fill="url(#barCol3d)" stroke="#23466b" stroke-width="1.1"/>
-                <rect x="25.5" y="25.5" width="4.5" height="11.5" rx="1.5" fill="url(#barCol3d)" stroke="#23466b" stroke-width="1.1"/>
-                <rect x="32.5" y="18.5" width="4.5" height="18.5" rx="1.5" fill="url(#barCol3d)" stroke="#23466b" stroke-width="1.1"/>
-                <polyline points="13.8,20 20.8,14.5 27.8,17.5 34.8,10.5" stroke="#4e7fb3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="34.8" cy="10.5" r="2.2" fill="#3b6ea5" stroke="#ffffff" stroke-width="1.1"/>
+                <rect x="11.5" y="27" width="4.5" height="10" rx="1.5" fill="url(#barCol3d)" stroke="var(--pdd)" stroke-width="1.1"/>
+                <rect x="18.5" y="23" width="4.5" height="14" rx="1.5" fill="url(#barCol3d)" stroke="var(--pdd)" stroke-width="1.1"/>
+                <rect x="25.5" y="25.5" width="4.5" height="11.5" rx="1.5" fill="url(#barCol3d)" stroke="var(--pdd)" stroke-width="1.1"/>
+                <rect x="32.5" y="18.5" width="4.5" height="18.5" rx="1.5" fill="url(#barCol3d)" stroke="var(--pdd)" stroke-width="1.1"/>
+                <polyline points="13.8,20 20.8,14.5 27.8,17.5 34.8,10.5" stroke="var(--pm)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="34.8" cy="10.5" r="2.2" fill="var(--p)" stroke="#ffffff" stroke-width="1.1"/>
               </svg>
             </span>
             <span class="text-[11.5px] font-medium text-slate-900">Grafik</span>
@@ -520,14 +521,14 @@
     <!-- 3. HALAMAN TRANSAKSI -->
     <main id="tab-transaksi" class="hidden flex-1 bg-white flex flex-col pb-24 relative">
       <div class="p-3.5 space-y-2.5">
-        <button type="button" onclick="openNewCustomerModal()" class="w-full bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[14px] py-2.5 rounded-lg shadow-xs transition">
+        <button type="button" onclick="openNewCustomerModal()" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[14px] py-2.5 rounded-lg shadow-xs transition">
           Pelanggan Baru
         </button>
-        <button type="button" id="btn-select-cust" onclick="openPickCustomerModal()" class="w-full bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[14px] py-2.5 rounded-lg shadow-xs transition">
+        <button type="button" id="btn-select-cust" onclick="openPickCustomerModal()" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[14px] py-2.5 rounded-lg shadow-xs transition">
           Pilih Pelanggan
         </button>
-        <div class="grid grid-cols-2 border border-[#3b6ea5] rounded-xl overflow-hidden text-[13.5px] font-medium text-slate-900 bg-[#f6f9fc]">
-          <div class="py-2 text-center border-r border-[#3b6ea5]/40">Jumlah Item : <span id="cart-count" class="font-bold">0</span></div>
+        <div class="grid grid-cols-2 border border-[color:var(--p)] rounded-xl overflow-hidden text-[13.5px] font-medium text-slate-900 bg-[color:var(--t1)]">
+          <div class="py-2 text-center border-r border-[rgb(var(--p-rgb)/0.4)]">Jumlah Item : <span id="cart-count" class="font-bold">0</span></div>
           <div class="py-2 text-center">Total : <span id="cart-total" class="font-bold">Rp0</span></div>
         </div>
         <button type="button" onclick="openCartModal()" class="w-full bg-[#2b7a5b] hover:bg-[#226349] text-white font-semibold text-[14px] py-2.5 rounded-lg shadow-xs transition">
@@ -537,7 +538,7 @@
 
       <!-- Tab Kategori Produk -->
       <div class="grid grid-cols-4 border-y border-slate-200 bg-white sticky top-[51px] z-20 text-[12.5px]">
-        <button type="button" id="cat-KILOAN" onclick="setProductCategory('KILOAN')" class="py-2.5 font-bold text-[#3b6ea5] border-b-2 border-[#3b6ea5]">KILOAN</button>
+        <button type="button" id="cat-KILOAN" onclick="setProductCategory('KILOAN')" class="py-2.5 font-bold text-[color:var(--p)] border-b-2 border-[color:var(--p)]">KILOAN</button>
         <button type="button" id="cat-SATUAN" onclick="setProductCategory('SATUAN')" class="py-2.5 font-semibold text-slate-500 border-b-2 border-transparent">SATUAN</button>
         <button type="button" id="cat-M2" onclick="setProductCategory('M2')" class="py-2.5 font-semibold text-slate-500 border-b-2 border-transparent">M2</button>
         <button type="button" id="cat-FAV" onclick="setProductCategory('FAV')" class="py-2.5 font-semibold text-slate-500 border-b-2 border-transparent">FAV</button>
@@ -549,9 +550,9 @@
           <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>
           </svg>
-          <input type="text" id="prod-search" oninput="renderProducts()" placeholder="Cari Produk" class="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-[13.5px] outline-none focus:border-[#3b6ea5]" />
+          <input type="text" id="prod-search" oninput="renderProducts()" placeholder="Cari Produk" class="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-[13.5px] outline-none focus:border-[color:var(--p)]" />
         </div>
-        <button type="button" onclick="renderProducts()" class="w-10 h-9 rounded-lg bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white flex items-center justify-center">
+        <button type="button" onclick="renderProducts()" class="w-10 h-9 rounded-lg bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white flex items-center justify-center">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>
           </svg>
@@ -568,13 +569,13 @@
 
       <!-- Tombol Load More di Bagian Bawah Daftar Produk -->
       <div class="p-3.5 border-t border-slate-100">
-        <button type="button" id="btn-load-more" onclick="toggleLoadMore()" class="w-full bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[14px] py-2.5 rounded-lg">
+        <button type="button" id="btn-load-more" onclick="toggleLoadMore()" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[14px] py-2.5 rounded-lg">
           Load More
         </button>
       </div>
 
       <!-- Tombol Lanjut Mengambang di Tengah Bagian Bawah -->
-      <button type="button" id="floating-lanjut-btn" onclick="openCheckoutModal()" class="hidden fixed bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-32px)] max-w-[408px] bg-[#3b6ea5] hover:bg-[#2f5b8a] active:bg-[#274d75] text-white font-semibold text-[14px] py-2.5 px-6 rounded-xl shadow-lg transition">
+      <button type="button" id="floating-lanjut-btn" onclick="openCheckoutModal()" class="hidden fixed bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-32px)] max-w-[408px] bg-[color:var(--p)] hover:bg-[color:var(--pd)] active:bg-[color:var(--pdd)] text-white font-semibold text-[14px] py-2.5 px-6 rounded-xl shadow-lg transition">
         Lanjut
       </button>
     </main>
@@ -584,15 +585,15 @@
       <div class="card-box p-3.5 space-y-2.5">
         <div class="text-[14.5px] font-bold text-slate-900">Cari &amp; Ambil Cucian</div>
         <label class="text-xs font-semibold text-slate-600 block">Jenis Pencarian</label>
-        <select id="order-search-type" onchange="onSearchTypeChange()" class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-[#3b6ea5] text-sm font-semibold text-[#3b6ea5] outline-none">
+        <select id="order-search-type" onchange="onSearchTypeChange()" class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-[color:var(--p)] text-sm font-semibold text-[color:var(--p)] outline-none">
           <option value="id">No Order Nota</option>
           <option value="nama" selected>Nama</option>
           <option value="phone">No Ponsel</option>
           <option value="urutan">Urutan Nota</option>
         </select>
-        <input type="text" id="order-search-input" oninput="renderOrdersLists()" placeholder="Tulis nama pelanggan" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-[#3b6ea5]" />
+        <input type="text" id="order-search-input" oninput="renderOrdersLists()" placeholder="Tulis nama pelanggan" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-[color:var(--p)]" />
         <div class="grid grid-cols-4 gap-1.5 text-xs font-semibold">
-          <button type="button" id="flt-search-ALL" onclick="setOrderFilter('search','ALL')" class="py-1.5 rounded-lg bg-[#3b6ea5] text-white">Semua</button>
+          <button type="button" id="flt-search-ALL" onclick="setOrderFilter('search','ALL')" class="py-1.5 rounded-lg bg-[color:var(--p)] text-white">Semua</button>
           <button type="button" id="flt-search-Proses" onclick="setOrderFilter('search','Proses')" class="py-1.5 rounded-lg bg-slate-100 text-slate-700">Proses</button>
           <button type="button" id="flt-search-Selesai" onclick="setOrderFilter('search','Selesai')" class="py-1.5 rounded-lg bg-slate-100 text-slate-700">Selesai</button>
           <button type="button" id="flt-search-Ambil" onclick="setOrderFilter('search','Ambil')" class="py-1.5 rounded-lg bg-slate-100 text-slate-700">Ambil</button>
@@ -609,10 +610,10 @@
             <div class="text-[14.5px] font-bold text-slate-900">Data Order</div>
             <div class="text-[11px] text-slate-500">Klik nama pelanggan untuk membuka Detail Order</div>
           </div>
-          <span id="total-order-badge" class="px-2.5 py-1 rounded-full bg-[#eef3f8] text-[#2f5b8a] font-bold text-xs">0 Order</span>
+          <span id="total-order-badge" class="px-2.5 py-1 rounded-full bg-[color:var(--t1)] text-[color:var(--pd)] font-bold text-xs">0 Order</span>
         </div>
         <div class="grid grid-cols-4 gap-1.5 text-xs font-semibold">
-          <button type="button" id="flt-orders-ALL" onclick="setOrderFilter('orders','ALL')" class="py-1.5 rounded-lg bg-[#3b6ea5] text-white">Semua</button>
+          <button type="button" id="flt-orders-ALL" onclick="setOrderFilter('orders','ALL')" class="py-1.5 rounded-lg bg-[color:var(--p)] text-white">Semua</button>
           <button type="button" id="flt-orders-Proses" onclick="setOrderFilter('orders','Proses')" class="py-1.5 rounded-lg bg-slate-100 text-slate-700">Proses</button>
           <button type="button" id="flt-orders-Selesai" onclick="setOrderFilter('orders','Selesai')" class="py-1.5 rounded-lg bg-slate-100 text-slate-700">Selesai</button>
           <button type="button" id="flt-orders-Ambil" onclick="setOrderFilter('orders','Ambil')" class="py-1.5 rounded-lg bg-slate-100 text-slate-700">Ambil</button>
@@ -637,7 +638,7 @@
           <svg class="nav-3d-svg" viewBox="0 0 24 24" fill="none">
             <path d="M5.63 1.5c-1.04 0-1.88.84-1.88 1.88v17.25c0 1.03.84 1.87 1.88 1.87h12.75c1.03 0 1.87-.84 1.87-1.87V12.75A3.75 3.75 0 0016.5 9h-1.88a1.88 1.88 0 01-1.87-1.88V5.25A3.75 3.75 0 009 1.5H5.63z" fill="#eef5fc"/>
             <path d="M12.97 1.82A5.23 5.23 0 0114.25 5.25v1.88c0 .2.17.37.38.37H16.5a5.23 5.23 0 013.43 1.28 9.77 9.77 0 00-6.96-6.96z" fill="#ffffff"/>
-            <path d="M8 13h8M8 16.5h6" stroke="#2f5b8a" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 13h8M8 16.5h6" stroke="var(--pd)" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
         </span>
         <span class="text-[11px] font-medium">Transaksi</span>
@@ -691,12 +692,12 @@
           <span id="arsip-cust-label" class="truncate text-slate-700">-pelanggan tidak dipilih-</span>
           <button type="button" onclick="arsipClearCust()" class="w-6 h-6 shrink-0 rounded-full bg-[#e0302b] text-white text-sm leading-none">&times;</button>
         </div>
-        <button type="button" onclick="openCustScreen('arsip')" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Pilih Pelanggan</button>
+        <button type="button" onclick="openCustScreen('arsip')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Pilih Pelanggan</button>
         <div class="grid grid-cols-2 gap-3 text-left">
           <div><div class="mb-1 text-xs font-semibold text-slate-600">Status</div><select id="arsip-status" class="arsip-sel"><option value="ALL">Semua</option><option value="Proses">Proses</option><option value="Selesai">Selesai</option><option value="Ambil">Ambil</option></select></div>
           <div><div class="mb-1 text-xs font-semibold text-slate-600">Status Bayar</div><select id="arsip-pay" class="arsip-sel"><option value="ALL">Semua</option><option value="LUNAS">Lunas</option><option value="BELUM">Belum Lunas</option></select></div>
         </div>
-        <button type="button" onclick="arsipRender(true)" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Filter</button>
+        <button type="button" onclick="arsipRender(true)" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Filter</button>
           <button type="button" onclick="arsipLoadOld()" class="w-full py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold text-xs">Muat order lama dari cloud (sesuai tanggal di atas)</button>
         </div>
       </div>
@@ -715,7 +716,7 @@
         <h2 class="text-[18px] text-slate-800 truncate">List Pelanggan</h2>
       </div>
       <div class="flex items-center gap-1.5 shrink-0">
-        <button type="button" onclick="custExport()" class="px-3 py-1.5 rounded-xl bg-[#1f4570] text-white text-[12px] font-semibold">export</button>
+        <button type="button" onclick="custExport()" class="px-3 py-1.5 rounded-xl bg-[color:var(--pdd)] text-white text-[12px] font-semibold">export</button>
         <button type="button" onclick="document.getElementById('cust-file').click()" class="px-3 py-1.5 rounded-xl bg-[#2e7d1e] text-white text-[12px] font-semibold">import</button>
         <button type="button" id="cust-del-btn" onclick="custDeleteAsk()" class="px-3 py-1.5 rounded-xl bg-[#7a1230] text-white text-[12px] font-semibold">hapus</button>
       </div>
@@ -726,13 +727,13 @@
         <svg class="w-5 h-5 text-slate-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path stroke-linecap="round" d="M20 20l-4.2-4.2"/></svg>
         <input type="text" id="cust-q" placeholder="Cari" oninput="custSearch(this.value)" class="w-full outline-none text-[14px] bg-transparent" />
       </div>
-      <button type="button" onclick="custSearch(document.getElementById('cust-q').value)" class="w-11 h-11 rounded-md bg-[#2f6fb5] text-white flex items-center justify-center shadow">
+      <button type="button" onclick="custSearch(document.getElementById('cust-q').value)" class="w-11 h-11 rounded-md bg-[color:var(--p)] text-white flex items-center justify-center shadow">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path stroke-linecap="round" d="M20 20l-4.2-4.2"/></svg>
       </button>
       <button type="button" onclick="custClear()" class="w-11 h-11 rounded-md bg-[#e0524d] text-white text-xl flex items-center justify-center shadow">&times;</button>
     </div>
     <div id="cust-body" class="flex-1 overflow-y-auto"></div>
-    <button type="button" onclick="openNewCustomerModal()" class="absolute right-4 bottom-6 w-14 h-14 rounded-full bg-[#2f6fb5] text-white text-3xl shadow-lg flex items-center justify-center" title="Tambah Pelanggan">+</button>
+    <button type="button" onclick="openNewCustomerModal()" class="absolute right-4 bottom-6 w-14 h-14 rounded-full bg-[color:var(--p)] text-white text-3xl shadow-lg flex items-center justify-center" title="Tambah Pelanggan">+</button>
   </div>
 
   <div id="estimasi-screen">
@@ -745,8 +746,8 @@
         </button>
         <h2 class="text-[18px] font-normal text-slate-800 truncate">Estimasi</h2>
       </div>
-      <div class="flex items-center gap-3 text-[#3b6ea5] shrink-0">
-        <button type="button" onclick="openEstimasiDatePicker()" title="Pilih Tanggal Estimasi" class="p-1.5 rounded-lg hover:bg-[#eef3f8]">
+      <div class="flex items-center gap-3 text-[color:var(--p)] shrink-0">
+        <button type="button" onclick="openEstimasiDatePicker()" title="Pilih Tanggal Estimasi" class="p-1.5 rounded-lg hover:bg-[color:var(--t1)]">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>
@@ -754,12 +755,12 @@
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
         </button>
-        <button type="button" onclick="syncEstimasiOrders()" title="Sinkronkan Estimasi Paket Hari" class="p-1.5 rounded-lg hover:bg-[#eef3f8]">
+        <button type="button" onclick="syncEstimasiOrders()" title="Sinkronkan Estimasi Paket Hari" class="p-1.5 rounded-lg hover:bg-[color:var(--t1)]">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
         </button>
-        <button type="button" onclick="printEstimasiList()" title="Cetak Daftar Estimasi" class="p-1.5 rounded-lg hover:bg-[#eef3f8] text-emerald-700">
+        <button type="button" onclick="printEstimasiList()" title="Cetak Daftar Estimasi" class="p-1.5 rounded-lg hover:bg-[color:var(--t1)] text-emerald-700">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
           </svg>
@@ -801,9 +802,21 @@
   </div>
 
   <!-- MODAL GLOBAL -->
+  <!-- KONFIRMASI YA / TIDAK -->
+  <div id="confirm-wrap" onclick="if(event.target===this) confirmNo()" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-900/60 p-6">
+    <div class="w-full max-w-[340px] rounded-2xl bg-white p-4 space-y-3 shadow-2xl">
+      <div id="confirm-title" class="text-[15px] font-bold text-slate-900">Hapus?</div>
+      <div id="confirm-msg" class="text-[13px] text-slate-600 leading-snug"></div>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="confirmNo()" class="py-2.5 rounded-xl bg-slate-200 text-slate-800 font-bold text-sm">Tidak</button>
+        <button type="button" onclick="confirmYes()" class="py-2.5 rounded-xl bg-[#7a1230] text-white font-bold text-sm">Ya</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-wrap" onclick="if(event.target===this) closeModal()" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-slate-900/55 p-0 sm:p-4">
     <div class="bg-white w-full max-w-[440px] rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[88vh] flex flex-col">
-      <div class="px-4 py-3 bg-[#3b6ea5] text-white flex items-center justify-between shrink-0 no-print">
+      <div class="px-4 py-3 bg-[color:var(--p)] text-white flex items-center justify-between shrink-0 no-print">
         <h3 id="modal-head" class="font-bold text-sm">Modal</h3>
         <button type="button" onclick="closeModal()" class="p-1 rounded-lg hover:bg-white/20">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -1144,7 +1157,7 @@
           '<div id="cloud-auth" class="space-y-2"></div>' +
           '<div class="text-slate-500 leading-relaxed">Tempel <b>firebaseConfig</b> dari Firebase Console (Project settings &gt; Your apps &gt; Web app). Data pelanggan, order, pengeluaran, dan produk akan tersimpan otomatis di cloud dan sinkron antar perangkat.</div>' +
           '<textarea id="cloud-cfg" rows="7" placeholder="const firebaseConfig = {\n  apiKey: &quot;...&quot;,\n  projectId: &quot;...&quot;, ...\n};" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-[11px]"></textarea>' +
-          '<button type="button" onclick="cloudSaveConfig()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Simpan &amp; Sambungkan</button>' +
+          '<button type="button" onclick="cloudSaveConfig()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Simpan &amp; Sambungkan</button>' +
           (has ? '<button type="button" onclick="cloudDisconnect()" class="w-full py-2.5 rounded-xl bg-slate-200 text-slate-800 font-bold text-sm">Putuskan Sambungan</button>' : '') +
         '</div>');
       cloudRefreshAuthUI();
@@ -1331,7 +1344,7 @@
       if (dotEl) {
         dotEl.className = 'w-1.5 h-1.5 rounded-full shrink-0 ' + (
           state.location && state.location.source === 'gps' ? 'bg-emerald-600' :
-          state.location && state.location.source === 'manual' ? 'bg-[#3b6ea5]' : 'bg-amber-500'
+          state.location && state.location.source === 'manual' ? 'bg-[color:var(--p)]' : 'bg-amber-500'
         );
       }
     }
@@ -1439,17 +1452,17 @@
 
       openModal('Lokasi Real-Time',
         '<div class="space-y-3 text-xs">' +
-          '<div class="p-3 rounded-xl bg-[#eef3f8] border border-[#c6d6e6] space-y-1">' +
-            '<div class="flex justify-between"><span class="text-slate-600">Lokasi Saat Ini</span><strong class="text-[#2f5b8a]">' + esc(loc.label || 'Makassar') + '</strong></div>' +
+          '<div class="p-3 rounded-xl bg-[color:var(--t1)] border border-[color:var(--t2)] space-y-1">' +
+            '<div class="flex justify-between"><span class="text-slate-600">Lokasi Saat Ini</span><strong class="text-[color:var(--pd)]">' + esc(loc.label || 'Makassar') + '</strong></div>' +
             '<div class="flex justify-between"><span class="text-slate-600">Mode</span><span class="font-semibold">' + esc(statusText) + '</span></div>' +
             '<div class="flex justify-between"><span class="text-slate-600">Koordinat</span><span class="font-mono text-[11px]">' + esc(coordText) + '</span></div>' +
             (loc.updatedAt ? '<div class="flex justify-between"><span class="text-slate-600">Update</span><span>' + esc(loc.updatedAt) + '</span></div>' : '') +
           '</div>' +
-          '<button type="button" onclick="state.location.source=\'gps\'; persistAll(); closeModal(); startRealtimeLocation(true);" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-bold text-xs">Deteksi Lokasi GPS Otomatis</button>' +
+          '<button type="button" onclick="state.location.source=\'gps\'; persistAll(); closeModal(); startRealtimeLocation(true);" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-bold text-xs">Deteksi Lokasi GPS Otomatis</button>' +
           '<div class="pt-1 border-t border-slate-200 space-y-2">' +
             '<label class="font-semibold block">Atur Nama Lokasi / Kota Manual</label>' +
             '<input type="text" id="inp-manual-location" value="' + esc(loc.label || 'Makassar') + '" placeholder="Contoh: Makassar" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
-            '<button type="button" onclick="saveManualLocation()" class="w-full py-2 rounded-xl bg-[#2f6690] hover:bg-[#27557a] text-white font-bold text-xs">Simpan Lokasi</button>' +
+            '<button type="button" onclick="saveManualLocation()" class="w-full py-2 rounded-xl bg-[color:var(--pd)] hover:bg-[color:var(--pdd)] text-white font-bold text-xs">Simpan Lokasi</button>' +
           '</div>' +
         '</div>'
       );
@@ -1654,7 +1667,7 @@
           '</div>' +
           '<div class="grid grid-cols-2 gap-2">' +
             '<button type="button" onclick="applyModalEstimasiDate(\'' + esc(todayStr) + '\')" class="py-2 rounded-xl bg-slate-100 text-slate-800 font-bold">Hari Ini (' + esc(todayStr) + ')</button>' +
-            '<button type="button" onclick="applyModalEstimasiDate()" class="py-2 rounded-xl bg-[#3b6ea5] text-white font-bold">Terapkan Tanggal</button>' +
+            '<button type="button" onclick="applyModalEstimasiDate()" class="py-2 rounded-xl bg-[color:var(--p)] text-white font-bold">Terapkan Tanggal</button>' +
           '</div>' +
         '</div>'
       );
@@ -1696,7 +1709,7 @@
           '<div>' + listHtml + '</div>' +
         '</div>' +
         '<div class="mt-3 no-print">' +
-          '<button type="button" onclick="triggerBrowserPrint()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-xs">Print Daftar Estimasi</button>' +
+          '<button type="button" onclick="triggerBrowserPrint()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-xs">Print Daftar Estimasi</button>' +
         '</div>'
       );
     }
@@ -1764,7 +1777,7 @@
       var filterSelectHtml =
         '<div class="px-3.5 py-2.5 bg-white border-b border-slate-200 flex items-center justify-between gap-2">' +
           '<button type="button" onclick="stepEstimasiDate(-1)" class="px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50">&lsaquo; Prev</button>' +
-          '<select id="estimasi-filter-select" onchange="setEstimasiFilter(this.value)" class="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-2 text-[14px] text-slate-800 font-medium outline-none focus:border-[#3b6ea5]">' +
+          '<select id="estimasi-filter-select" onchange="setEstimasiFilter(this.value)" class="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-2 text-[14px] text-slate-800 font-medium outline-none focus:border-[color:var(--p)]">' +
             filterOptions.map(function (opt) {
               return '<option value="' + esc(opt.key) + '"' + (flt === opt.key ? ' selected' : '') + '>' + esc(opt.label) + '</option>';
             }).join('') +
@@ -1773,9 +1786,9 @@
         '</div>';
 
       var summaryStripHtml =
-        '<div class="px-3.5 py-2 bg-[#eef3f8] border-b border-slate-200 flex items-center justify-between text-[11.5px] text-slate-700">' +
+        '<div class="px-3.5 py-2 bg-[color:var(--t1)] border-b border-slate-200 flex items-center justify-between text-[11.5px] text-slate-700">' +
           '<span>Target Selesai: <strong>' + matching.length + ' Order</strong> (' + formatQty(trunc2(totalEstKg)) + ' Kg)</span>' +
-          '<span class="font-bold text-[#2f5b8a]">' + formatRp(totalEstNominal) + '</span>' +
+          '<span class="font-bold text-[color:var(--pd)]">' + formatRp(totalEstNominal) + '</span>' +
         '</div>';
 
       var cardsHtml = matching.length
@@ -1791,14 +1804,14 @@
                 : 'bg-rose-100 text-rose-800';
               var stageBadgeText = mapOrderStageBadge(o.status);
               var stageBadgeClass = stageBadgeText === 'selesai'
-                ? 'bg-[#dce6f1] text-[#274d75]'
-                : 'bg-[#e6eff8] text-[#2f5b8a]';
+                ? 'bg-[color:var(--t2)] text-[color:var(--pdd)]'
+                : 'bg-[color:var(--t1)] text-[color:var(--pd)]';
               var channelText = o.deliveryChannel || 'datang langsung';
 
-              return '<div onclick="closeEstimasiScreen(); openDetailScreenByIndex(' + idx + ');" class="px-3.5 py-3 hover:bg-slate-50/90 active:bg-[#eef3f8] cursor-pointer">' +
+              return '<div onclick="closeEstimasiScreen(); openDetailScreenByIndex(' + idx + ');" class="px-3.5 py-3 hover:bg-slate-50/90 active:bg-[color:var(--t1)] cursor-pointer">' +
                 '<div class="flex items-start justify-between gap-2">' +
                   '<div class="min-w-0">' +
-                    '<div class="text-[13.5px] font-bold text-[#3b6ea5] leading-snug">ID: ' + esc(o.id) + '</div>' +
+                    '<div class="text-[13.5px] font-bold text-[color:var(--p)] leading-snug">ID: ' + esc(o.id) + '</div>' +
                     '<div class="text-[14.5px] font-medium text-slate-900 leading-snug mt-0.5 truncate">' + esc(o.customer) + '</div>' +
                     '<div class="text-[13px] text-slate-800 leading-snug mt-0.5">' + formatQty(itemCount) + ' Item <span class="text-[11px] text-slate-500">(' + esc(o.estimation || '') + ')</span></div>' +
                   '</div>' +
@@ -1820,12 +1833,12 @@
             '<div class="text-xs text-slate-500">Tanggal selesai dihitung otomatis dari tanggal order masuk ditambah estimasi paket hari (misal: HEMAT 1 HARI = +1 hari, HEMAT 2 HARI = +2 hari).</div>' +
             '<div class="flex items-center justify-center gap-2 pt-1">' +
               '<button type="button" onclick="stepEstimasiDate(1)" class="px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold">Cek Besok (+1 Hari)</button>' +
-              '<button type="button" onclick="syncEstimasiOrders()" class="px-3.5 py-2 rounded-lg bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white text-xs font-semibold">Sinkronkan Estimasi</button>' +
+              '<button type="button" onclick="syncEstimasiOrders()" class="px-3.5 py-2 rounded-lg bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white text-xs font-semibold">Sinkronkan Estimasi</button>' +
             '</div>' +
           '</div>';
 
       body.innerHTML =
-        '<div class="px-3.5 py-2 bg-[#eef2f6] border-b border-slate-200 flex items-center justify-between text-[13px] text-slate-700">' +
+        '<div class="px-3.5 py-2 bg-[color:var(--t1)] border-b border-slate-200 flex items-center justify-between text-[13px] text-slate-700">' +
           '<span>estimasi tgl : ' + esc(targetDate) + '</span>' +
           '<input type="date" value="' + esc(targetDate) + '" onchange="setEstimasiDate(this.value)" class="bg-white border border-slate-300 rounded px-2 py-0.5 text-xs text-slate-800 outline-none" />' +
         '</div>' +
@@ -2123,7 +2136,7 @@
       var entriesHtml = d.entries.length
         ? '<div class="divide-y divide-slate-200 bg-white">' +
             d.entries.map(function (it) {
-              var typeColor = it.isExpense ? 'text-rose-700' : 'text-[#2f5b8a]';
+              var typeColor = it.isExpense ? 'text-rose-700' : 'text-[color:var(--pd)]';
               var amtText = (it.isExpense ? '-' : '') + formatRp(it.amount);
               return '<div class="px-4 py-3.5">' +
                 '<div class="flex items-center justify-between gap-2">' +
@@ -2246,11 +2259,7 @@
       var todayOrders = branchOrders.filter(function (o) {
         return (o.createdAt || '').slice(0, 10) === today;
       });
-      var kasHari = todayOrders.reduce(function (sum, o) {
-        var totalOrder = Math.max(0, Number(o.total !== undefined ? o.total : o.subtotal) || 0);
-        var paidAmt = o.paid ? totalOrder : Math.max(0, Number(o.paidAmount) || 0);
-        return sum + paidAmt;
-      }, 0);
+      var kasHari = computeKasHariIniData().pemasukan; // sama persis dengan layar Kas Hari Ini
       syncAllOrdersEstimation();
       var targetEstDate = (state.estimasi && state.estimasi.date) ? state.estimasi.date : today;
       var dueOrders = branchOrders.filter(function (o) {
@@ -2297,7 +2306,7 @@
             '<label class="font-semibold block mb-1">Nama Cabang</label>' +
             '<input type="text" id="inp-branch" placeholder="Contoh: Queen Laundry Cabang 2" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
           '</div>' +
-          '<button type="button" onclick="submitBranch()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Simpan Cabang</button>' +
+          '<button type="button" onclick="submitBranch()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Simpan Cabang</button>' +
         '</div>'
       );
     }
@@ -2344,9 +2353,9 @@
     }
 
     function hmColor(v, max) {
-      if (!v) return '#eef3f8';
+      if (!v) return 'var(--t1)';
       var r = v / max;
-      return r > 0.75 ? '#1f4570' : r > 0.5 ? '#3b6ea5' : r > 0.25 ? '#7fa6cf' : '#bcd3ea';
+      return r > 0.75 ? 'var(--pdd)' : r > 0.5 ? 'var(--p)' : r > 0.25 ? 'var(--pm)' : 'var(--t2)';
     }
 
     function hmShort(v) {
@@ -2372,9 +2381,9 @@
       var sums = hmSums(HM.mode), alt = hmSums(HM.mode === 'om' ? 'pm' : 'om'), p2 = function (n) { return ('0' + n).slice(-2); };
       var todayKey = getLocalDateStr(new Date());
       var tabs = [['day', 'Harian'], ['month', 'Bulanan'], ['year', 'Tahunan']].map(function (t) {
-        return '<button type="button" onclick="hmSet({view:\'' + t[0] + '\',sel:\'\'})" class="flex-1 py-1.5 rounded-lg font-bold ' + (HM.view === t[0] ? 'bg-[#3b6ea5] text-white' : 'bg-slate-100 text-slate-600') + '">' + t[1] + '</button>';
+        return '<button type="button" onclick="hmSet({view:\'' + t[0] + '\',sel:\'\'})" class="flex-1 py-1.5 rounded-lg font-bold ' + (HM.view === t[0] ? 'bg-[color:var(--p)] text-white' : 'bg-slate-100 text-slate-600') + '">' + t[1] + '</button>';
       }).join('') + '</div><div class="flex gap-1.5">' + [['om', 'Omset (semua order)'], ['pm', 'Pemasukan (dibayar)']].map(function (t) {
-        return '<button type="button" onclick="hmSet({mode:\'' + t[0] + '\'})" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold ' + (HM.mode === t[0] ? 'bg-[#1f4570] text-white' : 'bg-slate-100 text-slate-600') + '">' + t[1] + '</button>';
+        return '<button type="button" onclick="hmSet({mode:\'' + t[0] + '\'})" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold ' + (HM.mode === t[0] ? 'bg-[color:var(--pdd)] text-white' : 'bg-slate-100 text-slate-600') + '">' + t[1] + '</button>';
       }).join('');
       var cells = [], title = '', cols = 7;
       if (HM.view === 'day') {
@@ -2414,9 +2423,9 @@
         : '<div class="text-center text-slate-400 text-[11px]">Tekan kotak untuk melihat penghasilan persisnya</div>';
       var head = HM.view === 'day' ? '<div class="grid grid-cols-7 gap-1 text-center text-[9px] text-slate-500">' + ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map(function (x) { return '<div>' + x + '</div>'; }).join('') + '</div>' : '';
       var nav = HM.view === 'year' ? '<div class="text-center font-bold">' + title + '</div>' : '<div class="flex items-center justify-between"><button type="button" onclick="hmNav(-1)" class="px-3 py-1 rounded-lg bg-slate-100 font-bold">&lsaquo;</button><div class="font-bold">' + title + '</div><button type="button" onclick="hmNav(1)" class="px-3 py-1 rounded-lg bg-slate-100 font-bold">&rsaquo;</button></div>';
-      el.innerHTML = '<div class="p-3 rounded-xl border border-slate-200 space-y-2"><div class="font-bold text-[#2f5b8a]">Heatmap Penghasilan</div><div class="flex gap-1.5">' + tabs + '</div>' + nav + head +
+      el.innerHTML = '<div class="p-3 rounded-xl border border-slate-200 space-y-2"><div class="font-bold text-[color:var(--pd)]">Heatmap Penghasilan</div><div class="flex gap-1.5">' + tabs + '</div>' + nav + head +
         '<div class="grid gap-1" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr))">' + grid + '</div>' + detail +
-        '<div class="flex justify-between font-bold"><span>Total ' + (HM.mode === 'om' ? 'Omset ' : 'Pemasukan ') + title + '</span><span class="text-[#2f5b8a]">' + formatRp(total) + '</span></div></div>';
+        '<div class="flex justify-between font-bold"><span>Total ' + (HM.mode === 'om' ? 'Omset ' : 'Pemasukan ') + title + '</span><span class="text-[color:var(--pd)]">' + formatRp(total) + '</span></div></div>';
     }
 
     function renderHeatmapLama() {
@@ -2424,7 +2433,7 @@
       if (!el) return;
       var sums = hmSums(), p2 = function (n) { return ('0' + n).slice(-2); };
       var tabs = [['day', 'Harian'], ['month', 'Bulanan'], ['year', 'Tahunan']].map(function (t) {
-        return '<button type="button" onclick="hmSet({view:\'' + t[0] + '\'})" class="flex-1 py-1.5 rounded-lg font-bold ' + (HM.view === t[0] ? 'bg-[#3b6ea5] text-white' : 'bg-slate-100 text-slate-600') + '">' + t[1] + '</button>';
+        return '<button type="button" onclick="hmSet({view:\'' + t[0] + '\'})" class="flex-1 py-1.5 rounded-lg font-bold ' + (HM.view === t[0] ? 'bg-[color:var(--p)] text-white' : 'bg-slate-100 text-slate-600') + '">' + t[1] + '</button>';
       }).join('');
       var cells = [], title = '', total = 0, cols = 7;
       if (HM.view === 'day') {
@@ -2456,9 +2465,9 @@
       }).join('');
       var head = HM.view === 'day' ? '<div class="grid grid-cols-7 gap-1 text-center text-[9px] text-slate-500">' + ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map(function (x) { return '<div>' + x + '</div>'; }).join('') + '</div>' : '';
       var nav = HM.view === 'year' ? '<div class="text-center font-bold">' + title + '</div>' : '<div class="flex items-center justify-between"><button type="button" onclick="hmNav(-1)" class="px-3 py-1 rounded-lg bg-slate-100 font-bold">&lsaquo;</button><div class="font-bold">' + title + '</div><button type="button" onclick="hmNav(1)" class="px-3 py-1 rounded-lg bg-slate-100 font-bold">&rsaquo;</button></div>';
-      el.innerHTML = '<div class="p-3 rounded-xl border border-slate-200 space-y-2"><div class="font-bold text-[#2f5b8a]">Heatmap Penghasilan</div><div class="flex gap-1.5">' + tabs + '</div>' + nav + head +
+      el.innerHTML = '<div class="p-3 rounded-xl border border-slate-200 space-y-2"><div class="font-bold text-[color:var(--pd)]">Heatmap Penghasilan</div><div class="flex gap-1.5">' + tabs + '</div>' + nav + head +
         '<div class="grid gap-1" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr))">' + grid + '</div>' +
-        '<div class="flex justify-between font-bold"><span>Total ' + title + '</span><span class="text-[#2f5b8a]">' + formatRp(total) + '</span></div></div>';
+        '<div class="flex justify-between font-bold"><span>Total ' + title + '</span><span class="text-[color:var(--pd)]">' + formatRp(total) + '</span></div></div>';
     }
 
     // ===== PEMBAYARAN BERTAHAP, PIUTANG, TUTUP KAS, GAJI, OFFLINE =====
@@ -2601,7 +2610,7 @@
           '<div><label class="font-semibold block mb-1">Uang fisik di laci sekarang</label><input type="tel" id="tk-fisik" oninput="tkRecalc()" value="' + (cur ? cur.fisik : '') + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold" /></div>' +
           '<div class="flex justify-between font-bold"><span>Selisih</span><span id="tk-diff"></span></div>' +
           '<div><label class="font-semibold block mb-1">Catatan</label><input type="text" id="tk-note" value="' + esc(cur ? cur.note : '') + '" placeholder="Mis. kembalian kurang" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
-          '<button type="button" onclick="tkSave()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Simpan Tutup Kas</button>' +
+          '<button type="button" onclick="tkSave()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Simpan Tutup Kas</button>' +
           '<div class="font-semibold text-slate-600 pt-1">Riwayat terbaru</div><div class="space-y-1">' + hist + '</div>' +
         '</div>');
       tkRecalc();
@@ -2675,9 +2684,9 @@
           '<div><div class="text-[11px] text-slate-500 mb-0.5">Komisi (%)</div><input type="tel" value="' + (Number(c.komisi) || 0) + '" onchange="gajiSet(' + i + ',\'komisi\',this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300" /></div></div>' +
           '<div class="flex justify-between text-slate-600"><span>Gaji pokok</span><span>' + formatRp(pokok) + '</span></div>' +
           '<div class="flex justify-between text-slate-600"><span>Komisi (dari omset ' + formatRp(Math.round(share[n] || 0)) + ')</span><span>' + formatRp(kom) + '</span></div>' +
-          '<div class="flex justify-between font-bold"><span>Total</span><span class="text-[#2f5b8a]">' + formatRp(tot) + '</span></div></div>';
+          '<div class="flex justify-between font-bold"><span>Total</span><span class="text-[color:var(--pd)]">' + formatRp(tot) + '</span></div></div>';
       }).join('') || '<div class="text-center text-slate-400 py-4">Belum ada absensi pada bulan ini</div>';
-      document.getElementById('gj-body').innerHTML = html + (names.length ? '<div class="flex justify-between font-bold p-2.5 rounded-xl bg-[#eef3f8] border border-[#c6d6e6]"><span>Total gaji & komisi</span><span class="text-[#2f5b8a]">' + formatRp(totAll) + '</span></div>' : '');
+      document.getElementById('gj-body').innerHTML = html + (names.length ? '<div class="flex justify-between font-bold p-2.5 rounded-xl bg-[color:var(--t1)] border border-[color:var(--t2)]"><span>Total gaji & komisi</span><span class="text-[color:var(--pd)]">' + formatRp(totAll) + '</span></div>' : '');
     }
 
     function gajiSet(i, field, val) {
@@ -2723,7 +2732,7 @@
           return '<div class="text-slate-600">' + esc(it.name) + ' &bull; ' + formatQty(trunc2(it.qty)) + ' ' + esc(it.unit || '') + '</div>';
         }).join('');
         return '<div class="flex items-start justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 break-words">' + esc(r.o.customer) + '</div><div class="text-[11px] text-slate-400">' + esc(r.o.id) + ' &bull; ' + esc(r.o.estimation || '') + '</div>' + lines + '</div>' +
-          '<button type="button" onclick="ironHide(\'' + esc(r.o.id) + '\')" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 font-bold border border-rose-200">Hapus</button></div>';
+          '<button type="button" onclick="confirmIronHide(\'' + esc(r.o.id) + '\')" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 font-bold border border-rose-200">Hapus</button></div>';
       }).join('') || '<div class="text-center text-slate-500 py-6">Belum ada setrikaan yang jatuh tempo hari ini</div>';
       openModal('Setrika Hari Ini',
         '<div class="space-y-2 text-xs"><div class="font-semibold text-slate-600">' + rows.length + ' order jatuh tempo hari ini (' + today + ')</div>' + html +
@@ -2748,10 +2757,10 @@
 
       openModal('Statistik & Grafik Order',
         '<div class="space-y-3 text-xs">' +
-          '<div class="p-3 rounded-xl bg-[#eef3f8] flex justify-between font-bold"><span>Total Omzet Order</span><span class="text-[#2f5b8a]">' + formatRp(omzet) + '</span></div>' +
+          '<div class="p-3 rounded-xl bg-[color:var(--t1)] flex justify-between font-bold"><span>Total Omzet Order</span><span class="text-[color:var(--pd)]">' + formatRp(omzet) + '</span></div>' +
           '<div class="p-3 rounded-xl bg-emerald-50 flex justify-between font-bold"><span>Total Sudah Lunas</span><span class="text-emerald-700">' + formatRp(lunas) + '</span></div>' +
           '<div class="grid grid-cols-3 gap-2 text-center">' +
-            '<div class="p-2.5 rounded-xl bg-[#f1f5f9]"><div class="text-slate-500">Proses</div><div class="font-bold text-sm text-[#3b6ea5]">' + proses + '</div></div>' +
+            '<div class="p-2.5 rounded-xl bg-[#f1f5f9]"><div class="text-slate-500">Proses</div><div class="font-bold text-sm text-[color:var(--p)]">' + proses + '</div></div>' +
             '<div class="p-2.5 rounded-xl bg-emerald-50"><div class="text-slate-500">Selesai</div><div class="font-bold text-sm text-emerald-700">' + selesai + '</div></div>' +
             '<div class="p-2.5 rounded-xl bg-slate-100"><div class="text-slate-500">Ambil</div><div class="font-bold text-sm text-slate-700">' + ambil + '</div></div>' +
           '</div>' +
@@ -2772,14 +2781,14 @@
       var names = [];
       list.forEach(function (r) { if (names.indexOf(r.name) === -1) names.push(r.name); });
       var rows = list.slice().sort(function (a, b) { return (b.date + b.masuk).localeCompare(a.date + a.masuk); }).slice(0, 40).map(function (r) {
-        return '<div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 truncate">' + esc(r.name) + '</div><div class="text-slate-500">' + esc(r.date) + ' &bull; Masuk ' + esc(r.masuk) + ' &bull; Pulang ' + (r.pulang ? esc(r.pulang) : '-') + '</div></div><button type="button" onclick="absDel(\'' + esc(r.id) + '\')" class="text-rose-600 font-bold px-2 text-base">&times;</button></div>';
+        return '<div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 truncate">' + esc(r.name) + '</div><div class="text-slate-500">' + esc(r.date) + ' &bull; Masuk ' + esc(r.masuk) + ' &bull; Pulang ' + (r.pulang ? esc(r.pulang) : '-') + '</div></div><button type="button" onclick="confirmAbsDel(\'' + esc(r.id) + '\')" class="text-rose-600 font-bold px-2 text-base">&times;</button></div>';
       }).join('') || '<div class="text-center text-slate-400 py-3">Belum ada absensi</div>';
       openModal('Absensi Karyawan',
         '<div class="space-y-3 text-xs">' +
           '<input id="abs-name" list="abs-names" value="' + esc(keepName || '') + '" placeholder="Nama karyawan" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />' +
           '<datalist id="abs-names">' + names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
-          '<div class="grid grid-cols-2 gap-2"><button type="button" onclick="absAction(\'in\')" class="py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Absen Masuk</button><button type="button" onclick="absAction(\'out\')" class="py-2.5 rounded-xl bg-[#1f4570] text-white font-bold text-sm">Absen Pulang</button></div>' +
-          '<button type="button" onclick="openGajiModal()" class="w-full py-2.5 rounded-xl bg-[#1f4570] text-white font-bold text-sm">Gaji & Komisi</button>' +
+          '<div class="grid grid-cols-2 gap-2"><button type="button" onclick="absAction(\'in\')" class="py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Absen Masuk</button><button type="button" onclick="absAction(\'out\')" class="py-2.5 rounded-xl bg-[color:var(--pdd)] text-white font-bold text-sm">Absen Pulang</button></div>' +
+          '<button type="button" onclick="openGajiModal()" class="w-full py-2.5 rounded-xl bg-[color:var(--pdd)] text-white font-bold text-sm">Gaji & Komisi</button>' +
           '<div class="font-semibold text-slate-600">Riwayat terbaru</div><div class="space-y-2">' + rows + '</div>' +
         '</div>');
     }
@@ -2814,8 +2823,8 @@
           return '<div class="py-2 border-b border-slate-100 flex justify-between items-center gap-2 text-xs">' +
             '<div class="min-w-0"><div class="font-bold text-slate-900 truncate">' + esc(p.name) + '</div><div class="text-[11px] text-slate-500">' + esc(p.cat) + ' &bull; ' + esc(p.unit) + '</div></div>' +
             '<div class="flex items-center gap-2 shrink-0">' +
-              '<span class="font-bold text-[#2f5b8a]">' + formatRp(p.price) + '</span>' +
-              '<button type="button" onclick="deleteProductById(\'' + esc(p.id) + '\')" class="px-2 py-1 rounded bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-[11px]">Hapus</button>' +
+              '<span class="font-bold text-[color:var(--pd)]">' + formatRp(p.price) + '</span>' +
+              '<button type="button" onclick="confirmDeleteProduct(\'' + esc(p.id) + '\')" class="px-2 py-1 rounded bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-[11px]">Hapus</button>' +
             '</div>' +
           '</div>';
         }).join('');
@@ -2833,7 +2842,7 @@
                   '<option value="M2">M2</option>' +
                 '</select>' +
               '</div>' +
-              '<button type="button" onclick="addNewProduct()" class="w-full py-2 rounded-lg bg-[#3b6ea5] text-white font-bold">Simpan Produk</button>' +
+              '<button type="button" onclick="addNewProduct()" class="w-full py-2 rounded-lg bg-[color:var(--p)] text-white font-bold">Simpan Produk</button>' +
             '</div>' +
             '<div>' + prodRows + '</div>' +
           '</div>'
@@ -2848,14 +2857,14 @@
           ? state.customers.map(function (c, idx) {
               return '<div class="p-2.5 rounded-xl border border-slate-200 flex justify-between items-center text-xs">' +
                 '<div><div class="font-bold text-slate-900">' + esc(c.name) + '</div><div class="text-slate-500">' + esc(c.phone) + ' &bull; ' + esc(c.address) + '</div></div>' +
-                '<button type="button" onclick="pickCustomerByIndex(' + idx + '); switchTab(\'transaksi\')" class="px-2.5 py-1 rounded-lg bg-[#3b6ea5] text-white font-bold">Order</button>' +
+                '<button type="button" onclick="pickCustomerByIndex(' + idx + '); switchTab(\'transaksi\')" class="px-2.5 py-1 rounded-lg bg-[color:var(--p)] text-white font-bold">Order</button>' +
               '</div>';
             }).join('')
           : '<div class="text-center py-4 text-xs text-slate-500">Daftar pelanggan masih kosong.</div>';
 
         openModal('Data Pelanggan (' + state.customers.length + ')',
           '<div class="space-y-3">' +
-            '<button type="button" onclick="openNewCustomerModal()" class="w-full py-2 rounded-xl bg-[#3b6ea5] text-white font-bold text-xs">+ Tambah Pelanggan Baru</button>' +
+            '<button type="button" onclick="openNewCustomerModal()" class="w-full py-2 rounded-xl bg-[color:var(--p)] text-white font-bold text-xs">+ Tambah Pelanggan Baru</button>' +
             '<div class="space-y-2">' + custRows + '</div>' +
           '</div>'
         );
@@ -2876,7 +2885,7 @@
           '<div class="space-y-2.5 text-xs mb-3">' +
             '<input type="text" id="inp-exp-title" placeholder="Keperluan (Deterjen, Plastik, Listrik...)" class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
             '<input type="number" id="inp-exp-amt" placeholder="Nominal (Rp)" class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
-            '<button type="button" onclick="submitExpense()" class="w-full py-2 rounded-xl bg-[#3b6ea5] text-white font-bold">Simpan Pengeluaran</button>' +
+            '<button type="button" onclick="submitExpense()" class="w-full py-2 rounded-xl bg-[color:var(--p)] text-white font-bold">Simpan Pengeluaran</button>' +
           '</div>' +
           '<div class="space-y-2">' + expRows + '</div>'
         );
@@ -2921,7 +2930,7 @@
                 '<button type="button" onclick="printerSearch(false).catch(function(){})" class="py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Cari RPP02N</button>' +
                 '<button type="button" onclick="printerSearch(true).catch(function(){})" class="py-2 rounded-xl bg-slate-200 text-slate-800 font-bold">Semua perangkat</button>' +
               '</div>' +
-              '<button type="button" onclick="printerTest()" class="w-full py-2 rounded-xl bg-[#3b6ea5] text-white font-bold">Tes Cetak</button>' +
+              '<button type="button" onclick="printerTest()" class="w-full py-2 rounded-xl bg-[color:var(--p)] text-white font-bold">Tes Cetak</button>' +
               (window.AndroidPrinter ? '<button type="button" onclick="window.AndroidPrinter.choosePrinter()" class="w-full py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Pilih Printer Bluetooth (APK)</button>' : '') +
             '</div>' +
             '<div>' +
@@ -2942,7 +2951,12 @@
               '</select>' +
             '</div>' +
             '<div><label class="font-semibold block mb-1">Footer Print (teks akhir nota)</label><textarea id="cfg-print-footer" rows="3" placeholder="Terima Kasih!" class="w-full px-3 py-2 rounded-xl border border-slate-300">' + esc(footerText()) + '</textarea></div>' +
-            '<button type="button" onclick="saveSettings()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold">Simpan Pengaturan</button>' +
+            '<div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">' +
+              '<div class="font-semibold">Warna Tampilan</div>' +
+              '<div id="theme-grid" class="grid grid-cols-3 gap-2">' + themeGridHtml() + '</div>' +
+              '<div class="text-[11px] text-slate-500">Warna langsung berubah saat dipilih dan tersimpan otomatis.</div>' +
+            '</div>' +
+            '<button type="button" onclick="saveSettings()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold">Simpan Pengaturan</button>' +
             '<div class="text-center text-[11px] text-slate-400 pt-1">Versi aplikasi: ' + APP_VERSION + '</div>' +
           '</div>'
         );
@@ -2973,7 +2987,7 @@
           '<div class="space-y-2.5 text-xs">' +
             '<div class="p-3 rounded-xl bg-emerald-50 flex justify-between"><span>Kas Masuk (Order Lunas)</span><strong class="text-emerald-700">' + formatRp(masuk) + '</strong></div>' +
             '<div class="p-3 rounded-xl bg-rose-50 flex justify-between"><span>Kas Keluar (Pengeluaran)</span><strong class="text-rose-700">' + formatRp(keluar) + '</strong></div>' +
-            '<div class="p-3 rounded-xl bg-[#eef3f8] flex justify-between font-bold text-sm"><span>Selisih Kas Bersih</span><span class="text-[#2f5b8a]">' + formatRp(masuk - keluar) + '</span></div>' +
+            '<div class="p-3 rounded-xl bg-[color:var(--t1)] flex justify-between font-bold text-sm"><span>Selisih Kas Bersih</span><span class="text-[color:var(--pd)]">' + formatRp(masuk - keluar) + '</span></div>' +
           '</div>'
         );
       }
@@ -3071,7 +3085,7 @@
         var btn = document.getElementById('cat-' + c);
         if (!btn) return;
         btn.className = state.trx.category === c
-          ? 'py-2.5 font-bold text-[#3b6ea5] border-b-2 border-[#3b6ea5]'
+          ? 'py-2.5 font-bold text-[color:var(--p)] border-b-2 border-[color:var(--p)]'
           : 'py-2.5 font-semibold text-slate-500 border-b-2 border-transparent';
       });
 
@@ -3092,7 +3106,7 @@
       } else {
         listEl.innerHTML = shown.map(function (p) {
           var realIndex = state.products.findIndex(function (x) { return x.id === p.id; });
-          return '<button type="button" onclick="prodTap(' + realIndex + ')" ontouchstart="prodPressStart(' + realIndex + ')" ontouchend="prodPressEnd()" ontouchmove="prodPressEnd()" ontouchcancel="prodPressEnd()" onmousedown="prodPressStart(' + realIndex + ')" onmouseup="prodPressEnd()" onmouseleave="prodPressEnd()" oncontextmenu="return false" class="select-none [-webkit-touch-callout:none] w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-[#eef3f8]/60 active:bg-[#dce6f1]/60">' +
+          return '<button type="button" onclick="prodTap(' + realIndex + ')" ontouchstart="prodPressStart(' + realIndex + ')" ontouchend="prodPressEnd()" ontouchmove="prodPressEnd()" ontouchcancel="prodPressEnd()" onmousedown="prodPressStart(' + realIndex + ')" onmouseup="prodPressEnd()" onmouseleave="prodPressEnd()" oncontextmenu="return false" class="select-none [-webkit-touch-callout:none] w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-[rgb(var(--t1-rgb)/0.6)] active:bg-[rgb(var(--t2-rgb)/0.6)]">' +
             '<span class="text-[14px] font-medium text-slate-900 pr-2">' + (p.pinned ? '&#128204; ' : '') + esc(p.name) + '</span>' +
             '<span class="text-[14px] font-medium text-slate-900 whitespace-nowrap">' + formatRp(p.price) + '</span>' +
           '</button>';
@@ -3157,7 +3171,7 @@
       if (!p) return;
       openModal(p.name,
         '<div class="space-y-2 text-xs">' +
-          '<button type="button" onclick="prodTogglePin(' + i + ')" class="w-full py-3 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">' + (p.pinned ? 'Lepas Pin' : '&#128204; Pin ke Atas') + '</button>' +
+          '<button type="button" onclick="prodTogglePin(' + i + ')" class="w-full py-3 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">' + (p.pinned ? 'Lepas Pin' : '&#128204; Pin ke Atas') + '</button>' +
           '<button type="button" onclick="closeModal()" class="w-full py-3 rounded-xl bg-slate-200 text-slate-800 font-bold text-sm">Batal</button>' +
         '</div>');
     }
@@ -3179,7 +3193,7 @@
         '<div class="space-y-3 text-xs">' +
           '<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center">' +
             '<span class="text-slate-600">Harga / ' + esc(prod.unit) + '</span>' +
-            '<span class="font-bold text-[#2f5b8a] text-sm">' + formatRp(prod.price) + '</span>' +
+            '<span class="font-bold text-[color:var(--pd)] text-sm">' + formatRp(prod.price) + '</span>' +
           '</div>' +
           '<div>' +
             '<label class="font-semibold block mb-1">Jumlah / Berat (' + esc(prod.unit) + ')</label>' +
@@ -3192,9 +3206,9 @@
           '</div>' +
           '<div class="flex justify-between font-semibold px-1">' +
             '<span>Subtotal:</span>' +
-            '<span id="qty-sub-preview" class="text-[#2f5b8a] font-bold">' + formatRp(0) + '</span>' +
+            '<span id="qty-sub-preview" class="text-[color:var(--pd)] font-bold">' + formatRp(0) + '</span>' +
           '</div>' +
-          '<button type="button" onclick="confirmAddToCart(' + prodIndex + ')" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Masukkan ke Keranjang</button>' +
+          '<button type="button" onclick="confirmAddToCart(' + prodIndex + ')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Masukkan ke Keranjang</button>' +
         '</div>'
       );
       setTimeout(function () {
@@ -3259,7 +3273,7 @@
             '<label class="font-semibold block mb-1">Alamat</label>' +
             '<input type="text" id="new-cust-addr" placeholder="Alamat lengkap (opsional)" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
           '</div>' +
-          '<button type="button" onclick="saveNewCustomer()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Simpan &amp; Pilih Pelanggan</button>' +
+          '<button type="button" onclick="saveNewCustomer()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Simpan &amp; Pilih Pelanggan</button>' +
         '</div>'
       );
     }
@@ -3331,21 +3345,21 @@
       var rows = arsipFiltered(), shown = rows.slice(0, arsip.page * 20);
       var html = '';
       if (rows.length) {
-        html += '<div class="px-1 flex items-center justify-between text-xs text-slate-500"><span>' + rows.length + ' order</span><button type="button" onclick="arsipSelAll()" class="font-semibold text-[#2f6fb5]">Pilih semua / batal</button></div>';
+        html += '<div class="px-1 flex items-center justify-between text-xs text-slate-500"><span>' + rows.length + ' order</span><button type="button" onclick="arsipSelAll()" class="font-semibold text-[color:var(--p)]">Pilih semua / batal</button></div>';
       }
       html += shown.map(function (r) {
         var o = r.o, id = esc(o.id), st = o.status || 'Proses';
         return '<div class="card-box p-3 flex items-start gap-3">' +
           '<input type="checkbox" ' + (arsip.sel[o.id] ? 'checked ' : '') + 'onchange="arsipToggle(\'' + id + '\', this.checked)" class="w-5 h-5 mt-0.5 shrink-0" />' +
-          '<div class="flex-1 min-w-0"><div class="text-[13px] font-bold text-[#2f5b8a]">' + id + '</div>' +
-          '<div class="text-[14px] font-semibold text-[#1f4570] break-words" style="cursor:pointer" onclick="openDetailScreenByIndex(' + r.idx + ')">' + esc(o.customer) + '</div>' +
+          '<div class="flex-1 min-w-0"><div class="text-[13px] font-bold text-[color:var(--pd)]">' + id + '</div>' +
+          '<div class="text-[14px] font-semibold text-[color:var(--pdd)] break-words" style="cursor:pointer" onclick="openDetailScreenByIndex(' + r.idx + ')">' + esc(o.customer) + '</div>' +
           '<div class="text-[11.5px] text-slate-500">' + esc(String(o.createdAt || '').slice(0, 16)) + '</div>' + (o.items || []).map(function (it) { return '<div class="text-[11.5px] text-slate-600">' + esc(it.name) + ' (' + formatQty(it.qty) + ' ' + esc(it.unit || '') + ')</div>'; }).join('') + '</div>' +
           '<div class="text-right shrink-0"><div class="text-[13px] font-semibold">' + formatRp(o.total) + '</div>' +
           '<div class="text-[11px] ' + (r.paid ? 'text-emerald-700' : 'text-rose-700') + ' font-semibold">' + (r.paid ? 'LUNAS' : 'BELUM LUNAS') + '</div>' +
           '<div class="text-[11px] text-slate-500">' + esc(st) + '</div></div></div>';
       }).join('');
       if (!rows.length) html += '<div class="card-box p-6 text-center text-sm font-semibold text-slate-600">Tidak ada data</div>';
-      if (rows.length > shown.length) html += '<button type="button" onclick="arsip.page++; arsipRender()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Load More Data...</button>';
+      if (rows.length > shown.length) html += '<button type="button" onclick="arsip.page++; arsipRender()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Load More Data...</button>';
       document.getElementById('arsip-list').innerHTML = html;
     }
 
@@ -3427,7 +3441,7 @@
         '<div id="print-area" style="font-size:11px"><div style="font-weight:700;font-size:14px">Arsip Queen Laundry</div><div style="margin-bottom:6px">Periode: ' + esc(per) + ' &bull; ' + rows.length + ' order</div>' +
         '<table style="width:100%;border-collapse:collapse" border="1" cellpadding="3"><tr style="background:#eee"><th>No Nota</th><th>Tgl</th><th>Pelanggan</th><th>Status</th><th>Bayar</th><th>Total</th></tr>' + body +
         '<tr><td colspan="5" style="text-align:right;font-weight:700">TOTAL</td><td style="text-align:right;font-weight:700">' + formatRp(sum) + '</td></tr></table></div>' +
-        '<div class="mt-3 no-print"><button type="button" onclick="triggerBrowserPrint()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-xs">Cetak / Simpan sebagai PDF</button></div>');
+        '<div class="mt-3 no-print"><button type="button" onclick="triggerBrowserPrint()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-xs">Cetak / Simpan sebagai PDF</button></div>');
     }
 
     // ===== LIST PELANGGAN (layar penuh) =====
@@ -3503,7 +3517,7 @@
         '</div>';
       }).join('');
       if (!total) html = '<div class="text-center py-10 text-sm text-slate-500">Pelanggan tidak ditemukan.</div>';
-      if (total > list.length) html += '<div class="p-3"><button type="button" onclick="custUI.page = (custUI.page || 1) + 1; renderCustScreen()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Tampilkan lebih banyak (' + list.length + ' dari ' + total + ')</button></div>';
+      if (total > list.length) html += '<div class="p-3"><button type="button" onclick="custUI.page = (custUI.page || 1) + 1; renderCustScreen()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Tampilkan lebih banyak (' + list.length + ' dari ' + total + ')</button></div>';
       document.getElementById('cust-body').innerHTML = '<div class="px-4 py-2 text-xs text-slate-500 border-b border-slate-200">Total ' + total + (q ? ' hasil pencarian dari ' + state.customers.length : '') + ' pelanggan</div>' + html + '<div style="height:90px"></div>';
       custUpdateDelLabel();
     }
@@ -3556,7 +3570,7 @@
           '<div><label class="font-semibold block mb-1">Nama Pelanggan *</label><input type="text" id="ec-name" value="' + esc(c.name) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
           '<div><label class="font-semibold block mb-1">No HP / WhatsApp</label><input type="tel" id="ec-phone" value="' + esc(c.phone) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
           '<div><label class="font-semibold block mb-1">Alamat</label><input type="text" id="ec-addr" value="' + esc(c.address) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
-          '<button type="button" onclick="custEditSave(\'' + esc(id) + '\')" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-sm">Simpan Perubahan</button>' +
+          '<button type="button" onclick="custEditSave(\'' + esc(id) + '\')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Simpan Perubahan</button>' +
         '</div>');
     }
 
@@ -3577,11 +3591,7 @@
     function custDeleteAsk() {
       var n = Object.keys(custUI.sel).length;
       if (!n) { showToast('Centang pelanggan yang akan dihapus'); return; }
-      openModal('Hapus Pelanggan',
-        '<div class="space-y-3 text-sm text-center">' +
-          '<div>Hapus <b>' + n + '</b> pelanggan terpilih? Riwayat order tidak ikut terhapus.</div>' +
-          '<button type="button" onclick="custDeleteDo()" class="w-full py-2.5 rounded-xl bg-[#7a1230] text-white font-bold">Ya, Hapus</button>' +
-        '</div>');
+      askConfirm('Hapus Pelanggan', 'Hapus <b>' + n + '</b> pelanggan terpilih? Riwayat order tidak ikut terhapus.', custDeleteDo);
     }
 
     function custDeleteDo() {
@@ -3626,15 +3636,15 @@
         openModal('Pilih Pelanggan',
           '<div class="text-center py-5 space-y-3">' +
             '<div class="text-xs text-slate-500">Belum ada data pelanggan tersimpan.</div>' +
-            '<button type="button" onclick="openNewCustomerModal()" class="px-4 py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-xs">+ Tambah Pelanggan Baru</button>' +
+            '<button type="button" onclick="openNewCustomerModal()" class="px-4 py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-xs">+ Tambah Pelanggan Baru</button>' +
           '</div>'
         );
         return;
       }
       var rows = state.customers.map(function (c, idx) {
-        return '<button type="button" onclick="pickCustomerByIndex(' + idx + ')" class="w-full p-3 rounded-xl border border-slate-200 hover:border-[#3b6ea5] flex justify-between items-center text-left">' +
+        return '<button type="button" onclick="pickCustomerByIndex(' + idx + ')" class="w-full p-3 rounded-xl border border-slate-200 hover:border-[color:var(--p)] flex justify-between items-center text-left">' +
           '<div><div class="font-bold text-slate-900">' + esc(c.name) + '</div><div class="text-xs text-slate-500">' + esc(c.phone) + '</div></div>' +
-          '<span class="text-xs font-bold text-[#2f5b8a]">Pilih</span>' +
+          '<span class="text-xs font-bold text-[color:var(--pd)]">Pilih</span>' +
         '</button>';
       }).join('');
       openModal('Pilih Pelanggan', '<div class="space-y-2">' + rows + '</div>');
@@ -3658,15 +3668,15 @@
         return '<div class="p-2.5 rounded-xl border border-slate-200 flex items-center justify-between gap-2">' +
           '<div><div class="font-bold text-xs">' + esc(it.name) + '</div><div class="text-[11px] text-slate-500">' + formatRp(it.price) + ' x ' + formatQty(it.qty) + ' ' + esc(it.unit) + '</div></div>' +
           '<div class="flex items-center gap-2"><span class="font-bold text-xs">' + formatRp(it.subtotal) + '</span>' +
-          '<button type="button" onclick="removeCartItem(' + idx + ')" class="px-2 py-1 rounded bg-rose-100 text-rose-700 text-[11px] font-bold">Hapus</button></div>' +
+          '<button type="button" onclick="confirmRemoveCartItem(' + idx + ')" class="px-2 py-1 rounded bg-rose-100 text-rose-700 text-[11px] font-bold">Hapus</button></div>' +
         '</div>';
       }).join('');
       var total = state.trx.cart.reduce(function (s, x) { return s + x.subtotal; }, 0);
       openModal('Keranjang Cucian',
         '<div class="space-y-3">' +
           '<div class="space-y-2">' + rows + '</div>' +
-          '<div class="pt-2 border-t flex justify-between font-bold text-sm"><span>Total</span><span class="text-[#2f5b8a]">' + formatRp(total) + '</span></div>' +
-          '<button type="button" onclick="openCheckoutModal()" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold text-xs">Lanjut Checkout</button>' +
+          '<div class="pt-2 border-t flex justify-between font-bold text-sm"><span>Total</span><span class="text-[color:var(--pd)]">' + formatRp(total) + '</span></div>' +
+          '<button type="button" onclick="openCheckoutModal()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-xs">Lanjut Checkout</button>' +
         '</div>'
       );
     }
@@ -3747,7 +3757,7 @@
             '<label class="font-semibold block mb-1">Catatan</label>' +
             '<input type="text" id="chk-note" placeholder="Catatan khusus cucian..." class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
           '</div>' +
-          '<div id="chk-sum" class="p-3 rounded-xl bg-[#eef3f8] border border-[#c6d6e6] space-y-1 font-bold text-sm"></div>' +
+          '<div id="chk-sum" class="p-3 rounded-xl bg-[color:var(--t1)] border border-[color:var(--t2)] space-y-1 font-bold text-sm"></div>' +
           '<button type="button" onclick="submitCheckout()" class="w-full py-2.5 rounded-xl bg-[#2b7a5b] text-white font-bold text-sm">Simpan Order</button>' +
         '</div>'
       );
@@ -3778,7 +3788,7 @@
         h += '<div class="flex justify-between font-normal text-slate-600"><span>Subtotal</span><span>' + formatRp(sub) + '</span></div>' +
           '<div class="flex justify-between font-normal text-slate-600"><span>Diskon' + (isP ? ' (' + d.value + '%)' : '') + '</span><span>-' + formatRp(d.amount) + '</span></div>';
       }
-      h += '<div class="flex justify-between"><span>Total Tagihan</span><span class="text-[#2f5b8a]">' + formatRp(net) + '</span></div>';
+      h += '<div class="flex justify-between"><span>Total Tagihan</span><span class="text-[color:var(--pd)]">' + formatRp(net) + '</span></div>';
       if (mode === '2' && dp > 0) {
         h += '<div class="flex justify-between font-normal text-slate-600"><span>DP dibayar</span><span>' + formatRp(dp) + '</span></div>' +
           '<div class="flex justify-between"><span>Sisa Bayar</span><span class="text-rose-700">' + formatRp(Math.max(0, net - dp)) + '</span></div>';
@@ -3926,7 +3936,7 @@
           var btn = document.getElementById('flt-' + targetKey + '-' + st);
           if (btn) {
             btn.className = activeFlt === st
-              ? 'py-1.5 rounded-lg bg-[#3b6ea5] text-white'
+              ? 'py-1.5 rounded-lg bg-[color:var(--p)] text-white'
               : 'py-1.5 rounded-lg bg-slate-100 text-slate-700';
           }
         });
@@ -3961,7 +3971,7 @@
           var idx = entry.index;
           var stClass = o.status === 'Selesai'
             ? 'bg-emerald-100 text-emerald-800'
-            : (o.status === 'Ambil' ? 'bg-slate-200 text-slate-700' : 'bg-[#e6eff8] text-[#2f5b8a]');
+            : (o.status === 'Ambil' ? 'bg-slate-200 text-slate-700' : 'bg-[color:var(--t1)] text-[color:var(--pd)]');
 
           var summaryItems = (o.items || []).map(function (i) { return i.name + ' x' + formatQty(i.qty); }).join(', ');
 
@@ -3969,11 +3979,11 @@
             '<div class="flex items-start justify-between gap-2">' +
               '<div>' +
                 '<div class="flex items-center gap-1.5 flex-wrap">' +
-                  '<span class="text-[11px] font-bold text-[#2f5b8a]">' + esc(o.id) + '</span>' +
+                  '<span class="text-[11px] font-bold text-[color:var(--pd)]">' + esc(o.id) + '</span>' +
                   '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full ' + stClass + '">' + esc(o.status) + '</span>' +
                   (o.priority ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">PRIORITAS</span>' : '') +
                 '</div>' +
-                '<button type="button" onclick="openDetailScreenByIndex(' + idx + ')" class="mt-1 text-left text-[15px] font-bold text-[#2f5b8a] hover:underline block">' +
+                '<button type="button" onclick="openDetailScreenByIndex(' + idx + ')" class="mt-1 text-left text-[15px] font-bold text-[color:var(--pd)] hover:underline block">' +
                   esc(o.customer) +
                 '</button>' +
                 '<div class="text-[11px] text-slate-500">' + esc(o.createdAt) + ' &bull; ' + esc(o.phone || '-') + '</div>' +
@@ -3983,11 +3993,14 @@
                 '<div class="text-[10.5px] font-semibold ' + (o.paid ? 'text-emerald-700' : 'text-rose-700') + '">' +
                   (o.paid ? 'LUNAS' : 'BELUM BAYAR') +
                 '</div>' +
+                (targetKey === 'search' && o.status !== 'Ambil'
+                  ? '<button type="button" onclick="confirmTakeOrder(' + idx + ')" class="mt-1.5 px-4 py-1 rounded-lg bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white text-[11.5px] font-bold">Ambil</button>'
+                  : '') +
               '</div>' +
             '</div>' +
             '<div class="text-xs text-slate-600 border-t border-slate-100 pt-2 flex items-center justify-between">' +
               '<span class="truncate pr-2">' + esc(summaryItems) + '</span>' +
-              '<button type="button" onclick="openDetailScreenByIndex(' + idx + ')" class="text-[11px] font-bold text-[#2f5b8a] shrink-0">Detail &rarr;</button>' +
+              '<button type="button" onclick="openDetailScreenByIndex(' + idx + ')" class="text-[11px] font-bold text-[color:var(--pd)] shrink-0">Detail &rarr;</button>' +
             '</div>' +
           '</div>';
         }).join('');
@@ -4011,7 +4024,7 @@
       var isCurrentlyPaid = Boolean(o.paid) && Number(o.paidAmount || 0) >= total;
       var paidAmt = isCurrentlyPaid ? total : Math.max(0, Number(o.paidAmount || 0));
       var lunasBtnLabel = isCurrentlyPaid ? 'Belum Lunas' : 'Jadikan Lunas';
-      var lunasBtnColor = isCurrentlyPaid ? 'bg-[#b4691e]' : 'bg-[#356494]';
+      var lunasBtnColor = isCurrentlyPaid ? 'bg-[#b4691e]' : 'bg-[color:var(--pd)]';
 
       var itemsHtml = (o.items || []).map(function (it) {
         return '<div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">' +
@@ -4038,9 +4051,9 @@
           '<div class="text-[13px] text-slate-700 mt-0.5">' + esc(o.branch || state.meta.activeBranch) + '</div>' +
         '</div>' +
 
-        '<div class="mt-3 px-4 py-2 bg-[#f1f4f8] text-[13.5px] space-y-1.5 text-slate-900">' +
+        '<div class="mt-3 px-4 py-2 bg-[color:var(--bg)] text-[13.5px] space-y-1.5 text-slate-900">' +
           '<div class="flex justify-between items-center">' +
-            '<span class="text-[#2f5b8a] font-medium">ID: ' + esc(o.id) + '</span>' +
+            '<span class="text-[color:var(--pd)] font-medium">ID: ' + esc(o.id) + '</span>' +
             '<span>' + esc(o.createdAt) + '</span>' +
           '</div>' +
           '<div class="flex justify-between items-center font-medium">' +
@@ -4055,20 +4068,20 @@
         '</div>' +
 
         '<div class="mt-2">' +
-          '<div class="py-2 text-center text-[14px] text-slate-900 bg-[#f1f4f8]">Detail Item Pesanan</div>' +
+          '<div class="py-2 text-center text-[14px] text-slate-900 bg-[color:var(--bg)]">Detail Item Pesanan</div>' +
           '<div class="border-t border-slate-200">' + itemsHtml + '</div>' +
         '</div>' +
 
         '<div class="px-10 pt-4 pb-2 text-center">' +
-          '<button type="button" onclick="openInventoryModal(' + idx + ')" class="w-full bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[13px] py-2.5 rounded shadow-xs">PILIH INVENTORI</button>' +
+          '<button type="button" onclick="openInventoryModal(' + idx + ')" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[13px] py-2.5 rounded shadow-xs">PILIH INVENTORI</button>' +
           '<div class="mt-3 text-[13.5px] text-slate-900">Detail Item Inventori</div>' +
         '</div>' +
         invHtml +
 
         '<div class="px-4 pt-3 pb-4 text-center space-y-2.5">' +
           '<label for="detail-note-inp" class="block text-[14px] text-slate-900">Catatan:</label>' +
-          '<textarea id="detail-note-inp" rows="4" class="w-full bg-white border border-slate-300 rounded-md p-2.5 text-sm text-slate-900 outline-none focus:border-[#3b6ea5]">' + esc(o.notes || '') + '</textarea>' +
-          '<button type="button" onclick="saveOrderNote(' + idx + ')" class="px-5 py-2.5 bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-semibold text-[12.5px] rounded shadow-xs">UPDATE CATATAN</button>' +
+          '<textarea id="detail-note-inp" rows="4" class="w-full bg-white border border-slate-300 rounded-md p-2.5 text-sm text-slate-900 outline-none focus:border-[color:var(--p)]">' + esc(o.notes || '') + '</textarea>' +
+          '<button type="button" onclick="saveOrderNote(' + idx + ')" class="px-5 py-2.5 bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[12.5px] rounded shadow-xs">UPDATE CATATAN</button>' +
         '</div>' +
 
         '<div class="px-3 pt-1 pb-3">' +
@@ -4076,15 +4089,15 @@
           '<div class="grid grid-cols-3 rounded-lg overflow-hidden border border-slate-300">' +
             '<button type="button" onclick="setOrderStatus(' + idx + ',\'Proses\')" class="status-tile ' + (o.status === 'Proses' ? 'active' : '') + ' py-3.5 px-2 flex flex-col items-center justify-center gap-1.5 border-r border-slate-300">' +
               '<svg class="status-3d-svg" viewBox="0 0 36 36" fill="none">' +
-                '<rect x="6" y="6" width="18" height="24" rx="3.5" fill="' + (o.status === 'Proses' ? '#e8f1fa' : '#ffffff') + '" stroke="' + (o.status === 'Proses' ? '#1e3c5c' : '#3b6ea5') + '" stroke-width="2"/>' +
-                '<circle cx="15" cy="19.5" r="6.2" fill="' + (o.status === 'Proses' ? '#2f5b8a' : '#dce6f1') + '" stroke="' + (o.status === 'Proses' ? '#ffffff' : '#2f5b8a') + '" stroke-width="1.8"/>' +
+                '<rect x="6" y="6" width="18" height="24" rx="3.5" fill="' + (o.status === 'Proses' ? 'var(--t1)' : '#ffffff') + '" stroke="' + (o.status === 'Proses' ? 'var(--pdd)' : 'var(--p)') + '" stroke-width="2"/>' +
+                '<circle cx="15" cy="19.5" r="6.2" fill="' + (o.status === 'Proses' ? 'var(--pd)' : 'var(--t2)') + '" stroke="' + (o.status === 'Proses' ? '#ffffff' : 'var(--pd)') + '" stroke-width="1.8"/>' +
                 '<path d="M15 16.5v3l2.2 1.4" stroke="' + (o.status === 'Proses' ? '#ffffff' : '#1e293b') + '" stroke-width="2" stroke-linecap="round"/>' +
               '</svg>' +
               '<span class="text-[13px] font-medium">Proses</span>' +
             '</button>' +
             '<button type="button" onclick="setOrderStatus(' + idx + ',\'Selesai\')" class="status-tile ' + (o.status === 'Selesai' ? 'active' : '') + ' py-3.5 px-2 flex flex-col items-center justify-center gap-1.5 border-r border-slate-300">' +
               '<svg class="status-3d-svg" viewBox="0 0 36 36" fill="none">' +
-                '<path d="M11 8l3-3h8l3 3 4 3-2.5 4-1.5-1.5V28H11V13.5L9.5 15 7 11l4-3z" fill="' + (o.status === 'Selesai' ? '#e8f1fa' : '#ffffff') + '" stroke="' + (o.status === 'Selesai' ? '#1e3c5c' : '#3b6ea5') + '" stroke-width="1.8" stroke-linejoin="round"/>' +
+                '<path d="M11 8l3-3h8l3 3 4 3-2.5 4-1.5-1.5V28H11V13.5L9.5 15 7 11l4-3z" fill="' + (o.status === 'Selesai' ? 'var(--t1)' : '#ffffff') + '" stroke="' + (o.status === 'Selesai' ? 'var(--pdd)' : 'var(--p)') + '" stroke-width="1.8" stroke-linejoin="round"/>' +
                 '<circle cx="24" cy="25" r="6" fill="' + (o.status === 'Selesai' ? '#3a9b6e' : '#2b7a5b') + '" stroke="#ffffff" stroke-width="1.6"/>' +
                 '<path d="M21.5 25l1.8 1.8 3.2-3.4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
               '</svg>' +
@@ -4092,16 +4105,16 @@
             '</button>' +
             '<button type="button" onclick="setOrderStatus(' + idx + ',\'Ambil\')" class="status-tile ' + (o.status === 'Ambil' ? 'active' : '') + ' py-3.5 px-2 flex flex-col items-center justify-center gap-1.5">' +
               '<svg class="status-3d-svg" viewBox="0 0 36 36" fill="none">' +
-                '<path d="M8.5 11.5h19l1.5 18H7l1.5-18z" fill="' + (o.status === 'Ambil' ? '#e8f1fa' : '#ffffff') + '" stroke="' + (o.status === 'Ambil' ? '#1e3c5c' : '#3b6ea5') + '" stroke-width="2" stroke-linejoin="round"/>' +
-                '<path d="M13.5 11.5V8.5a4.5 4.5 0 019 0v3" stroke="' + (o.status === 'Ambil' ? '#ffffff' : '#2f5b8a') + '" stroke-width="2" stroke-linecap="round"/>' +
-                '<path d="M12 16h12" stroke="' + (o.status === 'Ambil' ? '#2f5b8a' : '#89b4de') + '" stroke-width="1.6" stroke-linecap="round"/>' +
+                '<path d="M8.5 11.5h19l1.5 18H7l1.5-18z" fill="' + (o.status === 'Ambil' ? 'var(--t1)' : '#ffffff') + '" stroke="' + (o.status === 'Ambil' ? 'var(--pdd)' : 'var(--p)') + '" stroke-width="2" stroke-linejoin="round"/>' +
+                '<path d="M13.5 11.5V8.5a4.5 4.5 0 019 0v3" stroke="' + (o.status === 'Ambil' ? '#ffffff' : 'var(--pd)') + '" stroke-width="2" stroke-linecap="round"/>' +
+                '<path d="M12 16h12" stroke="' + (o.status === 'Ambil' ? 'var(--pd)' : 'var(--pa)') + '" stroke-width="1.6" stroke-linecap="round"/>' +
               '</svg>' +
               '<span class="text-[13px] font-medium">Ambil</span>' +
             '</button>' +
           '</div>' +
         '</div>' +
 
-        '<div class="px-4 py-2 space-y-2 text-[14px] text-slate-900 bg-[#f1f4f8]">' +
+        '<div class="px-4 py-2 space-y-2 text-[14px] text-slate-900 bg-[color:var(--bg)]">' +
           '<div class="flex justify-between items-center"><span>Sub-total</span><span>' + formatRp(subtotal) + '</span></div>' +
           '<button type="button" onclick="openDiscountModal(' + idx + ')" class="w-full flex justify-between items-center text-left hover:bg-white/60 py-0.5 rounded"><span>Diskon</span><span>' + formatRp(discount) + '</span></button>' +
           '<div class="flex justify-between items-center font-semibold"><span>Total</span><span>' + formatRp(total) + '</span></div>' +
@@ -4111,7 +4124,7 @@
         '<div id="act-dock" class="act-dock' + (state.actCollapsed ? ' collapsed' : '') + '"><button type="button" onclick="toggleActDock()" class="act-handle"><span class="act-bar"></span><span>Aksi order</span></button><div class="act-wrap">' +
         '<div class="px-3 pt-1 space-y-1.5 text-white text-[13px] font-medium">' +
           '<div class="grid grid-cols-3 gap-1">' +
-            '<button type="button" onclick="deleteOrder(' + idx + ')" class="bg-[#b83b3b] hover:bg-[#9c2f2f] py-2.5 px-1 text-center leading-tight rounded-xs">Hapus<br>Transaksi</button>' +
+            '<button type="button" onclick="confirmDeleteOrder(' + idx + ')" class="bg-[#b83b3b] hover:bg-[#9c2f2f] py-2.5 px-1 text-center leading-tight rounded-xs">Hapus<br>Transaksi</button>' +
             '<button type="button" onclick="toggleOrderPriority(' + idx + ',true)" class="bg-[#8e4b96] hover:bg-[#763c7d] py-2.5 px-1 text-center leading-tight rounded-xs">Set Prioritas</button>' +
             '<button type="button" onclick="toggleOrderPriority(' + idx + ',false)" class="bg-[#6d3939] hover:bg-[#572c2c] py-2.5 px-1 text-center leading-tight rounded-xs">UnSet Prioritas</button>' +
           '</div>' +
@@ -4122,13 +4135,13 @@
           '</div>' +
           '<div class="grid grid-cols-3 gap-1">' +
             '<button type="button" onclick="openPrintPreview(' + idx + ',\'pdf\')" class="bg-[#825836] hover:bg-[#69462a] py-2.5 px-1 text-center leading-tight rounded-xs">Nota PDF</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'qr\')" class="bg-[#3b6ea5] hover:bg-[#2f5b8a] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Label<br>(QRCode)</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'qr\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Label<br>(QRCode)</button>' +
             '<button type="button" onclick="openPayModal(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Bayar Sisa<br>(Cicilan)</button>' +
           '</div>' +
           '<div class="grid grid-cols-3 gap-1 pt-1">' +
             '<button type="button" onclick="openPrintPreview(' + idx + ',\'nota\')" class="bg-[#3c7ea6] hover:bg-[#2f6687] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Nota</button>' +
             '<button type="button" onclick="openPrintPreview(' + idx + ',\'logo\')" class="bg-[#8f3d56] hover:bg-[#732f44] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak<br>Nota(Logo)</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'label\')" class="bg-[#3b6ea5] hover:bg-[#2f5b8a] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Label</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'label\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Label</button>' +
           '</div>' +
           '<div class="grid grid-cols-3 gap-1">' +
             '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Kirim Nota WA</button>' +
@@ -4168,7 +4181,7 @@
             '<span>Kantong Laundry / Tas</span>' +
             '<input type="number" id="inv-bag" min="0" value="1" class="w-20 px-2 py-1 border rounded text-right" />' +
           '</label>' +
-          '<button type="button" onclick="saveInventory(' + idx + ')" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold">Simpan Inventori</button>' +
+          '<button type="button" onclick="saveInventory(' + idx + ')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold">Simpan Inventori</button>' +
         '</div>'
       );
     }
@@ -4196,7 +4209,7 @@
       showToast('Catatan diperbarui');
     }
 
-    function setOrderStatus(idx, status) {
+    function setOrderStatus(idx, status, silent) {
       var o = state.orders[idx];
       if (!o) return;
       o.status = status;
@@ -4219,7 +4232,7 @@
         persistAll();
         renderDashboard();
         renderOrdersLists();
-        openDetailScreenByIndex(idx);
+        if (!silent) openDetailScreenByIndex(idx);
         showToast('Status: Ambil & otomatis LUNAS');
         return;
       }
@@ -4235,7 +4248,7 @@
       openModal('Ubah Diskon (Rp)',
         '<div class="space-y-3 text-xs">' +
           '<input type="number" id="inp-disc" min="0" value="' + Number(o.discount || 0) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold" />' +
-          '<button type="button" onclick="saveDiscount(' + idx + ')" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold">Simpan Diskon</button>' +
+          '<button type="button" onclick="saveDiscount(' + idx + ')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold">Simpan Diskon</button>' +
         '</div>'
       );
     }
@@ -4260,7 +4273,7 @@
       openModal('Input Nominal Bayar (Rp)',
         '<div class="space-y-3 text-xs">' +
           '<input type="number" id="inp-paid" min="0" value="' + Number(o.paidAmount || 0) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-bold" />' +
-          '<button type="button" onclick="savePaid(' + idx + ')" class="w-full py-2.5 rounded-xl bg-[#3b6ea5] text-white font-bold">Simpan Pembayaran</button>' +
+          '<button type="button" onclick="savePaid(' + idx + ')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold">Simpan Pembayaran</button>' +
         '</div>'
       );
     }
@@ -4675,10 +4688,10 @@
           '</a>' +
           '<div class="grid grid-cols-2 gap-2">' +
             '<button type="button" id="btn-copy-wa-note" class="py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs">Salin Teks Nota</button>' +
-            '<button type="button" onclick="sendOrderWA(' + idx + ',' + (isAlt ? 'true' : 'false') + ')" class="py-2 px-2.5 rounded-xl bg-[#3b6ea5] hover:bg-[#2f5b8a] text-white font-bold text-xs">Kirim Ulang</button>' +
+            '<button type="button" onclick="sendOrderWA(' + idx + ',' + (isAlt ? 'true' : 'false') + ')" class="py-2 px-2.5 rounded-xl bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-bold text-xs">Kirim Ulang</button>' +
           '</div>' +
           '<div class="text-center">' +
-            '<a href="' + esc(waMeUrl) + '" target="_blank" rel="noopener noreferrer" class="text-[11px] text-[#2f5b8a] underline">Buka via wa.me (Tab Baru)</a>' +
+            '<a href="' + esc(waMeUrl) + '" target="_blank" rel="noopener noreferrer" class="text-[11px] text-[color:var(--pd)] underline">Buka via wa.me (Tab Baru)</a>' +
           '</div>' +
           '<div>' +
             '<label class="font-semibold text-[11px] text-slate-600 block mb-1">Pratinjau Pesan Nota:</label>' +
@@ -4708,10 +4721,10 @@
           '</div>' +
           '<div>' +
             '<label class="font-semibold block mb-1">Nomor WhatsApp Pelanggan *</label>' +
-            '<input type="tel" id="wa-phone-input" value="' + esc(initialPhone) + '" placeholder="081234567890" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold outline-none focus:border-[#3b6ea5]" />' +
+            '<input type="tel" id="wa-phone-input" value="' + esc(initialPhone) + '" placeholder="081234567890" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold outline-none focus:border-[color:var(--p)]" />' +
           '</div>' +
           '<label class="flex items-center gap-2 text-slate-700 cursor-pointer select-none">' +
-            '<input type="checkbox" id="wa-save-phone-chk" checked class="rounded border-slate-300 text-[#3b6ea5]" />' +
+            '<input type="checkbox" id="wa-save-phone-chk" checked class="rounded border-slate-300 text-[color:var(--p)]" />' +
             '<span>Simpan nomor ke order &amp; database pelanggan</span>' +
           '</label>' +
           '<div class="grid grid-cols-2 gap-2 pt-1">' +
@@ -5102,7 +5115,7 @@
       openModal(titles[mode] || 'Preview Cetak',
         '<div id="print-area" class="p-3.5 border border-slate-300 rounded-xl bg-white text-xs font-mono space-y-2 text-slate-900">' +
           '<div class="text-center border-b border-dashed border-slate-400 pb-2">' +
-            (mode === 'logo' ? '<div class="inline-block px-2.5 py-0.5 mb-1 rounded-full bg-[#3b6ea5] text-white font-sans font-bold text-[10px]">QUEEN LAUNDRY</div>' : '') +
+            (mode === 'logo' ? '<div class="inline-block px-2.5 py-0.5 mb-1 rounded-full bg-[color:var(--p)] text-white font-sans font-bold text-[10px]">QUEEN LAUNDRY</div>' : '') +
             '<div class="font-bold text-sm">' + esc((state.meta.outlet || 'Queen Laundry').toUpperCase()) + '</div>' +
             '<div class="text-[11px]">' + esc(o.branch || state.meta.activeBranch) + '</div>' +
           '</div>' +
@@ -5118,14 +5131,129 @@
           qrBlock +
         '</div>' +
         '<div class="mt-3 no-print">' +
-          '<button type="button" onclick="printOrderNow(' + idx + ',\'' + esc(mode) + '\',true)" class="w-full py-3 rounded-xl bg-[#2f6690] text-white font-bold text-sm">Cetak ke Printer Thermal</button>' +
+          '<button type="button" onclick="printOrderNow(' + idx + ',\'' + esc(mode) + '\',true)" class="w-full py-3 rounded-xl bg-[color:var(--pd)] text-white font-bold text-sm">Cetak ke Printer Thermal</button>' +
         '</div>'
       );
+    }
+
+
+    // =========================================================================
+    // KONFIRMASI YA/TIDAK, TEMA WARNA, TOMBOL KEMBALI
+    // =========================================================================
+    var CONFIRM_CB = null;
+    function askConfirm(title, msgHtml, cb, yesLabel) {
+      CONFIRM_CB = cb;
+      document.getElementById('confirm-title').textContent = title || 'Konfirmasi';
+      document.getElementById('confirm-msg').innerHTML = msgHtml || '';
+      var w = document.getElementById('confirm-wrap');
+      w.classList.remove('hidden'); w.classList.add('flex');
+    }
+    function hideConfirm() {
+      var w = document.getElementById('confirm-wrap');
+      w.classList.add('hidden'); w.classList.remove('flex');
+      CONFIRM_CB = null;
+    }
+    function confirmNo() { hideConfirm(); }
+    function confirmYes() { var cb = CONFIRM_CB; hideConfirm(); if (cb) cb(); }
+
+    function confirmDeleteOrder(idx) {
+      var o = state.orders[idx]; if (!o) return;
+      askConfirm('Hapus Transaksi', 'Hapus transaksi <b>' + esc(o.id) + '</b> a.n. ' + esc(o.customer) + '? Data tidak bisa dikembalikan.', function () {
+        var i = state.orders.indexOf(o); if (i > -1) deleteOrder(i);
+      });
+    }
+    function confirmDeleteProduct(id) {
+      var p = state.products.find(function (x) { return x.id === id; });
+      askConfirm('Hapus Produk', 'Hapus produk <b>' + esc(p ? p.name : id) + '</b>?', function () { deleteProductById(id); });
+    }
+    function confirmRemoveCartItem(idx) {
+      var it = state.trx.cart[idx]; if (!it) return;
+      askConfirm('Hapus dari Keranjang', 'Hapus <b>' + esc(it.name || 'item') + '</b> dari keranjang?', function () { removeCartItem(idx); });
+    }
+    function confirmIronHide(id) {
+      askConfirm('Hapus dari Daftar Setrika', 'Hapus order ini dari daftar setrika hari ini? (Order tidak terhapus)', function () { ironHide(id); });
+    }
+    function confirmAbsDel(id) {
+      askConfirm('Hapus Absensi', 'Hapus catatan absensi ini?', function () { absDel(id); });
+    }
+    function confirmTakeOrder(idx) {
+      var o = state.orders[idx]; if (!o) return;
+      var sisa = Math.max(0, Number(o.total || 0) - Number(o.paidAmount || 0));
+      var extra = arsipIsPaid(o) ? '' : '<br><b>Belum lunas:</b> otomatis dilunasi sebesar ' + formatRp(sisa) + '.';
+      askConfirm('Ambil Cucian', 'Tandai order <b>' + esc(o.id) + '</b> a.n. ' + esc(o.customer) + ' sudah diambil pelanggan?' + extra, function () {
+        var i = state.orders.indexOf(o); if (i > -1) setOrderStatus(i, 'Ambil', true);
+      });
+    }
+
+    // ----- Tema warna -----
+    var THEMES = {
+      laut:     { name: 'Biru Laut',   p: '#3b6ea5', pd: '#2f5b8a', pdd: '#23466b', pm: '#4e7fb3', pa: '#89b4de', t1: '#eef3f8', t2: '#dce6f1', bg: '#f1f4f8', bg2: '#dce3eb' },
+      lavender: { name: 'Lavender',    p: '#7459b8', pd: '#5c4496', pdd: '#3f2e6b', pm: '#8f78cc', pa: '#bfb0e6', t1: '#f3f0fa', t2: '#e2dcf3', bg: '#f6f4fb', bg2: '#e4def1' },
+      zamrud:   { name: 'Zamrud',      p: '#2a8c7e', pd: '#1f7266', pdd: '#14504a', pm: '#43a698', pa: '#92d3c8', t1: '#eef7f5', t2: '#d6ebe7', bg: '#f1f8f6', bg2: '#d9eae6' },
+      mawar:    { name: 'Mawar',       p: '#c24d7c', pd: '#a23a64', pdd: '#6e2443', pm: '#d4719a', pa: '#eba9c3', t1: '#fbf0f4', t2: '#f4dae4', bg: '#fcf4f7', bg2: '#f0dce5' },
+      jingga:   { name: 'Jingga',      p: '#d0693a', pd: '#b0522a', pdd: '#7a3419', pm: '#e08a5e', pa: '#f2c0a2', t1: '#fcf3ed', t2: '#f4dfd0', bg: '#fdf6f1', bg2: '#efdfd3' },
+      indigo:   { name: 'Indigo',      p: '#4753b0', pd: '#37418f', pdd: '#232b63', pm: '#626dc7', pa: '#a2abe8', t1: '#eff0fa', t2: '#dadef2', bg: '#f3f4fb', bg2: '#dfe1f0' }
+    };
+    function applyTheme(key) {
+      var t = THEMES[key] || THEMES.laut, st = document.documentElement.style;
+      Object.keys(t).forEach(function (k) {
+        if (k === 'name') return;
+        var h = t[k];
+        st.setProperty('--' + k, h);
+        st.setProperty('--' + k + '-rgb', parseInt(h.substr(1, 2), 16) + ' ' + parseInt(h.substr(3, 2), 16) + ' ' + parseInt(h.substr(5, 2), 16));
+      });
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', t.p);
+    }
+    function themeGridHtml() {
+      var cur = state.meta.theme || 'laut';
+      return Object.keys(THEMES).map(function (k) {
+        var t = THEMES[k], on = k === cur;
+        return '<button type="button" onclick="setTheme(\'' + k + '\')" class="flex flex-col items-center gap-1 p-1.5 rounded-xl bg-white" style="border:2px solid ' + (on ? t.p : '#e2e8f0') + '">' +
+          '<span class="w-full h-8 rounded-lg" style="background:linear-gradient(135deg,' + t.pdd + ' 0%,' + t.p + ' 55%,' + t.pa + ' 100%)"></span>' +
+          '<span class="text-[11px] font-semibold text-slate-700">' + (on ? '&#10003; ' : '') + t.name + '</span></button>';
+      }).join('');
+    }
+    function setTheme(key) {
+      if (!THEMES[key]) return;
+      state.meta.theme = key;
+      applyTheme(key);
+      persistAll();
+      var g = document.getElementById('theme-grid');
+      if (g) g.innerHTML = themeGridHtml();
+      showToast('Warna tampilan: ' + THEMES[key].name);
+    }
+
+    // ----- Tombol kembali (HP / geser kembali) -----
+    function closeTopLayer() {
+      var cw = document.getElementById('confirm-wrap');
+      if (cw && !cw.classList.contains('hidden')) { confirmNo(); return true; }
+      var mw = document.getElementById('modal-wrap');
+      if (mw && !mw.classList.contains('hidden')) { closeModal(); return true; }
+      var layers = [['detail-screen', closeDetailScreen], ['kas-hari-screen', closeKasHariIniScreen], ['estimasi-screen', closeEstimasiScreen], ['cust-screen', closeCustScreen], ['arsip-screen', closeArsipScreen]];
+      for (var i = 0; i < layers.length; i++) {
+        var el = document.getElementById(layers[i][0]);
+        if (el && el.classList.contains('open')) { layers[i][1](); return true; }
+      }
+      if (state.activeTab !== 'home') { switchTab('home'); return true; }
+      return false;
+    }
+    function backInit() {
+      var push = function () { try { history.pushState({ ql: 1 }, ''); } catch (e) {} };
+      try { history.replaceState({ ql: 0 }, ''); } catch (e) { return; }
+      push();
+      window.addEventListener('popstate', function () {
+        if (closeTopLayer()) { push(); return; }
+        showToast('Tekan kembali sekali lagi untuk keluar');
+        setTimeout(function () { if (history.state && history.state.ql === 0) push(); }, 2000);
+      });
     }
 
     // =========================================================================
     // INIT APLIKASI
     // =========================================================================
+    applyTheme(state.meta.theme);
+    backInit();
     seedSatuanProducts();
     renderLocationBadge();
     updateClock();
