@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
   <style>
+    .role-staff .owner-only{display:none!important}
     :root{--p:#3b6ea5;--p-rgb:59 110 165;--pd:#2f5b8a;--pd-rgb:47 91 138;--pdd:#23466b;--pdd-rgb:35 70 107;--pm:#4e7fb3;--pm-rgb:78 127 179;--pa:#89b4de;--pa-rgb:137 180 222;--t1:#eef3f8;--t1-rgb:238 243 248;--t2:#dce6f1;--t2-rgb:220 230 241;--bg:#f1f4f8;--bg-rgb:241 244 248;--bg2:#dce3eb;--bg2-rgb:220 227 235}
     /* Reset dasar dan pengaturan tata letak mobile-first */
     * {
@@ -325,6 +326,11 @@
           </div>
         </section>
 
+        <div id="staff-bar" class="hidden card-box px-3 py-2 text-xs items-center justify-between">
+          <span>Masuk sebagai karyawan: <b id="staff-bar-name">-</b></span>
+          <button type="button" onclick="staffLogoutAsk()" class="px-3 py-1 rounded-lg bg-slate-200 text-slate-800 font-bold">Keluar</button>
+        </div>
+
         <!-- Ringkasan Harian 3 Kolom -->
         <section class="card-box p-3.5 space-y-3">
           <div class="grid grid-cols-3 gap-2 text-center pb-2.5 border-b border-slate-200">
@@ -348,7 +354,7 @@
 
         <!-- Grid Menu 4x2 dengan Ikon 3D -->
         <section class="grid grid-cols-4 gap-2.5">
-          <button type="button" onclick="openMenuModal('produk')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
+          <button type="button" onclick="openMenuModal('produk')" class="owner-only card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
@@ -393,7 +399,7 @@
             <span class="text-[11.5px] font-medium text-slate-900">Pelanggan</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('pengeluaran')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
+          <button type="button" onclick="openMenuModal('pengeluaran')" class="owner-only card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
@@ -436,7 +442,7 @@
             <span class="text-[11.5px] font-medium text-slate-900">Absensi</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('pengaturan')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
+          <button type="button" onclick="openMenuModal('pengaturan')" class="owner-only card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
@@ -460,7 +466,7 @@
             <span class="text-[11.5px] font-medium text-slate-900">Pengaturan</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('mutasi')" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
+          <button type="button" onclick="openMenuModal('mutasi')" class="owner-only card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
@@ -477,7 +483,7 @@
             <span class="text-[11.5px] font-medium text-slate-900">Arsip Queen</span>
           </button>
 
-          <button type="button" onclick="openMenuModal('pembukuan')" class="card-box relative py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
+          <button type="button" onclick="openMenuModal('pembukuan')" class="owner-only card-box relative py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-[#c96a46] text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-2xs">Fitur Baru!</span>
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
@@ -495,7 +501,7 @@
             <span class="text-[11.5px] font-medium text-slate-900">Pembukuan</span>
           </button>
 
-          <button type="button" onclick="openStatsModal()" class="card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
+          <button type="button" onclick="openStatsModal()" class="owner-only card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
@@ -802,6 +808,25 @@
   </div>
 
   <!-- MODAL GLOBAL -->
+  <!-- NOTIFIKASI PERMINTAAN HAPUS (PEMILIK) -->
+  <button type="button" id="delreq-pill" onclick="openDelreqModal()" class="hidden fixed left-1/2 -translate-x-1/2 z-[45] px-4 py-1.5 rounded-full bg-[#7a1230] text-white text-xs font-bold shadow-lg" style="top:calc(env(safe-area-inset-top, 0px) + 8px)"></button>
+
+  <!-- LOGIN -->
+  <div id="login-wrap" class="hidden fixed inset-0 z-[80] items-center justify-center bg-slate-900/70 p-6">
+    <div class="w-full max-w-[340px] rounded-2xl bg-white p-4 space-y-3 shadow-2xl text-sm">
+      <div class="text-center font-bold text-base text-slate-900">Masuk ke Queen Laundry</div>
+      <div class="space-y-2">
+        <input id="login-user" type="text" autocapitalize="none" autocomplete="username" placeholder="Nama pengguna karyawan" class="w-full px-3 py-2 rounded-xl border border-slate-300" />
+        <input id="login-pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" class="w-full px-3 py-2 rounded-xl border border-slate-300" />
+        <div id="login-msg" class="text-xs text-rose-600 min-h-[1rem]"></div>
+        <button type="button" onclick="staffLogin()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold">Masuk Karyawan</button>
+      </div>
+      <div class="text-center text-[11px] text-slate-400">atau</div>
+      <button type="button" onclick="cloudLogin()" class="w-full py-2.5 rounded-xl bg-white border border-slate-300 text-slate-800 font-bold">Masuk Pemilik (Google)</button>
+      <button type="button" onclick="loginSkip()" class="w-full text-center text-[11px] text-slate-400 underline">Lewati (pakai data lokal saja)</button>
+    </div>
+  </div>
+
   <!-- KONFIRMASI YA / TIDAK -->
   <div id="confirm-wrap" onclick="if(event.target===this) confirmNo()" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-900/60 p-6">
     <div class="w-full max-w-[340px] rounded-2xl bg-white p-4 space-y-3 shadow-2xl">
@@ -960,9 +985,17 @@
     var CLOUD_KEY = 'ql_clean_v6_firebase';
     // Config Firebase bawaan (boleh dipublikasikan: keamanan data ada di aturan Firestore + login Google).
     // Isi dengan { apiKey: "...", authDomain: "...", projectId: "...", storageBucket: "...", messagingSenderId: "...", appId: "..." }
-    var CLOUD_DEFAULT_CONFIG = null;
+    var CLOUD_DEFAULT_CONFIG = {
+      apiKey: "AIzaSyAJAC9VVd86Wrxj6ac8GENOIOsmbFGsirA",
+      authDomain: "kasir-queen-laundry.firebaseapp.com",
+      projectId: "kasir-queen-laundry",
+      storageBucket: "kasir-queen-laundry.firebasestorage.app",
+      messagingSenderId: "226925401034",
+      appId: "1:226925401034:web:73982f1cb49f2edfb47533",
+      measurementId: "G-49TZXFZT8Q"
+    };
     function cloudCfg() { return loadJSON(CLOUD_KEY, null) || CLOUD_DEFAULT_CONFIG; }
-    var CLOUD = { db: null, uid: null, user: null, auth: null, authBound: false, known: { customers: {}, orders: {}, expenses: {}, products: {} }, ready: {}, unsubs: [], pushT: null, uiT: null, status: 'Belum tersambung' };
+    var CLOUD = { role: 'owner', dataUid: null, staffName: '', auxUnsubs: [], delreqs: [], myPending: {}, auxInit: false, db: null, uid: null, user: null, auth: null, authBound: false, known: { customers: {}, orders: {}, expenses: {}, products: {} }, ready: {}, unsubs: [], pushT: null, uiT: null, status: 'Belum tersambung' };
 
     function cloudStable(o) {
       return JSON.stringify(o, function (k, v) {
@@ -1020,14 +1053,49 @@
     function cloudAuthChanged() {
       cloudDisconnectListeners();
       cloudRefreshAuthUI();
-      if (!CLOUD.uid) { cloudSetStatus('Belum masuk. Tekan Masuk dengan Google'); return; }
-      var last = '';
-      try { last = localStorage.getItem('ql_clean_v6_uid') || ''; localStorage.setItem('ql_clean_v6_uid', CLOUD.uid); } catch (e) {}
-      if (last && last !== CLOUD.uid) { state.customers = []; state.orders = []; state.expenses = []; }
-      cloudListen();
+      if (!CLOUD.uid) {
+        CLOUD.role = 'owner'; CLOUD.dataUid = null; CLOUD.staffName = '';
+        applyRole();
+        cloudSetStatus('Belum masuk. Tekan Masuk dengan Google');
+        cloudShowLogin();
+        return;
+      }
+      loginHide();
+      var uid = CLOUD.uid;
+      var finish = function (role, dataUid, name) {
+        if (CLOUD.uid !== uid) return;
+        CLOUD.role = role; CLOUD.dataUid = dataUid; CLOUD.staffName = name || '';
+        try { localStorage.setItem('ql_role_cache', JSON.stringify({ uid: uid, role: role, dataUid: dataUid, name: name || '' })); } catch (e) {}
+        applyRole();
+        var last = '';
+        try { last = localStorage.getItem('ql_clean_v6_uid') || ''; localStorage.setItem('ql_clean_v6_uid', uid); } catch (e) {}
+        if (last && last !== uid) { state.customers = []; state.orders = []; state.expenses = []; }
+        cloudListen();
+        cloudAuxListen();
+      };
+      var isPwd = !!(CLOUD.user && CLOUD.user.providerData && CLOUD.user.providerData.some(function (p) { return p.providerId === 'password'; }));
+      CLOUD.db.collection('staffIndex').doc(uid).get().then(function (snap) {
+        if (snap.exists) {
+          var d = snap.data();
+          if (d.active === false) { CLOUD.auth.signOut(); showToast('Akun karyawan dinonaktifkan oleh pemilik'); return; }
+          finish('staff', d.ownerUid, d.name);
+        } else if (isPwd) {
+          CLOUD.auth.signOut(); showToast('Akun karyawan sudah tidak terdaftar');
+        } else {
+          finish('owner', uid, '');
+        }
+      }).catch(function (e) {
+        var c = null;
+        try { c = JSON.parse(localStorage.getItem('ql_role_cache') || 'null'); } catch (e2) {}
+        if (c && c.uid === uid) finish(c.role, c.dataUid, c.name);
+        else cloudSetStatus('Error: ' + (e.code || e.message));
+      });
     }
 
-    function cloudCol(c) { return CLOUD.db.collection('users').doc(CLOUD.uid).collection('ql_' + c); }
+    function cloudCol(c) { return CLOUD.db.collection('users').doc(CLOUD.dataUid || CLOUD.uid).collection('ql_' + c); }
+    function isStaff() { return CLOUD.role === 'staff'; }
+    function ownerOnly() { if (isStaff()) { showToast('Hanya pemilik yang dapat mengakses ini'); return true; } return false; }
+    function cloudCols() { return isStaff() ? ['customers', 'orders', 'products'] : ['customers', 'orders', 'expenses', 'products']; }
 
     function cloudLogin() {
       if (!CLOUD.auth) { showToast('Simpan config Firebase dulu'); return; }
@@ -1084,7 +1152,7 @@
     function cloudListen() {
       cloudSetStatus('Menyambung...');
       CLOUD.cutoff = cloudCutoff();
-      ['customers', 'orders', 'expenses', 'products'].forEach(function (c) {
+      cloudCols().forEach(function (c) {
         var q = cloudCol(c);
         if (CLOUD_WIN[c]) q = q.where(CLOUD_WIN[c], '>=', CLOUD.cutoff);
         var unsub = q.onSnapshot(function (snap) {
@@ -1104,13 +1172,19 @@
           cloudSetStatus('Tersambung ✓ (' + new Date().toTimeString().slice(0, 5) + ')');
           cloudRefreshUI();
           cloudPush();
-        }, function (err) { cloudSetStatus('Error: ' + err.code); });
+        }, function (err) {
+          cloudSetStatus('Error: ' + err.code);
+          if (isStaff() && err.code === 'permission-denied') { try { CLOUD.auth.signOut(); } catch (e) {} showToast('Akses karyawan ditolak / dinonaktifkan'); }
+        });
         CLOUD.unsubs.push(unsub);
       });
     }
 
     function cloudDisconnectListeners() {
       CLOUD.unsubs.forEach(function (u) { try { u(); } catch (e) {} });
+      (CLOUD.auxUnsubs || []).forEach(function (u) { try { u(); } catch (e) {} });
+      CLOUD.auxUnsubs = []; CLOUD.delreqs = []; CLOUD.myPending = {}; CLOUD.auxInit = false;
+      try { delreqRefreshPill(); } catch (e) {}
       CLOUD.unsubs = []; CLOUD.ready = {}; CLOUD.known = { customers: {}, orders: {}, expenses: {}, products: {} }; CLOUD.base = { orders: {}, expenses: {} };
     }
 
@@ -1119,8 +1193,9 @@
       clearTimeout(CLOUD.pushT);
       CLOUD.pushT = setTimeout(function () {
         var ops = [];
-        ['customers', 'orders', 'expenses', 'products'].forEach(function (c) {
+        cloudCols().forEach(function (c) {
           if (!CLOUD.ready[c]) return;
+          if (isStaff() && c === 'products') return;
           var seen = {};
           state[c].forEach(function (r) {
             if (!r.id) r.id = 'X' + cloudHash(cloudStable(r));
@@ -1134,7 +1209,7 @@
             }
             if (CLOUD.known[c][id] !== s) { ops.push({ c: c, id: id, s: s }); CLOUD.known[c][id] = s; }
           });
-          Object.keys(CLOUD.known[c]).forEach(function (id) {
+          if (!isStaff()) Object.keys(CLOUD.known[c]).forEach(function (id) {
             if (!seen[id]) { ops.push({ c: c, id: id, del: true }); delete CLOUD.known[c][id]; }
           });
         });
@@ -1150,6 +1225,7 @@
     }
 
     function openCloudModal() {
+      if (ownerOnly()) return;
       var has = !!cloudCfg();
       openModal('Sinkronisasi Cloud (Firebase)',
         '<div class="space-y-3 text-xs">' +
@@ -1980,6 +2056,7 @@
     }
 
     function openKasHariIniScreen() {
+      if (ownerOnly()) return;
       state.kasHariIniOpen = true;
       renderKasHariIniScreen();
       var screen = document.getElementById('kas-hari-screen');
@@ -2273,7 +2350,7 @@
       var kasEl = document.getElementById('ui-kas-hari');
       var orderEl = document.getElementById('ui-order-hari');
       var estEl = document.getElementById('ui-est-cucian');
-      if (kasEl) kasEl.textContent = formatRp(kasHari);
+      if (kasEl) kasEl.textContent = isStaff() ? '\u2014' : formatRp(kasHari);
       var todayKg = todayOrders.reduce(function (sum, o) {
         return sum + (o.items || []).filter(function (i) { return String(i.unit).toLowerCase() === 'kg'; }).reduce(function (s, x) { return s + (Number(x.qty) || 0); }, 0);
       }, 0);
@@ -2300,6 +2377,7 @@
     }
 
     function openBranchModal() {
+      if (ownerOnly()) return;
       openModal('Tambah Cabang Baru',
         '<div class="space-y-3 text-xs">' +
           '<div>' +
@@ -2749,6 +2827,7 @@
     }
 
     function openStatsModal() {
+      if (ownerOnly()) return;
       var omzet = state.orders.reduce(function (s, o) { return s + Number(o.total || 0); }, 0);
       var lunas = state.orders.reduce(function (s, o) { return s + (o.paid ? Number(o.total || 0) : 0); }, 0);
       var proses = state.orders.filter(function (o) { return o.status === 'Proses'; }).length;
@@ -2812,12 +2891,14 @@
     }
 
     function absDel(id) {
+      if (ownerOnly()) return;
       state.meta.absensi = (state.meta.absensi || []).filter(function (r) { return r.id !== id; });
       persistAll();
       openAbsensiModal();
     }
 
     function openMenuModal(menu) {
+      if (isStaff() && ['produk', 'pengeluaran', 'pengaturan', 'mutasi', 'pembukuan'].indexOf(menu) > -1) { ownerOnly(); return; }
       if (menu === 'produk') {
         var prodRows = state.products.map(function (p) {
           return '<div class="py-2 border-b border-slate-100 flex justify-between items-center gap-2 text-xs">' +
@@ -2913,8 +2994,9 @@
         var p = state.printer;
         openModal('Pengaturan Outlet & Printer Thermal',
           '<div class="space-y-3 text-xs">' +
-            '<div>' +
+            '<div class="space-y-2">' +
               '<button type="button" onclick="openCloudModal()" class="w-full py-2.5 rounded-xl bg-[#2b7a5b] text-white font-bold">Sinkronisasi Cloud (Firebase)</button>' +
+              '<button type="button" onclick="openStaffModal()" class="w-full py-2.5 rounded-xl bg-[color:var(--pd)] text-white font-bold">Kelola Karyawan (Nama &amp; PIN)</button>' +
             '</div><div>' +
               '<label class="font-semibold block mb-1">Nama Outlet</label>' +
               '<input type="text" id="cfg-outlet-name" value="' + esc(state.meta.outlet) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
@@ -3011,6 +3093,7 @@
 
     // Menghapus produk berdasarkan ID, menyimpan perubahan, dan menyegarkan daftar
     function deleteProductById(prodId) {
+      if (ownerOnly()) return;
       if (!prodId) return;
       var targetIdx = state.products.findIndex(function (p) { return p.id === prodId; });
       if (targetIdx === -1) {
@@ -3150,7 +3233,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v18';
+    var APP_VERSION = 'Q.v20';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -3595,6 +3678,7 @@
     }
 
     function custDeleteDo() {
+      if (ownerOnly()) return;
       var sel = custUI.sel;
       state.customers = state.customers.filter(function (c) { return !sel[c.id]; });
       if (sel[state.trx.customerId]) state.trx.customerId = '';
@@ -4294,6 +4378,7 @@
     }
 
     function deleteOrder(idx) {
+      if (ownerOnly()) return;
       state.orders.splice(idx, 1);
       persistAll();
       closeDetailScreen();
@@ -5234,6 +5319,7 @@
     function confirmYes() { var cb = CONFIRM_CB; hideConfirm(); if (cb) cb(); }
 
     function confirmDeleteOrder(idx) {
+      if (isStaff()) { staffRequestDelete(idx); return; }
       var o = state.orders[idx]; if (!o) return;
       askConfirm('Hapus Transaksi', 'Hapus transaksi <b>' + esc(o.id) + '</b> a.n. ' + esc(o.customer) + '? Data tidak bisa dikembalikan.', function () {
         var i = state.orders.indexOf(o); if (i > -1) deleteOrder(i);
@@ -5329,6 +5415,246 @@
         if (closeTopLayer()) { push(); return; }
         showToast('Tekan kembali sekali lagi untuk keluar');
         setTimeout(function () { if (history.state && history.state.ql === 0) push(); }, 2000);
+      });
+    }
+
+
+    // =========================================================================
+    // KARYAWAN: login nama + PIN, hak akses, permintaan hapus order
+    // =========================================================================
+    function staffEmail(u) { return String(u || '').toLowerCase().replace(/[^a-z0-9]/g, '') + '@staff.queenlaundry.app'; }
+    function staffPass(pin) { return 'ql-' + String(pin) + '-pos'; }
+
+    function applyRole() {
+      document.body.classList.toggle('role-staff', isStaff());
+      var bar = document.getElementById('staff-bar');
+      if (bar) { bar.classList.toggle('hidden', !isStaff()); bar.classList.toggle('flex', isStaff()); }
+      var n = document.getElementById('staff-bar-name'); if (n) n.textContent = CLOUD.staffName || '-';
+      try { renderDashboard(); } catch (e) {}
+    }
+    function staffLogoutAsk() { askConfirm('Keluar', 'Keluar dari akun karyawan?', function () { cloudLogout(); }); }
+
+    function cloudShowLogin() {
+      if (!cloudCfg()) return;
+      try { if (sessionStorage.getItem('ql_skip_login') === '1') return; } catch (e) {}
+      var w = document.getElementById('login-wrap'); if (!w) return;
+      w.classList.remove('hidden'); w.classList.add('flex');
+    }
+    function loginHide() { var w = document.getElementById('login-wrap'); if (w) { w.classList.add('hidden'); w.classList.remove('flex'); } }
+    function loginSkip() { try { sessionStorage.setItem('ql_skip_login', '1'); } catch (e) {} loginHide(); }
+    function staffLogin() {
+      var u = (document.getElementById('login-user').value || '').trim(), p = (document.getElementById('login-pin').value || '').trim();
+      var msg = document.getElementById('login-msg');
+      if (!u || !p) { msg.textContent = 'Isi nama pengguna dan PIN'; return; }
+      if (!CLOUD.auth) { msg.textContent = 'Belum tersambung ke server (cek internet)'; return; }
+      msg.textContent = 'Memeriksa...';
+      CLOUD.auth.signInWithEmailAndPassword(staffEmail(u), staffPass(p)).then(function () {
+        document.getElementById('login-pin').value = ''; msg.textContent = '';
+      }).catch(function (e) {
+        msg.textContent = (e.code === 'auth/network-request-failed') ? 'Tidak ada koneksi internet' : 'Nama pengguna atau PIN salah';
+      });
+    }
+
+    // ----- Karyawan mengajukan hapus order -----
+    function staffRequestDelete(idx) {
+      var o = state.orders[idx]; if (!o) return;
+      if (CLOUD.myPending[o.id]) { showToast('Pengajuan hapus sudah dikirim, menunggu pemilik'); return; }
+      askConfirm('Ajukan Penghapusan', 'Karyawan tidak dapat menghapus langsung. Kirim permintaan hapus order <b>' + esc(o.id) + '</b> a.n. ' + esc(o.customer) + ' ke pemilik?', function () {
+        CLOUD.db.collection('users').doc(CLOUD.dataUid).collection('ql_delreq').add({
+          orderId: o.id, customer: o.customer || '', total: Number(o.total || 0),
+          requestedBy: CLOUD.uid, requestedByName: CLOUD.staffName || 'Karyawan',
+          requestedAt: new Date().toISOString(), status: 'pending'
+        }).then(function () { showToast('Permintaan hapus dikirim ke pemilik'); })
+          .catch(function (e) { showToast('Gagal mengirim: ' + (e.code || e.message)); });
+      });
+    }
+
+    function cloudAuxListen() {
+      var base = CLOUD.db.collection('users').doc(CLOUD.dataUid).collection('ql_delreq');
+      CLOUD.auxInit = false;
+      if (isStaff()) {
+        CLOUD.auxUnsubs.push(base.where('requestedBy', '==', CLOUD.uid).onSnapshot(function (snap) {
+          snap.docChanges().forEach(function (ch) {
+            if (ch.type !== 'modified') return;
+            var d = ch.doc.data();
+            if (d.status === 'approved') showToast('Penghapusan order ' + d.orderId + ' disetujui pemilik');
+            else if (d.status === 'rejected') showToast('Penghapusan order ' + d.orderId + ' ditolak pemilik');
+          });
+          CLOUD.myPending = {};
+          snap.forEach(function (doc) { var d = doc.data(); if (d.status === 'pending') CLOUD.myPending[d.orderId] = 1; });
+        }, function () {}));
+      } else {
+        CLOUD.auxUnsubs.push(base.where('status', '==', 'pending').onSnapshot(function (snap) {
+          var fresh = CLOUD.auxInit ? snap.docChanges().filter(function (c) { return c.type === 'added'; }) : [];
+          CLOUD.auxInit = true;
+          CLOUD.delreqs = snap.docs.map(function (d) { var x = d.data(); x._id = d.id; return x; });
+          delreqRefreshPill();
+          if (fresh.length) showToast('Permintaan hapus order dari ' + (fresh[0].doc.data().requestedByName || 'karyawan'));
+        }, function () {}));
+      }
+    }
+
+    // ----- Pemilik: notifikasi & persetujuan -----
+    function delreqRefreshPill() {
+      var el = document.getElementById('delreq-pill'); if (!el) return;
+      var n = (CLOUD.delreqs || []).length;
+      if (!n || isStaff()) { el.classList.add('hidden'); return; }
+      el.classList.remove('hidden');
+      el.textContent = '\uD83D\uDD14 ' + n + ' permintaan hapus order';
+    }
+    function openDelreqModal() {
+      var list = CLOUD.delreqs || [];
+      var rows = list.map(function (r) {
+        return '<div class="p-2.5 rounded-xl border border-slate-200 space-y-1.5">' +
+          '<div class="font-bold text-slate-900">' + esc(r.orderId) + ' &bull; ' + esc(r.customer) + '</div>' +
+          '<div class="text-slate-500">Total ' + formatRp(r.total) + ' &bull; diajukan ' + esc(r.requestedByName) + ' (' + esc(String(r.requestedAt || '').slice(0, 16).replace('T', ' ')) + ')</div>' +
+          '<div class="grid grid-cols-2 gap-2">' +
+            '<button type="button" onclick="delreqReject(\'' + esc(r._id) + '\')" class="py-2 rounded-xl bg-slate-200 text-slate-800 font-bold">Tolak</button>' +
+            '<button type="button" onclick="delreqApprove(\'' + esc(r._id) + '\')" class="py-2 rounded-xl bg-[#7a1230] text-white font-bold">Setujui Hapus</button>' +
+          '</div></div>';
+      }).join('') || '<div class="text-center text-slate-400 py-3">Tidak ada permintaan</div>';
+      openModal('Permintaan Hapus Order', '<div class="space-y-2 text-xs">' + rows + '</div>');
+    }
+    function delreqFind(id) { return (CLOUD.delreqs || []).filter(function (r) { return r._id === id; })[0]; }
+    function delreqRef(id) { return CLOUD.db.collection('users').doc(CLOUD.dataUid).collection('ql_delreq').doc(id); }
+    function delreqApprove(id) {
+      var r = delreqFind(id); if (!r) return;
+      askConfirm('Setujui Penghapusan', 'Order <b>' + esc(r.orderId) + '</b> a.n. ' + esc(r.customer) + ' akan dihapus permanen. Lanjutkan?', function () {
+        var i = state.orders.findIndex(function (o) { return o.id === r.orderId; });
+        if (i > -1) deleteOrder(i);
+        else { try { cloudCol('orders').doc(cloudDocId(r.orderId)).delete(); } catch (e) {} }
+        delreqRef(id).update({ status: 'approved', handledAt: new Date().toISOString() }).catch(function () {});
+        closeModal();
+        showToast('Order dihapus');
+      });
+    }
+    function delreqReject(id) {
+      var r = delreqFind(id); if (!r) return;
+      askConfirm('Tolak Permintaan', 'Tolak penghapusan order <b>' + esc(r.orderId) + '</b>?', function () {
+        delreqRef(id).update({ status: 'rejected', handledAt: new Date().toISOString() }).catch(function () {});
+        closeModal();
+        showToast('Permintaan ditolak');
+      });
+    }
+
+    // ----- Pemilik: kelola karyawan -----
+    function staffSecAuth() {
+      var app = null;
+      firebase.apps.forEach(function (a) { if (a.name === 'sec') app = a; });
+      if (!app) app = firebase.initializeApp(cloudCfg(), 'sec');
+      var a = firebase.auth(app);
+      try { a.setPersistence(firebase.auth.Auth.Persistence.NONE); } catch (e) {}
+      return a;
+    }
+    function staffOwnerCheck() {
+      if (!CLOUD.user || !CLOUD.db || isStaff()) { showToast('Masuk sebagai pemilik (Google) dulu'); return false; }
+      return true;
+    }
+    function staffCol(n) { return CLOUD.db.collection('users').doc(CLOUD.uid).collection(n); }
+    var STAFF_LIST = [];
+    function openStaffModal() {
+      if (ownerOnly() || !staffOwnerCheck()) return;
+      staffCol('staff').get().then(function (snap) {
+        STAFF_LIST = snap.docs.map(function (d) { var x = d.data(); x.id = d.id; return x; });
+        var rows = STAFF_LIST.map(function (s) {
+          return '<div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 truncate">' + esc(s.name) + '</div>' +
+            '<div class="text-slate-500">@' + esc(s.username) + ' &bull; ' + (s.active === false ? 'Nonaktif' : 'Aktif') + '</div></div>' +
+            '<button type="button" onclick="openStaffEdit(\'' + esc(s.id) + '\')" class="px-3 py-1.5 rounded-lg bg-[color:var(--p)] text-white font-bold">Ubah</button></div>';
+        }).join('') || '<div class="text-center text-slate-400 py-3">Belum ada karyawan</div>';
+        openModal('Kelola Karyawan',
+          '<div class="space-y-2 text-xs">' + rows +
+            '<div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">' +
+              '<div class="font-bold">+ Tambah Karyawan</div>' +
+              '<input id="st-name" type="text" placeholder="Nama karyawan" class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
+              '<input id="st-user" type="text" autocapitalize="none" placeholder="Nama pengguna login (huruf/angka, tanpa spasi)" class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
+              '<input id="st-pin" type="text" inputmode="numeric" placeholder="PIN (4-8 angka)" class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
+              '<button type="button" onclick="staffAdd()" class="w-full py-2.5 rounded-xl bg-[#2b7a5b] text-white font-bold">Simpan Karyawan</button>' +
+            '</div></div>');
+      }).catch(function (e) { showToast('Gagal memuat: ' + (e.code || e.message)); });
+    }
+    function staffAdd() {
+      var name = (document.getElementById('st-name').value || '').trim();
+      var user = (document.getElementById('st-user').value || '').trim().toLowerCase();
+      var pin = (document.getElementById('st-pin').value || '').trim();
+      if (!name) { showToast('Nama karyawan wajib diisi'); return; }
+      if (!/^[a-z0-9]{3,20}$/.test(user)) { showToast('Nama pengguna: 3-20 huruf/angka tanpa spasi'); return; }
+      if (!/^\d{4,8}$/.test(pin)) { showToast('PIN harus 4-8 angka'); return; }
+      var sa = staffSecAuth();
+      showToast('Membuat akun...');
+      sa.createUserWithEmailAndPassword(staffEmail(user), staffPass(pin)).then(function (cr) {
+        var suid = cr.user.uid, b = CLOUD.db.batch(), now = new Date().toISOString();
+        b.set(staffCol('staff').doc(suid), { name: name, username: user, active: true, createdAt: now });
+        b.set(staffCol('staffSecret').doc(suid), { pin: pin });
+        b.set(CLOUD.db.collection('staffIndex').doc(suid), { ownerUid: CLOUD.uid, name: name, active: true });
+        return b.commit();
+      }).then(function () { return sa.signOut(); }).then(function () {
+        showToast('Karyawan ditambahkan'); openStaffModal();
+      }).catch(function (e) {
+        try { sa.signOut(); } catch (e2) {}
+        showToast(e.code === 'auth/email-already-in-use' ? 'Nama pengguna sudah dipakai' : e.code === 'auth/operation-not-allowed' ? 'Aktifkan Email/Password di Firebase Authentication' : 'Gagal: ' + (e.code || e.message));
+      });
+    }
+    function openStaffEdit(id) {
+      var s = STAFF_LIST.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+      staffCol('staffSecret').doc(id).get().then(function (snap) {
+        var pin = snap.exists ? (snap.data().pin || '') : '';
+        openModal('Ubah Karyawan',
+          '<div class="space-y-2 text-xs">' +
+            '<div class="text-slate-500">Nama pengguna login: <b>@' + esc(s.username) + '</b> (tidak dapat diubah)</div>' +
+            '<input id="se-name" type="text" value="' + esc(s.name) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
+            '<input id="se-pin" type="text" inputmode="numeric" value="' + esc(pin) + '" placeholder="PIN (4-8 angka)" class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
+            '<button type="button" onclick="staffEditSave(\'' + esc(id) + '\',\'' + esc(pin) + '\')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold">Simpan Perubahan</button>' +
+            '<button type="button" onclick="staffToggle(\'' + esc(id) + '\')" class="w-full py-2.5 rounded-xl bg-slate-200 text-slate-800 font-bold">' + (s.active === false ? 'Aktifkan Akun' : 'Nonaktifkan Akun') + '</button>' +
+            '<button type="button" onclick="staffDeleteAsk(\'' + esc(id) + '\')" class="w-full py-2.5 rounded-xl bg-[#7a1230] text-white font-bold">Hapus Karyawan</button>' +
+          '</div>');
+      });
+    }
+    function staffEditSave(id, oldPin) {
+      var s = STAFF_LIST.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+      var name = (document.getElementById('se-name').value || '').trim();
+      var pin = (document.getElementById('se-pin').value || '').trim();
+      if (!name) { showToast('Nama wajib diisi'); return; }
+      if (!/^\d{4,8}$/.test(pin)) { showToast('PIN harus 4-8 angka'); return; }
+      var saveDocs = function () {
+        var b = CLOUD.db.batch();
+        b.update(staffCol('staff').doc(id), { name: name });
+        b.set(staffCol('staffSecret').doc(id), { pin: pin });
+        b.update(CLOUD.db.collection('staffIndex').doc(id), { name: name });
+        return b.commit();
+      };
+      var p;
+      if (pin !== oldPin) {
+        var sa = staffSecAuth();
+        p = sa.signInWithEmailAndPassword(staffEmail(s.username), staffPass(oldPin)).then(function (cr) {
+          return cr.user.updatePassword(staffPass(pin));
+        }).then(function () { return sa.signOut(); }).then(saveDocs);
+      } else p = saveDocs();
+      p.then(function () { showToast('Perubahan disimpan'); openStaffModal(); })
+        .catch(function (e) { showToast('Gagal: ' + (e.code || e.message)); });
+    }
+    function staffToggle(id) {
+      var s = STAFF_LIST.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+      var on = s.active === false;
+      var b = CLOUD.db.batch();
+      b.update(staffCol('staff').doc(id), { active: on });
+      b.update(CLOUD.db.collection('staffIndex').doc(id), { active: on });
+      b.commit().then(function () { showToast(on ? 'Akun diaktifkan' : 'Akun dinonaktifkan'); openStaffModal(); })
+        .catch(function (e) { showToast('Gagal: ' + (e.code || e.message)); });
+    }
+    function staffDeleteAsk(id) {
+      var s = STAFF_LIST.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+      askConfirm('Hapus Karyawan', 'Hapus akun karyawan <b>' + esc(s.name) + '</b>? Karyawan tidak bisa masuk lagi.', function () {
+        staffCol('staffSecret').doc(id).get().then(function (snap) {
+          var pin = snap.exists ? snap.data().pin : null;
+          var sa = staffSecAuth();
+          var gone = pin ? sa.signInWithEmailAndPassword(staffEmail(s.username), staffPass(pin)).then(function (cr) { return cr.user.delete(); }).catch(function () {}) : Promise.resolve();
+          return gone;
+        }).then(function () {
+          var b = CLOUD.db.batch();
+          b.delete(staffCol('staff').doc(id)); b.delete(staffCol('staffSecret').doc(id)); b.delete(CLOUD.db.collection('staffIndex').doc(id));
+          return b.commit();
+        }).then(function () { showToast('Karyawan dihapus'); openStaffModal(); })
+          .catch(function (e) { showToast('Gagal: ' + (e.code || e.message)); });
       });
     }
 
