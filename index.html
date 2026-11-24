@@ -105,10 +105,10 @@
     .arsip-pill:focus, .arsip-sel:focus { border-color: var(--p); }
     body #detail-screen.open { z-index: 47; }
     #detail-body { padding-bottom: 0 !important; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
-    .act-dock { position: sticky; bottom: 0; z-index: 6; margin-top: 10px; background: rgba(241, 244, 248, 0.97); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.14); border-top-left-radius: 28px; border-top-right-radius: 28px; padding-bottom: env(safe-area-inset-bottom, 0px); transform: translateZ(0); }
-    .act-handle { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 0 8px; font-size: 16px; color: #64748b; }
-    .act-bar { width: 56px; height: 6px; border-radius: 6px; background: #94a3b8; }
-    .act-wrap { overflow-x: hidden; overflow-y: auto; max-height: 52vh; transition: max-height 0.28s ease; padding-bottom: 12px; }
+    .act-dock { position: sticky; bottom: 0; z-index: 6; margin-top: 10px; background: rgba(241, 244, 248, 0.97); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.14); border-top-left-radius: 20px; border-top-right-radius: 20px; padding-bottom: env(safe-area-inset-bottom, 0px); transform: translateZ(0); }
+    .act-handle { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 7px 0 4px; font-size: 12px; color: #64748b; }
+    .act-bar { width: 44px; height: 5px; border-radius: 5px; background: #94a3b8; }
+    .act-wrap { overflow-x: hidden; overflow-y: auto; max-height: 42vh; transition: max-height 0.28s ease; padding-bottom: 8px; }
     .act-dock.collapsed .act-wrap { max-height: 0; padding-bottom: 0; overflow: hidden; }
     .cust-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; }
     .cust-btn { background: var(--p); color: #fff; font-weight: 600; font-size: 12px; letter-spacing: .04em; padding: 7px 16px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,.25); }
@@ -3150,7 +3150,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v17';
+    var APP_VERSION = 'Q.v18';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -4122,28 +4122,28 @@
         '</div>' +
 
         '<div id="act-dock" class="act-dock' + (state.actCollapsed ? ' collapsed' : '') + '"><button type="button" onclick="toggleActDock()" class="act-handle"><span class="act-bar"></span><span id="act-handle-txt">' + (state.actCollapsed ? 'Tampilkan &#9650;' : 'Sembunyikan &#9660;') + '</span></button><div class="act-wrap">' +
-        '<div class="px-4 pt-1 text-white text-[16px] font-semibold">' +
-          '<div class="grid grid-cols-2 gap-3">' +
-            '<button type="button" onclick="confirmDeleteOrder(' + idx + ')" class="bg-[#b83b3b] hover:bg-[#9c2f2f] py-4 px-2 text-center leading-tight rounded-2xl">Hapus Transaksi</button>' +
-            '<button type="button" onclick="toggleOrderPriority(' + idx + ',true)" class="bg-[#8e4b96] hover:bg-[#763c7d] py-4 px-2 text-center leading-tight rounded-2xl">Set Prioritas</button>' +
-            '<button type="button" onclick="toggleOrderPriority(' + idx + ',false)" class="bg-[#6d3939] hover:bg-[#572c2c] py-4 px-2 text-center leading-tight rounded-2xl">UnSet Prioritas</button>' +
+        '<div class="px-3 pt-1 text-white text-[13px] font-medium">' +
+          '<div class="grid grid-cols-2 gap-2">' +
+            '<button type="button" onclick="confirmDeleteOrder(' + idx + ')" class="bg-[#b83b3b] hover:bg-[#9c2f2f] py-2.5 px-2 text-center leading-tight rounded-xl">Hapus Transaksi</button>' +
+            '<button type="button" onclick="toggleOrderPriority(' + idx + ',true)" class="bg-[#8e4b96] hover:bg-[#763c7d] py-2.5 px-2 text-center leading-tight rounded-xl">Set Prioritas</button>' +
+            '<button type="button" onclick="toggleOrderPriority(' + idx + ',false)" class="bg-[#6d3939] hover:bg-[#572c2c] py-2.5 px-2 text-center leading-tight rounded-xl">UnSet Prioritas</button>' +
           
-            '<button type="button" onclick="toggleOrderLunas(' + idx + ')" class="' + lunasBtnColor + ' py-4 px-2 text-center leading-tight rounded-2xl">' + esc(lunasBtnLabel) + '</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'antar\')" class="bg-[#6c427a] hover:bg-[#573463] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Nota Antar</button>' +
-            '<button type="button" onclick="sendOrderWA(' + idx + ',true)" class="bg-[#34789c] hover:bg-[#29617f] py-4 px-2 text-center leading-tight rounded-2xl">Kirim Nota Alternatif</button>' +
+            '<button type="button" onclick="toggleOrderLunas(' + idx + ')" class="' + lunasBtnColor + ' py-2.5 px-2 text-center leading-tight rounded-xl">' + esc(lunasBtnLabel) + '</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'antar\')" class="bg-[#6c427a] hover:bg-[#573463] py-2.5 px-2 text-center leading-tight rounded-xl">Cetak Nota Antar</button>' +
+            '<button type="button" onclick="sendOrderWA(' + idx + ',true)" class="bg-[#34789c] hover:bg-[#29617f] py-2.5 px-2 text-center leading-tight rounded-xl">Kirim Nota Alternatif</button>' +
           
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'pdf\')" class="bg-[#825836] hover:bg-[#69462a] py-4 px-2 text-center leading-tight rounded-2xl">Nota PDF</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'qr\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Label (QRCode)</button>' +
-            '<button type="button" onclick="openPayModal(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-4 px-2 text-center leading-tight rounded-2xl">Bayar Sisa (Cicilan)</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'pdf\')" class="bg-[#825836] hover:bg-[#69462a] py-2.5 px-2 text-center leading-tight rounded-xl">Nota PDF</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'label2\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-2.5 px-2 text-center leading-tight rounded-xl">Cetak Label 2</button>' +
+            '<button type="button" onclick="openPayModal(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-2 text-center leading-tight rounded-xl">Bayar Sisa (Cicilan)</button>' +
           
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'nota\')" class="bg-[#3c7ea6] hover:bg-[#2f6687] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Nota</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'logo\')" class="bg-[#8f3d56] hover:bg-[#732f44] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Nota(Logo)</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'label\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Label</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'nota\')" class="bg-[#3c7ea6] hover:bg-[#2f6687] py-2.5 px-2 text-center leading-tight rounded-xl">Cetak Nota</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'logo\')" class="bg-[#8f3d56] hover:bg-[#732f44] py-2.5 px-2 text-center leading-tight rounded-xl">Cetak Nota(Logo)</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'label\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-2.5 px-2 text-center leading-tight rounded-xl">Cetak Label</button>' +
           
-            '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[#2b7a5b] hover:bg-[#216148] py-4 px-2 text-center leading-tight rounded-2xl">Kirim Nota WA</button>' +
-            '<button type="button" onclick="copyOrderPhone(' + idx + ')" class="bg-[#6c427a] hover:bg-[#573463] py-4 px-2 text-center leading-tight rounded-2xl">Copy No HP</button>' +
+            '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-2 text-center leading-tight rounded-xl">Kirim Nota WA</button>' +
+            '<button type="button" onclick="copyOrderPhone(' + idx + ')" class="bg-[#6c427a] hover:bg-[#573463] py-2.5 px-2 text-center leading-tight rounded-xl">Copy No HP</button>' +
             (o.status === 'Selesai'
-              ? '<button type="button" onclick="waNotifyDone(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-4 px-2 text-center leading-tight rounded-2xl">Kabari Selesai (WA)</button>'
+              ? '<button type="button" onclick="waNotifyDone(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-2 text-center leading-tight rounded-xl">Kabari Selesai (WA)</button>'
               : '') +
           '</div>' +
         '</div></div></div>';
@@ -4849,6 +4849,49 @@
       return wrap(name, w, false).join('\n') + '\n';
     }
 
+    // ===== LABEL 2: nama pelanggan + singkatan produk (hanya Hemat 1 Hari, Hemat 2 Hari, Komplit) =====
+    var LABEL2_PICK = {};
+    function label2Pick(idx, a) { var o = state.orders[idx]; if (!o) return; LABEL2_PICK[o.id] = a; openPrintPreview(idx, 'label2'); }
+    function labelAbbrev(o) {
+      var map = { 'hemat 1 hari': 'H1', 'hemat 2 hari': 'H2', 'komplit': 'K' }, out = [];
+      (o.items || []).forEach(function (it) {
+        var a = map[String(it.name || '').toLowerCase().replace(/\s+/g, ' ').trim()];
+        if (a && out.indexOf(a) === -1) out.push(a);
+      });
+      return out;
+    }
+    // Jika order berisi beberapa produk bersingkatan, hanya yang dipilih yang dipakai
+    function labelAbbrevChosen(o) {
+      var all = labelAbbrev(o);
+      if (all.length <= 1) return all;
+      var p = LABEL2_PICK[o.id];
+      return [all.indexOf(p) > -1 ? p : all[0]];
+    }
+    // Huruf K dalam lingkaran, dicetak sebagai gambar raster ESC/POS
+    function circleKRaster(size) {
+      try {
+        var chr = String.fromCharCode;
+        var c = document.createElement('canvas'); c.width = size; c.height = size;
+        var g = c.getContext('2d');
+        g.fillStyle = '#fff'; g.fillRect(0, 0, size, size);
+        var lw = Math.max(4, Math.round(size * 0.06));
+        g.strokeStyle = '#000'; g.lineWidth = lw;
+        g.beginPath(); g.arc(size / 2, size / 2, size / 2 - lw, 0, Math.PI * 2); g.stroke();
+        g.fillStyle = '#000'; g.font = 'bold ' + Math.round(size * 0.6) + 'px Arial, sans-serif';
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillText('K', size / 2, size / 2 + size * 0.03);
+        var d = g.getImageData(0, 0, size, size).data, wb = size / 8, s = '';
+        for (var y = 0; y < size; y++) {
+          for (var xb = 0; xb < wb; xb++) {
+            var b = 0;
+            for (var bit = 0; bit < 8; bit++) { if (d[((y * size) + (xb * 8 + bit)) * 4] < 128) b |= (0x80 >> bit); }
+            s += chr(b);
+          }
+        }
+        return chr(29) + 'v0' + chr(0) + chr(wb & 255) + chr((wb >> 8) & 255) + chr(size & 255) + chr((size >> 8) & 255) + s;
+      } catch (e) { return ''; }
+    }
+
     function buildThermalEscPos(o, mode) {
       var w = Number(state.printer.paperWidth) || 32;
       var line = new Array(w + 1).join('-') + '\n';
@@ -4864,6 +4907,19 @@
       var outletTitle = (state.meta.outlet || 'Queen Laundry').toUpperCase();
 
       var out = INIT;
+      if (mode === 'label2') {
+        out += CENTER + ESC + 'J' + String.fromCharCode(14) + BOLD_ON + labelName(String(o.customer || '-').toUpperCase(), w, GS) + BOLD_OFF + '\n';
+        labelAbbrevChosen(o).forEach(function (a) {
+          if (a === 'K') {
+            var r = circleKRaster(w >= 48 ? 144 : 112);
+            out += r ? r + '\n' : GS + '!' + String.fromCharCode(51) + '(K)\n' + GS + '!' + String.fromCharCode(0);
+          } else {
+            out += GS + '!' + String.fromCharCode(51) + a + '\n' + GS + '!' + String.fromCharCode(0);
+          }
+        });
+        out += '\n\n\n';
+        return out;
+      }
       if (mode === 'label' || mode === 'qr') {
         var FONT_B = ESC + 'M' + String.fromCharCode(1);
         var FONT_A = ESC + 'M' + String.fromCharCode(0);
@@ -5092,8 +5148,30 @@
         label: 'Cetak Label',
         antar: 'Cetak Nota Antar',
         pdf: 'Nota PDF',
-        qr: 'Cetak Label (QRCode)'
+        qr: 'Cetak Label (QRCode)',
+        label2: 'Cetak Label 2'
       };
+      if (mode === 'label2') {
+        var all = labelAbbrev(o), ab = labelAbbrevChosen(o);
+        var abHtml = ab.length ? ab.map(function (a) {
+          return a === 'K'
+            ? '<div class="mx-auto w-16 h-16 rounded-full border-[3px] border-slate-900 flex items-center justify-center text-4xl leading-none">K</div>'
+            : '<div class="text-5xl leading-none">' + esc(a) + '</div>';
+        }).join('') : '<div class="text-[11px] text-slate-400">(tidak ada produk singkatan pada order ini)</div>';
+        var pickHtml = all.length > 1
+          ? '<div class="mt-3 no-print space-y-1.5"><div class="text-xs font-semibold text-slate-600">Pilih singkatan yang dipakai:</div><div class="grid grid-cols-' + Math.min(all.length, 3) + ' gap-2">' +
+            all.map(function (a) {
+              var on = a === ab[0];
+              return '<button type="button" onclick="label2Pick(' + idx + ',\'' + a + '\')" class="py-2 rounded-xl text-sm font-bold border-2 ' + (on ? 'bg-[color:var(--p)] text-white border-[color:var(--p)]' : 'bg-white text-slate-700 border-slate-200') + '">' + (a === 'K' ? 'K (Komplit)' : a === 'H1' ? 'H1 (Hemat 1 Hari)' : 'H2 (Hemat 2 Hari)') + '</button>';
+            }).join('') + '</div></div>'
+          : '';
+        openModal(titles.label2,
+          '<div id="print-area" class="p-4 border border-slate-300 rounded-xl bg-white text-slate-900 text-center space-y-3">' +
+            '<div class="text-2xl font-bold break-words">' + esc(String(o.customer || '-').toUpperCase()) + '</div>' + abHtml +
+          '</div>' + pickHtml +
+          '<div class="mt-3 no-print"><button type="button" onclick="printOrderNow(' + idx + ',\'label2\',true)" class="w-full py-3 rounded-xl bg-[color:var(--pd)] text-white font-bold text-sm">Cetak ke Printer Thermal</button></div>');
+        return;
+      }
 
       var itemsHtml = (o.items || []).map(function (it) {
         return '<div class="flex justify-between py-1">' +
