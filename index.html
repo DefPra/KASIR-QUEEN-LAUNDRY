@@ -548,7 +548,7 @@
           <div class="py-2 text-center border-r border-[rgb(var(--p-rgb)/0.4)]">Jumlah Item : <span id="cart-count" class="font-bold">0</span></div>
           <div class="py-2 text-center">Total : <span id="cart-total" class="font-bold">Rp0</span></div>
         </div>
-        <button type="button" onclick="openCartModal()" class="w-full bg-[#2b7a5b] hover:bg-[#226349] text-white font-semibold text-[14px] py-2.5 rounded-lg shadow-xs transition">
+        <button type="button" onclick="openCartModal()" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[14px] py-2.5 rounded-lg shadow-xs transition">
           Lihat Keranjang
         </button>
       </div>
@@ -3021,7 +3021,7 @@
         openModal('Pengaturan Outlet & Printer Thermal',
           '<div class="space-y-3 text-xs">' +
             '<div class="space-y-2">' +
-              '<button type="button" onclick="openCloudModal()" class="w-full py-2.5 rounded-xl bg-[#2b7a5b] text-white font-bold">Sinkronisasi Cloud (Firebase)</button>' +
+              '<button type="button" onclick="openCloudModal()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-bold">Sinkronisasi Cloud (Firebase)</button>' +
               '<button type="button" onclick="openStaffModal()" class="w-full py-2.5 rounded-xl bg-[color:var(--pd)] text-white font-bold">Kelola Karyawan (Nama &amp; PIN)</button>' +
             '</div><div>' +
               '<label class="font-semibold block mb-1">Nama Outlet</label>' +
@@ -3034,7 +3034,7 @@
             '<div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">' +
               '<div class="font-semibold">Printer Bluetooth (BLE)</div>' +
               '<div id="prn-status" class="text-slate-600">' + esc(printerStatusText()) + '</div>' +
-              '<button type="button" onclick="printerSearch(false).catch(function(){})" class="w-full py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Cari Printer Thermal</button>' +
+              '<button type="button" onclick="printerSearch(false).catch(function(){})" class="w-full py-2 rounded-xl bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-bold">Cari Printer Thermal</button>' +
               (window.AndroidPrinter ? '' : '<button type="button" onclick="printerSearch(true).catch(function(){})" class="w-full text-center text-[11px] text-slate-500 underline">Tidak ketemu? Tampilkan semua perangkat Bluetooth</button>') +
               ((!window.AndroidPrinter && (state.printer.deviceId || state.printer.deviceName)) ? '<button type="button" onclick="printerForget()" class="w-full text-center text-[11px] text-rose-600 underline">Lupakan printer tersimpan</button>' : '') +
               '<button type="button" onclick="printerTest()" class="w-full py-2 rounded-xl bg-[color:var(--p)] text-white font-bold">Tes Cetak</button>' +
@@ -3866,7 +3866,7 @@
             '<input type="text" id="chk-note" placeholder="Catatan khusus cucian..." class="w-full px-3 py-2 rounded-xl border border-slate-300" />' +
           '</div>' +
           '<div id="chk-sum" class="p-3 rounded-xl bg-[color:var(--t1)] border border-[color:var(--t2)] space-y-1 font-bold text-sm"></div>' +
-          '<button type="button" onclick="submitCheckout()" class="w-full py-2.5 rounded-xl bg-[#2b7a5b] text-white font-bold text-sm">Simpan Order</button>' +
+          '<button type="button" onclick="submitCheckout()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-bold text-sm">Simpan Order</button>' +
         '</div>'
       );
       chkRecalc();
@@ -4249,7 +4249,7 @@
             '<button type="button" onclick="openPrintPreview(' + idx + ',\'logo\')" class="bg-[#8f3d56] hover:bg-[#732f44] py-2.5 px-2 text-center leading-tight rounded-xl">Cetak Nota(Logo)</button>' +
             '<button type="button" onclick="openPrintPreview(' + idx + ',\'label\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-2.5 px-2 text-center leading-tight rounded-xl">Cetak Label</button>' +
           
-            '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-2 text-center leading-tight rounded-xl">Kirim Nota WA</button>' +
+            '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-2.5 px-2 text-center leading-tight rounded-xl">Kirim Nota WA</button>' +
             '<button type="button" onclick="copyOrderPhone(' + idx + ')" class="bg-[#6c427a] hover:bg-[#573463] py-2.5 px-2 text-center leading-tight rounded-xl">Copy No HP</button>' +
             (o.status === 'Selesai'
               ? '<button type="button" onclick="waNotifyDone(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-2 text-center leading-tight rounded-xl">Kabari Selesai (WA)</button>'
