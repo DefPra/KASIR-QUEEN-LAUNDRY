@@ -313,6 +313,17 @@
       </section>
 
       <div class="p-3.5 space-y-3.5">
+        <div id="update-banner" class="hidden card-box px-3 py-2.5 text-xs space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="font-bold text-slate-900">Update aplikasi tersedia <span id="upd-ver"></span></div>
+              <div id="upd-notes" class="text-slate-500"></div>
+            </div>
+            <button type="button" onclick="apkUpdateLater()" class="text-slate-400 text-base px-1 leading-none">&times;</button>
+          </div>
+          <div id="upd-bar" class="hidden h-1.5 rounded bg-slate-200 overflow-hidden"><div id="upd-bar-fill" class="h-full bg-[color:var(--p)]" style="width:0%"></div></div>
+          <button id="upd-btn" type="button" onclick="apkUpdateStart()" class="w-full py-2 rounded-xl bg-[color:var(--p)] text-white font-bold">Unduh &amp; Pasang</button>
+        </div>
         <!-- Tambah Cabang & Dropdown -->
         <section class="card-box p-3.5 space-y-2.5">
           <button type="button" onclick="openBranchModal()" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition">
@@ -3010,10 +3021,9 @@
               '<div class="font-semibold">Printer Bluetooth (BLE)</div>' +
               '<div id="prn-status" class="text-slate-600">' + esc(printerStatusText()) + '</div>' +
               '<button type="button" onclick="printerSearch(false).catch(function(){})" class="w-full py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Cari Printer Thermal</button>' +
-              '<button type="button" onclick="printerSearch(true).catch(function(){})" class="w-full text-center text-[11px] text-slate-500 underline">Tidak ketemu? Tampilkan semua perangkat Bluetooth</button>' +
-              ((state.printer.deviceId || state.printer.deviceName) ? '<button type="button" onclick="printerForget()" class="w-full text-center text-[11px] text-rose-600 underline">Lupakan printer tersimpan</button>' : '') +
+              (window.AndroidPrinter ? '' : '<button type="button" onclick="printerSearch(true).catch(function(){})" class="w-full text-center text-[11px] text-slate-500 underline">Tidak ketemu? Tampilkan semua perangkat Bluetooth</button>') +
+              ((!window.AndroidPrinter && (state.printer.deviceId || state.printer.deviceName)) ? '<button type="button" onclick="printerForget()" class="w-full text-center text-[11px] text-rose-600 underline">Lupakan printer tersimpan</button>' : '') +
               '<button type="button" onclick="printerTest()" class="w-full py-2 rounded-xl bg-[color:var(--p)] text-white font-bold">Tes Cetak</button>' +
-              (window.AndroidPrinter ? '<button type="button" onclick="window.AndroidPrinter.choosePrinter()" class="w-full py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Pilih Printer Bluetooth (APK)</button>' : '') +
             '</div>' +
             '<div>' +
               '<label class="font-semibold block mb-1">Jalur Cetak Thermal</label>' +
@@ -3233,7 +3243,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v21';
+    var APP_VERSION = 'Q.v23';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -5119,6 +5129,11 @@
     var PRN_SERVICES = ['000018f0-0000-1000-8000-00805f9b34fb', '0000ff00-0000-1000-8000-00805f9b34fb', '0000ffe0-0000-1000-8000-00805f9b34fb', '49535343-fe7d-4ae5-8fa9-9fafd205e455', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2'];
 
     function printerStatusText() {
+      if (window.AndroidPrinter && !navigator.bluetooth) {
+        var pn = '';
+        try { if (typeof window.AndroidPrinter.getPrinterName === 'function') pn = window.AndroidPrinter.getPrinterName(); } catch (e) {}
+        return pn ? 'Printer tersimpan: ' + pn : 'Belum ada printer. Tekan Cari Printer Thermal.';
+      }
       if (PRN.char && PRN.device) return 'Tersambung: ' + (PRN.device.name || 'printer');
       return state.printer.deviceName ? 'Terakhir: ' + state.printer.deviceName + ' (belum tersambung)' : 'Belum ada printer';
     }
@@ -5129,6 +5144,10 @@
     }
 
     function printerSearch(all) {
+      if (window.AndroidPrinter && typeof window.AndroidPrinter.choosePrinter === 'function') {
+        try { window.AndroidPrinter.choosePrinter(); } catch (e) { showToast('Gagal membuka pilihan printer'); }
+        return Promise.resolve();
+      }
       if (!navigator.bluetooth) {
         showToast('Browser tidak mendukung Web Bluetooth. Pakai Chrome Android atau RawBT.');
         return Promise.reject();
@@ -5412,6 +5431,7 @@
       mt.setAttribute('content', t.p);
       document.head.appendChild(mt);
       try { if (window.Android && typeof window.Android.setStatusBarColor === 'function') window.Android.setStatusBarColor(t.p); } catch (e) {}
+      try { if (window.AndroidBridge && typeof window.AndroidBridge.setStatusBarColor === 'function') window.AndroidBridge.setStatusBarColor(t.p); } catch (e) {}
       try { if (window.AndroidPrinter && typeof window.AndroidPrinter.setStatusBarColor === 'function') window.AndroidPrinter.setStatusBarColor(t.p); } catch (e) {}
     }
     function themeGridHtml() {
@@ -5697,6 +5717,55 @@
           .catch(function (e) { showToast('Gagal: ' + (e.code || e.message)); });
       });
     }
+
+
+    // =========================================================================
+    // UPDATE APLIKASI (APK) DARI DALAM APLIKASI
+    // =========================================================================
+    var APKUPD = null, APKUPD_LAST = 0;
+    function apkCheckUpdate() {
+      if (!window.AndroidUpdater || typeof window.AndroidUpdater.getVersionCode !== 'function') return;
+      var cur = 0;
+      try { cur = Number(window.AndroidUpdater.getVersionCode()) || 0; } catch (e) {}
+      APKUPD_LAST = Date.now();
+      fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (v) {
+        if (!v || !(Number(v.versionCode) > cur) || !/^https:\/\//.test(String(v.apkUrl || ''))) return;
+        try { if (sessionStorage.getItem('ql_upd_later') === String(v.versionCode)) return; } catch (e) {}
+        APKUPD = v;
+        document.getElementById('upd-ver').textContent = v.versionName ? ('v' + v.versionName) : '';
+        document.getElementById('upd-notes').textContent = v.notes || '';
+        document.getElementById('update-banner').classList.remove('hidden');
+      }).catch(function () {});
+    }
+    function apkUpdateLater() {
+      try { if (APKUPD) sessionStorage.setItem('ql_upd_later', String(APKUPD.versionCode)); } catch (e) {}
+      document.getElementById('update-banner').classList.add('hidden');
+    }
+    function apkUpdateStart() {
+      if (!APKUPD || !window.AndroidUpdater) return;
+      var btn = document.getElementById('upd-btn');
+      btn.disabled = true; btn.textContent = 'Mengunduh... 0%';
+      document.getElementById('upd-bar').classList.remove('hidden');
+      try { window.AndroidUpdater.downloadAndInstall(APKUPD.apkUrl); }
+      catch (e) { window.onApkError('Gagal memulai unduhan'); }
+    }
+    window.onApkProgress = function (p) {
+      var btn = document.getElementById('upd-btn'), f = document.getElementById('upd-bar-fill');
+      if (f) f.style.width = p + '%';
+      if (btn) btn.textContent = p >= 100 ? 'Membuka pemasang...' : ('Mengunduh... ' + p + '%');
+      if (p >= 100 && btn) setTimeout(function () { btn.disabled = false; btn.textContent = 'Unduh & Pasang'; }, 4000);
+    };
+    window.onApkError = function (msg) {
+      var btn = document.getElementById('upd-btn');
+      if (btn) { btn.disabled = false; btn.textContent = 'Unduh & Pasang'; }
+      var bar = document.getElementById('upd-bar'); if (bar) bar.classList.add('hidden');
+      showToast(msg || 'Update gagal');
+    };
+    window.onPrinterChosen = function () { printerRefreshUI(); };
+    window.addEventListener('load', function () { setTimeout(apkCheckUpdate, 3000); });
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && Date.now() - APKUPD_LAST > 600000) apkCheckUpdate();
+    });
 
     // =========================================================================
     // INIT APLIKASI
