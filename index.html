@@ -1257,7 +1257,7 @@
       showToast('Sinkronisasi cloud diputus (data lokal tetap ada)');
     }
 
-    window.addEventListener('load', function () { setTimeout(function () { cloudConnect(true); }, 600); });
+    window.addEventListener('load', function () { setTimeout(function () { cloudConnect(true); }, 600); setTimeout(function () { if (!window.AndroidPrinter) printerAutoConnect(); }, 1500); });
 
     function persistAll() {
       saveJSON(KEYS.META, state.meta);
@@ -2898,6 +2898,7 @@
     }
 
     function openMenuModal(menu) {
+      if (menu === 'pengaturan') setTimeout(function () { printerAutoConnect(); }, 300);
       if (isStaff() && ['produk', 'pengeluaran', 'pengaturan', 'mutasi', 'pembukuan'].indexOf(menu) > -1) { ownerOnly(); return; }
       if (menu === 'produk') {
         var prodRows = state.products.map(function (p) {
@@ -3008,10 +3009,9 @@
             '<div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">' +
               '<div class="font-semibold">Printer Bluetooth (BLE)</div>' +
               '<div id="prn-status" class="text-slate-600">' + esc(printerStatusText()) + '</div>' +
-              '<div class="grid grid-cols-2 gap-2">' +
-                '<button type="button" onclick="printerSearch(false).catch(function(){})" class="py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Cari RPP02N</button>' +
-                '<button type="button" onclick="printerSearch(true).catch(function(){})" class="py-2 rounded-xl bg-slate-200 text-slate-800 font-bold">Semua perangkat</button>' +
-              '</div>' +
+              '<button type="button" onclick="printerSearch(false).catch(function(){})" class="w-full py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Cari Printer Thermal</button>' +
+              '<button type="button" onclick="printerSearch(true).catch(function(){})" class="w-full text-center text-[11px] text-slate-500 underline">Tidak ketemu? Tampilkan semua perangkat Bluetooth</button>' +
+              ((state.printer.deviceId || state.printer.deviceName) ? '<button type="button" onclick="printerForget()" class="w-full text-center text-[11px] text-rose-600 underline">Lupakan printer tersimpan</button>' : '') +
               '<button type="button" onclick="printerTest()" class="w-full py-2 rounded-xl bg-[color:var(--p)] text-white font-bold">Tes Cetak</button>' +
               (window.AndroidPrinter ? '<button type="button" onclick="window.AndroidPrinter.choosePrinter()" class="w-full py-2 rounded-xl bg-[#2b7a5b] text-white font-bold">Pilih Printer Bluetooth (APK)</button>' : '') +
             '</div>' +
@@ -3233,7 +3233,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v20';
+    var APP_VERSION = 'Q.v21';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -5114,7 +5114,8 @@
     }
 
     // ===== PRINTER BLUETOOTH (WEB BLUETOOTH / BLE) =====
-    var PRN = { device: null, char: null };
+    var PRN = { device: null, char: null, auto: null };
+    var PRN_NAMES = ['RPP', 'Rongta', 'MTP', 'MPT', 'PT-', 'POS', 'XP-', 'Printer', 'BlueTooth', 'BT', 'GP', 'ZJ', 'MHT', 'Mini', 'SP', 'RP', 'Thermal'];
     var PRN_SERVICES = ['000018f0-0000-1000-8000-00805f9b34fb', '0000ff00-0000-1000-8000-00805f9b34fb', '0000ffe0-0000-1000-8000-00805f9b34fb', '49535343-fe7d-4ae5-8fa9-9fafd205e455', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2'];
 
     function printerStatusText() {
@@ -5132,14 +5133,49 @@
         showToast('Browser tidak mendukung Web Bluetooth. Pakai Chrome Android atau RawBT.');
         return Promise.reject();
       }
-      var opt = all ? { acceptAllDevices: true, optionalServices: PRN_SERVICES } : { filters: [{ namePrefix: 'RPP' }, { namePrefix: 'Rongta' }], optionalServices: PRN_SERVICES };
+      var filters = PRN_NAMES.map(function (n) { return { namePrefix: n }; }).concat(PRN_SERVICES.map(function (s) { return { services: [s] }; }));
+      var opt = all ? { acceptAllDevices: true, optionalServices: PRN_SERVICES } : { filters: filters, optionalServices: PRN_SERVICES };
       return navigator.bluetooth.requestDevice(opt).then(printerConnect);
     }
 
-    function printerConnect(d) {
+    // Sambung otomatis ke printer yang pernah dipilih (tanpa membuka daftar pencarian)
+    function printerAutoConnect() {
+      if (PRN.char && PRN.device && PRN.device.gatt.connected) return Promise.resolve(true);
+      if (!navigator.bluetooth || typeof navigator.bluetooth.getDevices !== 'function') return Promise.resolve(false);
+      if (!state.printer.deviceId && !state.printer.deviceName) return Promise.resolve(false);
+      if (PRN.auto) return PRN.auto;
+      var el = document.getElementById('prn-status');
+      if (el) el.textContent = 'Menyambung ke printer tersimpan...';
+      PRN.auto = navigator.bluetooth.getDevices().then(function (list) {
+        var d = list.filter(function (x) { return x.id === state.printer.deviceId; })[0] ||
+                list.filter(function (x) { return x.name && x.name === state.printer.deviceName; })[0];
+        if (!d) return false;
+        return printerConnect(d, true).then(function () { return true; });
+      }).catch(function () { return false; }).then(function (ok) { PRN.auto = null; printerRefreshUI(); return ok; });
+      return PRN.auto;
+    }
+
+    function printerForget() {
+      askConfirm('Lupakan Printer', 'Hapus printer tersimpan? Anda perlu mencari printer lagi untuk mencetak lewat Bluetooth.', function () {
+        try { if (PRN.device && PRN.device.gatt.connected) PRN.device.gatt.disconnect(); } catch (e) {}
+        try { if (PRN.device && typeof PRN.device.forget === 'function') PRN.device.forget(); } catch (e) {}
+        PRN.device = null; PRN.char = null;
+        state.printer.deviceId = ''; state.printer.deviceName = '';
+        persistAll(); printerRefreshUI();
+        showToast('Printer tersimpan dilupakan');
+      });
+    }
+
+    function printerConnect(d, quiet) {
       PRN.device = d;
       PRN.char = null;
-      d.addEventListener('gattserverdisconnected', function () { PRN.char = null; printerRefreshUI(); });
+      if (!d._qlBound) {
+        d._qlBound = true;
+        d.addEventListener('gattserverdisconnected', function () {
+          PRN.char = null; printerRefreshUI();
+          if (state.printer.deviceId) setTimeout(function () { printerAutoConnect(); }, 2000);
+        });
+      }
       return d.gatt.connect().then(function (srv) {
         return srv.getPrimaryServices();
       }).then(function (svcs) {
@@ -5149,16 +5185,20 @@
         if (!c) throw new Error('Jalur tulis printer tidak ditemukan');
         PRN.char = c;
         state.printer.deviceName = d.name || 'Bluetooth Printer';
+        state.printer.deviceId = d.id || '';
         persistAll();
         printerRefreshUI();
-        showToast('Tersambung ke ' + state.printer.deviceName);
+        if (!quiet) showToast('Tersambung ke ' + state.printer.deviceName);
       });
     }
 
     function printerSend(str) {
       var bytes = new Uint8Array(str.length);
       for (var k = 0; k < str.length; k++) bytes[k] = str.charCodeAt(k) & 255;
-      var ready = (PRN.char && PRN.device && PRN.device.gatt.connected) ? Promise.resolve() : (PRN.device ? printerConnect(PRN.device) : printerSearch(false));
+      var ready = (PRN.char && PRN.device && PRN.device.gatt.connected) ? Promise.resolve() : printerAutoConnect().then(function (ok) {
+        if (ok) return;
+        return PRN.device ? printerConnect(PRN.device) : printerSearch(false);
+      });
       return ready.then(function () {
         var c = PRN.char, nr = c.properties.writeWithoutResponse, i = 0;
         function next() {
@@ -5210,7 +5250,7 @@
         } catch (e) {}
       }
 
-      if (navigator.bluetooth && (cfgMode === 'ble' || ((cfgMode === 'auto' || forceThermal) && PRN.char))) {
+      if (navigator.bluetooth && (cfgMode === 'ble' || ((cfgMode === 'auto' || forceThermal) && (PRN.char || state.printer.deviceId)))) {
         printerSend(escPos);
         return;
       }
