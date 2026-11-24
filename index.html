@@ -1315,6 +1315,16 @@
       return (!isNaN(n) && n > 0) ? Math.round(n * 100) / 100 : 0;
     }
 
+    function toUpperName(v) { return String(v == null ? '' : v).toUpperCase(); }
+    function forceUpperInput(el) {
+      if (!el) return;
+      var a = el.selectionStart, b = el.selectionEnd, u = el.value.toUpperCase();
+      if (el.value !== u) {
+        el.value = u;
+        try { el.setSelectionRange(a, b); } catch (e) {}
+      }
+    }
+
     function getLocalDateStr(dateObj) {
       var d = dateObj || new Date();
       var pad = function (n) { return String(n).padStart(2, '0'); };
@@ -1968,6 +1978,9 @@
       branchOrdersToday.forEach(function (o) {
         var totalOrder = Math.max(0, Number(o.total !== undefined ? o.total : o.subtotal) || 0);
         var paidAmt = o.paid ? totalOrder : Math.max(0, Number(o.paidAmount) || 0);
+        // Ambil juga total dari riwayat pembayaran agar income tidak hilang bila flag lunas/nominal tidak sinkron
+        var sumPay = (Array.isArray(o.payments) ? o.payments : []).reduce(function (a, pp) { return a + Math.max(0, Number(pp.amount) || 0); }, 0);
+        if (sumPay > paidAmt) paidAmt = sumPay;
         if (paidAmt > totalOrder) paidAmt = totalOrder;
         var sisaOrder = Math.max(0, totalOrder - paidAmt);
 
@@ -1975,7 +1988,7 @@
         pemasukan += paidAmt;
         piutang += sisaOrder;
 
-        var payTypeLower = String(o.paymentType || 'cash/tunai').toLowerCase();
+        var payTypeLower = String(extractPaymentMethod(o.paymentType) || 'cash/tunai').toLowerCase();
         var isNonTunai = payTypeLower.indexOf('qris') !== -1 ||
           payTypeLower.indexOf('transfer') !== -1 ||
           payTypeLower.indexOf('non') !== -1 ||
@@ -2016,13 +2029,14 @@
         if ((o.branch || activeBranch) !== activeBranch) return;
         if (String(o.createdAt || '').slice(0, 10) === todayStr) return;
         (o.payments || []).forEach(function (p) {
-          if (String(p.at || '').slice(0, 10) !== todayStr) return;
+          var pAt = p.at || o.createdAt || '';
+          if (String(pAt).slice(0, 10) !== todayStr) return;
           var amt = Math.max(0, Number(p.amount) || 0);
           var nt = /qris|transfer|non|ewallet|debit/.test(String(p.method || '').toLowerCase());
           pemasukan += amt;
           bayarPiutang += amt;
           if (nt) bayarNonTunai += amt; else bayarTunai += amt;
-          entries.push({ type: 'income', amount: amt, sign: '', isExpense: false, desc: 'bayar piutang (' + (nt ? 'non tunai' : 'tunai') + ') order ' + (o.id || '-') + ' (' + (o.customer || 'Pelanggan') + ')', timestamp: p.at });
+          entries.push({ type: 'income', amount: amt, sign: '', isExpense: false, desc: 'bayar piutang (' + (nt ? 'non tunai' : 'tunai') + ') order ' + (o.id || '-') + ' (' + (o.customer || 'Pelanggan') + ')', timestamp: pAt });
         });
       });
 
@@ -3356,7 +3370,7 @@
         '<div class="space-y-3 text-xs">' +
           '<div>' +
             '<label class="font-semibold block mb-1">Nama Pelanggan *</label>' +
-            '<input type="text" id="new-cust-name" placeholder="Masukkan nama pelanggan" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
+            '<input type="text" id="new-cust-name" style="text-transform:uppercase" oninput="forceUpperInput(this)" placeholder="Masukkan nama pelanggan" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
           '</div>' +
           '<div>' +
             '<label class="font-semibold block mb-1">No HP / WhatsApp</label>' +
@@ -3372,7 +3386,7 @@
     }
 
     function saveNewCustomer() {
-      var name = document.getElementById('new-cust-name').value.trim();
+      var name = toUpperName(document.getElementById('new-cust-name').value.trim());
       var phone = document.getElementById('new-cust-phone').value.trim() || '-';
       var address = document.getElementById('new-cust-addr').value.trim() || '-';
       if (!name) {
@@ -3660,7 +3674,7 @@
       if (!c) return;
       openModal('Edit Pelanggan',
         '<div class="space-y-3 text-xs">' +
-          '<div><label class="font-semibold block mb-1">Nama Pelanggan *</label><input type="text" id="ec-name" value="' + esc(c.name) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
+          '<div><label class="font-semibold block mb-1">Nama Pelanggan *</label><input type="text" id="ec-name" style="text-transform:uppercase" oninput="forceUpperInput(this)" value="' + esc(c.name) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
           '<div><label class="font-semibold block mb-1">No HP / WhatsApp</label><input type="tel" id="ec-phone" value="' + esc(c.phone) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
           '<div><label class="font-semibold block mb-1">Alamat</label><input type="text" id="ec-addr" value="' + esc(c.address) + '" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" /></div>' +
           '<button type="button" onclick="custEditSave(\'' + esc(id) + '\')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Simpan Perubahan</button>' +
@@ -3669,7 +3683,7 @@
 
     function custEditSave(id) {
       var c = state.customers.find(function (x) { return x.id === id; });
-      var name = document.getElementById('ec-name').value.trim();
+      var name = toUpperName(document.getElementById('ec-name').value.trim());
       if (!c || !name) { showToast('Nama pelanggan wajib diisi'); return; }
       c.name = name;
       c.phone = document.getElementById('ec-phone').value.trim() || '-';
@@ -3712,7 +3726,7 @@
           var phone = p[1] || '-';
           var dup = state.customers.some(function (c) { return String(c.name).toLowerCase() === p[0].toLowerCase() && c.phone === phone; });
           if (dup) return;
-          state.customers.push({ id: 'C' + Date.now() + '_' + added, name: p[0], phone: phone, address: p[2] || '-' });
+          state.customers.push({ id: 'C' + Date.now() + '_' + added, name: toUpperName(p[0]), phone: phone, address: p[2] || '-' });
           added++;
         });
         persistAll();
@@ -3797,7 +3811,7 @@
         '<div class="space-y-3 text-xs">' +
           '<div>' +
             '<label class="font-semibold block mb-1">Nama Pelanggan *</label>' +
-            '<input type="text" id="chk-name" value="' + esc(cust ? cust.name : '') + '" placeholder="Ketik nama pelanggan" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
+            '<input type="text" id="chk-name" style="text-transform:uppercase" oninput="forceUpperInput(this)" value="' + esc(cust ? cust.name : '') + '" placeholder="Ketik nama pelanggan" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />' +
           '</div>' +
           '<div>' +
             '<label class="font-semibold block mb-1">No HP Pelanggan</label>' +
@@ -3891,7 +3905,7 @@
     }
 
     function submitCheckout() {
-      var name = document.getElementById('chk-name').value.trim();
+      var name = toUpperName(document.getElementById('chk-name').value.trim());
       var phone = document.getElementById('chk-phone').value.trim() || '-';
       if (!name) {
         showToast('Nama pelanggan wajib diisi');
@@ -3911,8 +3925,9 @@
       if (!existingCust) {
         existingCust = { id: 'C' + Date.now(), name: name, phone: phone, address: '-' };
         state.customers.unshift(existingCust);
-      } else if (phone !== '-') {
-        existingCust.phone = phone;
+      } else {
+        existingCust.name = name;
+        if (phone !== '-') existingCust.phone = phone;
       }
 
       var isPaid = payMode0 === '1';
@@ -5412,7 +5427,7 @@
       laut:     { name: 'Biru Laut',   p: '#3b6ea5', pd: '#2f5b8a', pdd: '#23466b', pm: '#4e7fb3', pa: '#89b4de', t1: '#eef3f8', t2: '#dce6f1', bg: '#f1f4f8', bg2: '#dce3eb' },
       lavender: { name: 'Lavender',    p: '#7459b8', pd: '#5c4496', pdd: '#3f2e6b', pm: '#8f78cc', pa: '#bfb0e6', t1: '#f3f0fa', t2: '#e2dcf3', bg: '#f6f4fb', bg2: '#e4def1' },
       zamrud:   { name: 'Zamrud',      p: '#2a8c7e', pd: '#1f7266', pdd: '#14504a', pm: '#43a698', pa: '#92d3c8', t1: '#eef7f5', t2: '#d6ebe7', bg: '#f1f8f6', bg2: '#d9eae6' },
-      mawar:    { name: 'Mawar',       p: '#c24d7c', pd: '#a23a64', pdd: '#6e2443', pm: '#d4719a', pa: '#eba9c3', t1: '#fbf0f4', t2: '#f4dae4', bg: '#fcf4f7', bg2: '#f0dce5' },
+      mawar:    { name: 'Hitam',       p: '#1f1f1f', pd: '#000000', pdd: '#000000', pm: '#3a3a3a', pa: '#9a9a9a', t1: '#f2f2f2', t2: '#e2e2e2', bg: '#f5f5f5', bg2: '#e1e1e1' },
       jingga:   { name: 'Jingga',      p: '#d0693a', pd: '#b0522a', pdd: '#7a3419', pm: '#e08a5e', pa: '#f2c0a2', t1: '#fcf3ed', t2: '#f4dfd0', bg: '#fdf6f1', bg2: '#efdfd3' },
       indigo:   { name: 'Indigo',      p: '#4753b0', pd: '#37418f', pdd: '#232b63', pm: '#626dc7', pa: '#a2abe8', t1: '#eff0fa', t2: '#dadef2', bg: '#f3f4fb', bg2: '#dfe1f0' }
     };
