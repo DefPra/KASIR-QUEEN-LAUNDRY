@@ -105,11 +105,11 @@
     .arsip-pill:focus, .arsip-sel:focus { border-color: var(--p); }
     body #detail-screen.open { z-index: 47; }
     #detail-body { padding-bottom: 0 !important; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
-    .act-dock { position: sticky; bottom: 0; z-index: 6; margin-top: 10px; background: rgba(241, 244, 248, 0.97); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.14); border-top-left-radius: 14px; border-top-right-radius: 14px; padding-bottom: env(safe-area-inset-bottom, 0px); transform: translateZ(0); }
-    .act-handle { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 7px 0 3px; font-size: 10px; color: #64748b; }
-    .act-bar { width: 38px; height: 4px; border-radius: 4px; background: #94a3b8; }
-    .act-wrap { overflow: hidden; max-height: 440px; transition: max-height 0.28s ease; padding-bottom: 8px; }
-    .act-dock.collapsed .act-wrap { max-height: 0; padding-bottom: 0; }
+    .act-dock { position: sticky; bottom: 0; z-index: 6; margin-top: 10px; background: rgba(241, 244, 248, 0.97); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.14); border-top-left-radius: 28px; border-top-right-radius: 28px; padding-bottom: env(safe-area-inset-bottom, 0px); transform: translateZ(0); }
+    .act-handle { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 0 8px; font-size: 16px; color: #64748b; }
+    .act-bar { width: 56px; height: 6px; border-radius: 6px; background: #94a3b8; }
+    .act-wrap { overflow-x: hidden; overflow-y: auto; max-height: 52vh; transition: max-height 0.28s ease; padding-bottom: 12px; }
+    .act-dock.collapsed .act-wrap { max-height: 0; padding-bottom: 0; overflow: hidden; }
     .cust-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; }
     .cust-btn { background: var(--p); color: #fff; font-weight: 600; font-size: 12px; letter-spacing: .04em; padding: 7px 16px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,.25); }
     #detail-screen {
@@ -4121,34 +4121,30 @@
           '<button type="button" onclick="openPaidModal(' + idx + ')" class="w-full flex justify-between items-center text-left hover:bg-white/60 py-0.5 rounded"><span>Bayar</span><span>' + formatRp(paidAmt) + '</span></button>' +
         '</div>' +
 
-        '<div id="act-dock" class="act-dock' + (state.actCollapsed ? ' collapsed' : '') + '"><button type="button" onclick="toggleActDock()" class="act-handle"><span class="act-bar"></span><span>Aksi order</span></button><div class="act-wrap">' +
-        '<div class="px-3 pt-1 space-y-1.5 text-white text-[13px] font-medium">' +
-          '<div class="grid grid-cols-3 gap-1">' +
-            '<button type="button" onclick="confirmDeleteOrder(' + idx + ')" class="bg-[#b83b3b] hover:bg-[#9c2f2f] py-2.5 px-1 text-center leading-tight rounded-xs">Hapus<br>Transaksi</button>' +
-            '<button type="button" onclick="toggleOrderPriority(' + idx + ',true)" class="bg-[#8e4b96] hover:bg-[#763c7d] py-2.5 px-1 text-center leading-tight rounded-xs">Set Prioritas</button>' +
-            '<button type="button" onclick="toggleOrderPriority(' + idx + ',false)" class="bg-[#6d3939] hover:bg-[#572c2c] py-2.5 px-1 text-center leading-tight rounded-xs">UnSet Prioritas</button>' +
-          '</div>' +
-          '<div class="grid grid-cols-3 gap-1">' +
-            '<button type="button" onclick="toggleOrderLunas(' + idx + ')" class="' + lunasBtnColor + ' py-2.5 px-1 text-center leading-tight rounded-xs">' + esc(lunasBtnLabel) + '</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'antar\')" class="bg-[#6c427a] hover:bg-[#573463] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Nota<br>Antar</button>' +
-            '<button type="button" onclick="sendOrderWA(' + idx + ',true)" class="bg-[#34789c] hover:bg-[#29617f] py-2.5 px-1 text-center leading-tight rounded-xs">Kirim Nota<br>Alternatif</button>' +
-          '</div>' +
-          '<div class="grid grid-cols-3 gap-1">' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'pdf\')" class="bg-[#825836] hover:bg-[#69462a] py-2.5 px-1 text-center leading-tight rounded-xs">Nota PDF</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'qr\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Label<br>(QRCode)</button>' +
-            '<button type="button" onclick="openPayModal(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Bayar Sisa<br>(Cicilan)</button>' +
-          '</div>' +
-          '<div class="grid grid-cols-3 gap-1 pt-1">' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'nota\')" class="bg-[#3c7ea6] hover:bg-[#2f6687] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Nota</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'logo\')" class="bg-[#8f3d56] hover:bg-[#732f44] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak<br>Nota(Logo)</button>' +
-            '<button type="button" onclick="openPrintPreview(' + idx + ',\'label\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-2.5 px-1 text-center leading-tight rounded-xs">Cetak Label</button>' +
-          '</div>' +
-          '<div class="grid grid-cols-3 gap-1">' +
-            '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Kirim Nota WA</button>' +
-            '<button type="button" onclick="copyOrderPhone(' + idx + ')" class="bg-[#6c427a] hover:bg-[#573463] py-2.5 px-1 text-center leading-tight rounded-xs">Copy No HP</button>' +
+        '<div id="act-dock" class="act-dock' + (state.actCollapsed ? ' collapsed' : '') + '"><button type="button" onclick="toggleActDock()" class="act-handle"><span class="act-bar"></span><span id="act-handle-txt">' + (state.actCollapsed ? 'Tampilkan &#9650;' : 'Sembunyikan &#9660;') + '</span></button><div class="act-wrap">' +
+        '<div class="px-4 pt-1 text-white text-[16px] font-semibold">' +
+          '<div class="grid grid-cols-2 gap-3">' +
+            '<button type="button" onclick="confirmDeleteOrder(' + idx + ')" class="bg-[#b83b3b] hover:bg-[#9c2f2f] py-4 px-2 text-center leading-tight rounded-2xl">Hapus Transaksi</button>' +
+            '<button type="button" onclick="toggleOrderPriority(' + idx + ',true)" class="bg-[#8e4b96] hover:bg-[#763c7d] py-4 px-2 text-center leading-tight rounded-2xl">Set Prioritas</button>' +
+            '<button type="button" onclick="toggleOrderPriority(' + idx + ',false)" class="bg-[#6d3939] hover:bg-[#572c2c] py-4 px-2 text-center leading-tight rounded-2xl">UnSet Prioritas</button>' +
+          
+            '<button type="button" onclick="toggleOrderLunas(' + idx + ')" class="' + lunasBtnColor + ' py-4 px-2 text-center leading-tight rounded-2xl">' + esc(lunasBtnLabel) + '</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'antar\')" class="bg-[#6c427a] hover:bg-[#573463] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Nota Antar</button>' +
+            '<button type="button" onclick="sendOrderWA(' + idx + ',true)" class="bg-[#34789c] hover:bg-[#29617f] py-4 px-2 text-center leading-tight rounded-2xl">Kirim Nota Alternatif</button>' +
+          
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'pdf\')" class="bg-[#825836] hover:bg-[#69462a] py-4 px-2 text-center leading-tight rounded-2xl">Nota PDF</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'qr\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Label (QRCode)</button>' +
+            '<button type="button" onclick="openPayModal(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-4 px-2 text-center leading-tight rounded-2xl">Bayar Sisa (Cicilan)</button>' +
+          
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'nota\')" class="bg-[#3c7ea6] hover:bg-[#2f6687] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Nota</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'logo\')" class="bg-[#8f3d56] hover:bg-[#732f44] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Nota(Logo)</button>' +
+            '<button type="button" onclick="openPrintPreview(' + idx + ',\'label\')" class="bg-[color:var(--p)] hover:bg-[color:var(--pd)] py-4 px-2 text-center leading-tight rounded-2xl">Cetak Label</button>' +
+          
+            '<button type="button" onclick="sendOrderWA(' + idx + ',false)" class="bg-[#2b7a5b] hover:bg-[#216148] py-4 px-2 text-center leading-tight rounded-2xl">Kirim Nota WA</button>' +
+            '<button type="button" onclick="copyOrderPhone(' + idx + ')" class="bg-[#6c427a] hover:bg-[#573463] py-4 px-2 text-center leading-tight rounded-2xl">Copy No HP</button>' +
             (o.status === 'Selesai'
-              ? '<button type="button" onclick="waNotifyDone(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-2.5 px-1 text-center leading-tight rounded-xs">Kabari Selesai<br>(WA)</button>'
-              : '<div></div>') +
+              ? '<button type="button" onclick="waNotifyDone(' + idx + ')" class="bg-[#2b7a5b] hover:bg-[#216148] py-4 px-2 text-center leading-tight rounded-2xl">Kabari Selesai (WA)</button>'
+              : '') +
           '</div>' +
         '</div></div></div>';
 
@@ -4161,6 +4157,8 @@
       state.actCollapsed = !state.actCollapsed;
       var d = document.getElementById('act-dock');
       if (d) d.classList.toggle('collapsed', !!state.actCollapsed);
+      var ht = document.getElementById('act-handle-txt');
+      if (ht) ht.innerHTML = state.actCollapsed ? 'Tampilkan &#9650;' : 'Sembunyikan &#9660;';
     }
 
     function closeDetailScreen() {
@@ -4875,19 +4873,19 @@
         var HLINE = new Array(w + 1).join('=') + '\n';
         out += CENTER + HLINE + BOLD_ON + labelName(String(o.customer || '-').toUpperCase(), w, GS) + BOLD_OFF + HLINE;
         if (o.phone && o.phone !== '-') out += 'HP: ' + o.phone + '\n';
-        out += FEED + FONT_B + BIG_ON + BOLD_ON + o.id + '\n' + BIG_OFF + BOLD_OFF + FONT_A;
+        out += FEED + FONT_B + BIG_ON + o.id + '\n' + BIG_OFF + FONT_A;
         out += (o.createdAt || '').slice(0, 16).replace('T', ' ') + '\n';
-        out += BOLD_ON + 'Tgl Selesai:\n' + (o.estimation || '-') + '\n' + BOLD_OFF;
-        if (o.priority) out += BOLD_ON + '*** PRIORITAS ***\n' + BOLD_OFF;
-        out += FEED + FONT_B + BIG_ON + BOLD_ON + (isPaidLbl ? 'LUNAS' : 'BELUM LUNAS') + '\n' + BIG_OFF + BOLD_OFF + FONT_A;
+        out += 'Tgl Selesai:\n' + (o.estimation || '-') + '\n';
+        if (o.priority) out += '*** PRIORITAS ***\n';
+        out += FEED + FONT_B + BIG_ON + (isPaidLbl ? 'LUNAS' : 'BELUM LUNAS') + '\n' + BIG_OFF + FONT_A;
         out += line;
-        out += BOLD_ON + (isPaidLbl ? 'Total: ' + formatRp(o.total) : 'Harus Bayar: ' + formatRp(sisaLbl)) + '\n' + BOLD_OFF;
+        out += (isPaidLbl ? 'Total: ' + formatRp(o.total) : 'Harus Bayar: ' + formatRp(sisaLbl)) + '\n';
         out += 'Note: ' + (o.notes || '') + '\n';
-        out += line + LEFT + BOLD_ON;
+        out += line + LEFT;
         (o.items || []).forEach(function (it) {
           out += String(it.name).toUpperCase() + ' x' + formatQty(it.qty) + (it.unit || '') + '\n';
         });
-        out += BOLD_OFF + line + 'Item Lainnya :\n\n' + line;
+        out += line + 'Item Lainnya :\n\n' + line;
         out += '\n\n\n';
         return out;
       }
@@ -5085,6 +5083,7 @@
     }
 
     function openPrintPreview(idx, mode) {
+      var FB = (mode === 'label' || mode === 'qr') ? '' : 'font-bold';
       var o = state.orders[idx];
       if (!o) return;
       var titles = {
@@ -5099,7 +5098,7 @@
       var itemsHtml = (o.items || []).map(function (it) {
         return '<div class="flex justify-between py-1">' +
           '<span>' + esc(it.name) + ' (' + formatRp(it.price) + ' x ' + formatQty(it.qty) + ')</span>' +
-          '<span class="font-bold">' + formatRp(it.subtotal) + '</span>' +
+          '<span class="' + FB + '">' + formatRp(it.subtotal) + '</span>' +
         '</div>';
       }).join('');
 
@@ -5116,18 +5115,18 @@
         '<div id="print-area" class="p-3.5 border border-slate-300 rounded-xl bg-white text-xs font-mono space-y-2 text-slate-900">' +
           '<div class="text-center border-b border-dashed border-slate-400 pb-2">' +
             (mode === 'logo' ? '<div class="inline-block px-2.5 py-0.5 mb-1 rounded-full bg-[color:var(--p)] text-white font-sans font-bold text-[10px]">QUEEN LAUNDRY</div>' : '') +
-            '<div class="font-bold text-sm">' + esc((state.meta.outlet || 'Queen Laundry').toUpperCase()) + '</div>' +
+            '<div class="' + FB + ' text-sm">' + esc((state.meta.outlet || 'Queen Laundry').toUpperCase()) + '</div>' +
             '<div class="text-[11px]">' + esc(o.branch || state.meta.activeBranch) + '</div>' +
           '</div>' +
           '<div class="space-y-1 border-b border-dashed border-slate-400 pb-2">' +
-            '<div class="flex justify-between"><span>ID Order:</span><span class="font-bold">' + esc(o.id) + '</span></div>' +
+            '<div class="flex justify-between"><span>ID Order:</span><span class="' + FB + '">' + esc(o.id) + '</span></div>' +
             '<div class="flex justify-between"><span>Pelanggan:</span><span class="font-bold">' + esc(o.customer) + '</span></div>' +
             '<div class="flex justify-between"><span>No HP:</span><span>' + esc(o.phone || '-') + '</span></div>' +
             '<div class="flex justify-between"><span>Estimasi:</span><span>' + esc(o.estimation || '-') + '</span></div>' +
-            '<div class="flex justify-between"><span>Status:</span><span class="font-bold">' + esc(o.status) + ' (' + (o.paid ? 'LUNAS' : 'BELUM BAYAR') + ')</span></div>' +
+            '<div class="flex justify-between"><span>Status:</span><span class="' + FB + '">' + esc(o.status) + ' (' + (o.paid ? 'LUNAS' : 'BELUM BAYAR') + ')</span></div>' +
           '</div>' +
           '<div class="border-b border-dashed border-slate-400 pb-2">' + itemsHtml + '</div>' +
-          '<div class="flex justify-between font-bold text-sm"><span>TOTAL</span><span>' + formatRp(o.total) + '</span></div>' +
+          '<div class="flex justify-between ' + FB + ' text-sm"><span>TOTAL</span><span>' + formatRp(o.total) + '</span></div>' +
           qrBlock +
         '</div>' +
         '<div class="mt-3 no-print">' +
@@ -5202,8 +5201,14 @@
         st.setProperty('--' + k, h);
         st.setProperty('--' + k + '-rgb', parseInt(h.substr(1, 2), 16) + ' ' + parseInt(h.substr(3, 2), 16) + ' ' + parseInt(h.substr(5, 2), 16));
       });
-      var m = document.querySelector('meta[name="theme-color"]');
-      if (m) m.setAttribute('content', t.p);
+      var old = document.querySelectorAll('meta[name="theme-color"]');
+      for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+      var mt = document.createElement('meta');
+      mt.setAttribute('name', 'theme-color');
+      mt.setAttribute('content', t.p);
+      document.head.appendChild(mt);
+      try { if (window.Android && typeof window.Android.setStatusBarColor === 'function') window.Android.setStatusBarColor(t.p); } catch (e) {}
+      try { if (window.AndroidPrinter && typeof window.AndroidPrinter.setStatusBarColor === 'function') window.AndroidPrinter.setStatusBarColor(t.p); } catch (e) {}
     }
     function themeGridHtml() {
       var cur = state.meta.theme || 'laut';
