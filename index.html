@@ -233,9 +233,36 @@
         display: none !important;
       }
     }
+    /* ===== SPLASH PEMBUKA: mahkota + tulisan terbang ke banner dashboard ===== */
+    #ql-splash { position: fixed; inset: 0; z-index: 100; animation: qlSafe 0s linear 6s forwards; }
+    #ql-splash.done { display: none; }
+    @keyframes qlSafe { to { visibility: hidden; pointer-events: none; } }
+    #ql-splash .ql-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 45%, var(--pd) 0%, var(--pdd) 70%); transition: opacity .55s ease; }
+    #ql-splash.land .ql-bg { opacity: 0; }
+    #ql-splash .ql-fly { position: fixed; left: 0; top: 0; transform-origin: 0 0; opacity: 0;
+      transition: transform .72s cubic-bezier(.65,0,.25,1), color .72s ease, background-color .72s ease, border-color .72s ease; }
+    #ql-splash.in .ql-fly { opacity: 1; }
+    #ql-fcrown { box-sizing: border-box; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      color: #eef3f8; background: rgb(255 255 255 / .14); border: 1px solid rgb(255 255 255 / .25); }
+    #ql-fcrown svg { width: 20px; height: 20px; fill: currentColor; }
+    #ql-splash.land #ql-fcrown { color: var(--p); background: rgb(var(--p-rgb) / .16); border-color: rgb(var(--p-rgb) / .15); }
+    #ql-fword { font-family: 'Great Vibes', cursive; font-size: 42px; line-height: 1.25; white-space: nowrap; text-align: center; color: #eef3f8; }
+    #ql-splash.land #ql-fword { color: var(--p); }
+    #ql-fword span { display: block; clip-path: inset(-30% 100% -30% -10%); }
+    #ql-splash.in #ql-fcrown svg { animation: qlPop .4s cubic-bezier(.3,1.5,.5,1) both; }
+    #ql-splash.in #ql-fword span { animation: qlWrite .65s cubic-bezier(.5,0,.2,1) .15s forwards; }
+    @keyframes qlPop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes qlWrite { to { clip-path: inset(-30% -10% -30% -10%); } }
+    @media (prefers-reduced-motion: reduce) { #ql-splash .ql-fly, #ql-splash .ql-bg { transition-duration: .01ms !important; } #ql-splash .ql-fly * { animation-duration: .01ms !important; } }
   </style>
 </head>
 <body>
+
+  <div id="ql-splash" aria-hidden="true">
+    <div class="ql-bg"></div>
+    <div class="ql-fly" id="ql-fcrown"><svg viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg></div>
+    <div class="ql-fly" id="ql-fword"><span>Queen Laundry</span></div>
+  </div>
 
   <div class="app-shell flex flex-col">
     <!-- 1. HEADER UTAMA -->
@@ -309,7 +336,7 @@
       <!-- Banner Estetik Queen Laundry -->
       <section class="relative overflow-hidden bg-gradient-to-br from-white via-[color:var(--t1)] to-[color:var(--t1)] px-4 py-5 border-b border-slate-200/80 text-center">
         <div class="flex flex-col items-center justify-center">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[rgb(var(--p-rgb)/0.15)] to-[rgb(var(--pm-rgb)/0.2)] flex items-center justify-center mb-1.5 shadow-xs border border-[rgb(var(--p-rgb)/0.15)]">
+          <div id="ql-tile" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[rgb(var(--p-rgb)/0.15)] to-[rgb(var(--pm-rgb)/0.2)] flex items-center justify-center mb-1.5 shadow-xs border border-[rgb(var(--p-rgb)/0.15)]">
             <svg class="w-5 h-5 text-[color:var(--p)]" viewBox="0 0 24 24" fill="currentColor">
               <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
             </svg>
@@ -3574,7 +3601,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v24';
+    var APP_VERSION = 'Q.v25';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -6102,6 +6129,53 @@
       if (!document.hidden && Date.now() - APKUPD_LAST > 600000) apkCheckUpdate();
     });
 
+    // ===== SPLASH PEMBUKA =====
+    function qlSplash() {
+      var sp = document.getElementById('ql-splash'); if (!sp) return;
+      var fc = document.getElementById('ql-fcrown'), fw = document.getElementById('ql-fword'),
+          tT = document.getElementById('ql-tile'), tW = document.getElementById('ui-outlet'), T = [], over = false;
+      function end() {
+        if (over) return; over = true;
+        T.forEach(clearTimeout);
+        if (tT) tT.style.visibility = '';
+        if (tW) tW.style.visibility = '';
+        sp.classList.add('done');
+      }
+      function place(e, x, y, s) { e.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + s + ')'; }
+      function run() {
+        try {
+          if (!tT || !tW) { end(); return; }
+          var a = tT.getBoundingClientRect(), h = tW.getBoundingClientRect(), rg = document.createRange();
+          rg.selectNodeContents(tW);
+          var tw = rg.getBoundingClientRect().width;
+          if (!a.width || !h.width || !tw) { end(); return; }
+          var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var bl = h.left + (h.width - tw) / 2, bt = h.top, bh = h.height;
+          var S = 1.5, gap = bt - a.bottom, vw = window.innerWidth, vh = window.innerHeight;
+          var y0 = (vh - (a.height + gap + bh) * S) / 2;
+          tT.style.visibility = tW.style.visibility = 'hidden';
+          fw.firstChild.textContent = (tW.textContent || '').trim();
+          fc.style.transition = fw.style.transition = 'none';
+          fc.style.width = a.width + 'px'; fc.style.height = a.height + 'px'; fw.style.width = tw + 'px';
+          place(fc, (vw - a.width * S) / 2, y0, S);
+          place(fw, (vw - tw * S) / 2, y0 + (a.height + gap) * S, S);
+          void sp.offsetWidth;
+          fc.style.transition = fw.style.transition = '';
+          sp.classList.add('in');
+          T.push(setTimeout(function () {
+            sp.classList.add('land');
+            place(fc, a.left, a.top, 1); place(fw, bl, bt, 1);
+          }, reduce ? 200 : 1000));
+          T.push(setTimeout(end, reduce ? 400 : 1780));
+          sp.addEventListener('click', end);
+        } catch (e) { end(); }
+      }
+      var started = false;
+      function go() { if (started) return; started = true; run(); }
+      try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(go); } catch (e) {}
+      setTimeout(go, 1200);
+    }
+
     // =========================================================================
     // INIT APLIKASI
     // =========================================================================
@@ -6116,6 +6190,7 @@
     renderCartSummary();
     renderProducts();
     renderOrdersLists();
+    qlSplash();
   </script>
 </body>
 </html>
