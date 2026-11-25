@@ -107,6 +107,26 @@
     }
     #arsip-screen.open { display: flex; }
     #arsip-screen button, #arsip-screen input, #arsip-screen select { font-family: 'Inter', sans-serif; }
+    /* Modal layar penuh: Produk, Pengaturan, Setrika Hari Ini, Keranjang, Transaksi */
+    #modal-wrap.modal-full { padding: 0 !important; align-items: stretch !important; background: var(--bg) !important; }
+    #modal-wrap.modal-full > div { max-width: 440px !important; width: 100% !important; height: 100% !important; max-height: none !important; border-radius: 0 !important; box-shadow: none !important; }
+    #modal-wrap.modal-full > div > div:first-child { padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important; }
+    #modal-wrap.modal-full #modal-content { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+    #stats-screen {
+      position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 440px; background: var(--bg); z-index: 45;
+      display: none; flex-direction: column; font-family: 'Inter', sans-serif;
+    }
+    #stats-screen.open { display: flex; }
+    #stats-screen button { font-family: 'Inter', sans-serif; }
+    #stats-screen #hm-box > div { padding: 14px !important; }
+    #stats-screen #hm-box > div > div:first-child { display: none; }
+    #stats-screen #hm-box .space-y-2 > * + * { margin-top: 10px !important; }
+    #stats-screen #hm-box [onclick^="hmPick"] { padding-top: 6px !important; padding-bottom: 6px !important; }
+    #stats-screen #hm-bar > div { padding: 14px !important; }
+    #stats-screen #hm-box .grid.gap-1 { gap: 5px !important; }
+    #stats-screen #stats-sum .p-2 { padding: 10px 12px !important; }
+    #stats-screen #hm-bar .space-y-2 > * + * { margin-top: 10px !important; }
     .arsip-act { background: #ffffff; color: #0f172a; border-radius: 12px; padding: 12px 4px; font-size: 11.5px; font-weight: 500; line-height: 1.25; border: 1px solid rgba(148, 169, 193, 0.22); box-shadow: 0 2px 6px rgba(30, 58, 90, 0.05), 0 1px 2px rgba(15, 23, 42, 0.04); }
     .arsip-act:active { background: var(--t1); }
     .arsip-pill { background: #f8fafc; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 12px; font-size: 14px; width: 100%; outline: none; }
@@ -547,7 +567,7 @@
             <span class="text-[11.5px] font-medium text-slate-900">Pembukuan</span>
           </button>
 
-          <button type="button" onclick="openStatsModal()" class="owner-only card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
+          <button type="button" onclick="openStatsScreen()" class="owner-only card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
@@ -718,6 +738,22 @@
   </div>
 
   <!-- LAYAR PENUH ESTIMASI -->
+  <div id="stats-screen">
+    <div class="bg-white px-4 py-3 border-b border-slate-200 shadow-sm flex items-center shrink-0">
+      <div class="flex items-center gap-3.5">
+        <button type="button" onclick="closeStatsScreen()" class="p-1.5 -ml-1.5 rounded-full hover:bg-slate-100 text-slate-700" title="Kembali">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+        </button>
+        <h2 class="text-[18px] text-slate-800">Statistik &amp; Grafik Order</h2>
+      </div>
+    </div>
+    <div class="flex-1 min-h-0 flex flex-col gap-3 p-3 text-xs overflow-y-auto" style="padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))">
+      <div id="stats-sum" class="shrink-0"></div>
+      <div id="hm-bar" class="shrink-0"></div>
+      <div id="hm-box" class="shrink-0"></div>
+    </div>
+  </div>
+
   <div id="arsip-screen">
     <div class="bg-white px-4 py-3 border-b border-slate-200 shadow-sm flex items-center justify-between shrink-0">
       <div class="flex items-center gap-3.5">
@@ -1676,10 +1712,13 @@
       showToast('Lokasi diatur ke: ' + state.location.label);
     }
 
-    function openModal(title, html) {
+    var MODAL_FULL_RE = /^(Kelola Produk|Pengaturan Outlet|Setrika Hari Ini|Keranjang Cucian|Transaksi$)/;
+
+    function openModal(title, html, full) {
       document.getElementById('modal-head').textContent = title || 'Informasi';
       document.getElementById('modal-content').innerHTML = html || '';
       var wrap = document.getElementById('modal-wrap');
+      wrap.classList.toggle('modal-full', !!full || MODAL_FULL_RE.test(title || ''));
       wrap.classList.remove('hidden');
       wrap.classList.add('flex');
     }
@@ -1688,6 +1727,7 @@
       var wrap = document.getElementById('modal-wrap');
       wrap.classList.add('hidden');
       wrap.classList.remove('flex');
+      wrap.classList.remove('modal-full');
     }
 
     // =========================================================================
@@ -2628,6 +2668,50 @@
       el.innerHTML = '<div class="p-3 rounded-xl border border-slate-200 space-y-2"><div class="font-bold text-[color:var(--pd)]">Heatmap Penghasilan</div><div class="flex gap-1.5">' + tabs + '</div>' + nav + head +
         '<div class="grid gap-1" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr))">' + grid + '</div>' + detail +
         '<div class="flex justify-between font-bold"><span>Total ' + (HM.mode === 'om' ? 'Omset ' : 'Pemasukan ') + title + '</span><span class="text-[color:var(--pd)]">' + formatRp(total) + '</span></div></div>';
+      renderHmBar(cells, max, title);
+    }
+
+    // Grafik batang: memakai data, warna, mode, bulan/tahun & pilihan yang sama dengan heatmap
+    function renderHmBar(cells, max, title) {
+      var bx = document.getElementById('hm-bar');
+      if (!bx) return;
+      var list = cells.filter(function (c) { return c; });
+      var n = list.length, H = 150, gap = n > 20 ? 3 : 6;
+      var todayKey = getLocalDateStr(new Date());
+      var modeLbl = HM.mode === 'om' ? 'Omset' : 'Pemasukan';
+      var best = null;
+      list.forEach(function (c) { if (c.v > 0 && (!best || c.v > best.v)) best = c; });
+      var sel = list.filter(function (c) { return c.k === HM.sel; })[0];
+      var cap = sel
+        ? esc(sel.t) + ' : <b>' + formatRp(sel.v) + '</b>'
+        : (best ? 'Tertinggi: ' + esc(best.t) + ' : <b>' + formatRp(best.v) + '</b>' : 'Belum ada data pada periode ini');
+      var bars = list.map(function (c) {
+        var h = c.v ? Math.max(4, Math.round(c.v / max * H)) : 2;
+        var isSel = c.k === HM.sel, isToday = c.k === todayKey;
+        var ring = isSel ? 'outline:2px solid #0f172a;' : (isToday ? 'outline:2px solid #e0302b;' : '');
+        var showVal = c.v > 0 && (n <= 12 || isSel);
+        var val = '<div style="height:12px;position:relative;width:100%">' + (showVal ? '<span style="position:absolute;left:50%;bottom:0;transform:translateX(-50%);white-space:nowrap;font-size:8px;line-height:12px;' + (isSel ? 'font-weight:800;color:#0f172a;' : 'color:#475569;') + '">' + hmShort(c.v) + '</span>' : '') + '</div>';
+        return '<div onclick="hmPick(\'' + c.k + '\')" style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer">' + val +
+          '<div style="width:100%;height:' + h + 'px;border-radius:3px 3px 0 0;background:' + hmColor(c.v, max) + ';' + ring + '"></div></div>';
+      }).join('');
+      var lbls = list.map(function (c, i) {
+        var show = HM.view !== 'day' || i === 0 || (i + 1) % 5 === 0 || (i === n - 1 && n % 5 >= 3);
+        return '<div style="flex:1;min-width:0;position:relative;height:12px">' + (show ? '<span style="position:absolute;left:50%;top:2px;transform:translateX(-50%);white-space:nowrap;font-size:8px;color:#64748b;' + (c.k === HM.sel ? 'font-weight:800;color:#0f172a;' : '') + '">' + c.l + '</span>' : '') + '</div>';
+      }).join('');
+      var gut = '<div style="width:30px;position:relative;height:' + (H + 12) + 'px;flex-shrink:0">' +
+        '<span style="position:absolute;right:0;bottom:' + (H - 5) + 'px;font-size:8px;color:#94a3b8">' + hmShort(max) + '</span>' +
+        '<span style="position:absolute;right:0;bottom:' + (Math.round(H / 2) - 5) + 'px;font-size:8px;color:#94a3b8">' + hmShort(Math.round(max / 2)) + '</span>' +
+        '<span style="position:absolute;right:0;bottom:-5px;font-size:8px;color:#94a3b8">0</span></div>';
+      bx.innerHTML = '<div class="p-3 rounded-xl border border-slate-200 space-y-2">' +
+        '<div class="flex items-center justify-between"><div class="font-bold text-[color:var(--pd)]">Grafik Penghasilan</div><div class="text-[10.5px] text-slate-500">' + modeLbl + ' &bull; ' + esc(title) + '</div></div>' +
+        '<div style="display:flex;gap:4px">' + gut +
+          '<div style="flex:1;min-width:0"><div style="position:relative;height:' + (H + 12) + 'px">' +
+            '<div style="position:absolute;left:0;right:0;bottom:' + H + 'px;border-top:1px dashed #e2e8f0"></div>' +
+            '<div style="position:absolute;left:0;right:0;bottom:' + Math.round(H / 2) + 'px;border-top:1px dashed #e2e8f0"></div>' +
+            '<div style="position:absolute;left:0;right:0;bottom:0;border-top:1px solid #cbd5e1"></div>' +
+            '<div style="position:absolute;inset:0;display:flex;align-items:flex-end;gap:' + gap + 'px">' + bars + '</div></div>' +
+          '<div style="display:flex;gap:' + gap + 'px">' + lbls + '</div></div></div>' +
+        '<div class="text-center text-[11px] text-slate-500">' + cap + '</div></div>';
     }
 
     function renderHeatmapLama() {
@@ -2918,28 +3002,39 @@
       showToast('Dihapus dari daftar setrika');
     }
 
-    function openStatsModal() {
-      if (ownerOnly()) return;
+    function renderStatsSummary() {
       var omzet = state.orders.reduce(function (s, o) { return s + Number(o.total || 0); }, 0);
       var lunas = state.orders.reduce(function (s, o) { return s + (o.paid ? Number(o.total || 0) : 0); }, 0);
       var proses = state.orders.filter(function (o) { return o.status === 'Proses'; }).length;
       var selesai = state.orders.filter(function (o) { return o.status === 'Selesai'; }).length;
       var ambil = state.orders.filter(function (o) { return o.status === 'Ambil'; }).length;
+      var el = document.getElementById('stats-sum');
+      if (!el) return;
+      el.innerHTML = '<div class="space-y-2.5">' +
+        '<div class="grid grid-cols-2 gap-2.5">' +
+          '<div class="p-2 rounded-xl bg-[color:var(--t1)]"><div class="text-[10.5px] text-slate-500">Total Omzet Order</div><div class="font-bold text-[13px] text-[color:var(--pd)]">' + formatRp(omzet) + '</div></div>' +
+          '<div class="p-2 rounded-xl bg-emerald-50"><div class="text-[10.5px] text-slate-500">Total Sudah Lunas</div><div class="font-bold text-[13px] text-emerald-700">' + formatRp(lunas) + '</div></div>' +
+        '</div>' +
+        '<div class="grid grid-cols-3 gap-2.5 text-center">' +
+          '<div class="p-2 rounded-xl bg-[#f1f5f9]"><div class="text-slate-500">Proses</div><div class="font-bold text-sm text-[color:var(--p)]">' + proses + '</div></div>' +
+          '<div class="p-2 rounded-xl bg-emerald-50"><div class="text-slate-500">Selesai</div><div class="font-bold text-sm text-emerald-700">' + selesai + '</div></div>' +
+          '<div class="p-2 rounded-xl bg-slate-100"><div class="text-slate-500">Ambil</div><div class="font-bold text-sm text-slate-700">' + ambil + '</div></div>' +
+        '</div></div>';
+    }
 
-      openModal('Statistik & Grafik Order',
-        '<div class="space-y-3 text-xs">' +
-          '<div class="p-3 rounded-xl bg-[color:var(--t1)] flex justify-between font-bold"><span>Total Omzet Order</span><span class="text-[color:var(--pd)]">' + formatRp(omzet) + '</span></div>' +
-          '<div class="p-3 rounded-xl bg-emerald-50 flex justify-between font-bold"><span>Total Sudah Lunas</span><span class="text-emerald-700">' + formatRp(lunas) + '</span></div>' +
-          '<div class="grid grid-cols-3 gap-2 text-center">' +
-            '<div class="p-2.5 rounded-xl bg-[#f1f5f9]"><div class="text-slate-500">Proses</div><div class="font-bold text-sm text-[color:var(--p)]">' + proses + '</div></div>' +
-            '<div class="p-2.5 rounded-xl bg-emerald-50"><div class="text-slate-500">Selesai</div><div class="font-bold text-sm text-emerald-700">' + selesai + '</div></div>' +
-            '<div class="p-2.5 rounded-xl bg-slate-100"><div class="text-slate-500">Ambil</div><div class="font-bold text-sm text-slate-700">' + ambil + '</div></div>' +
-          '</div>' +
-          '<div id="hm-box"></div>' +
-        '</div>'
-      );
+    function openStatsScreen() {
+      if (ownerOnly()) return;
+      renderStatsSummary();
+      document.getElementById('stats-screen').classList.add('open');
       renderHeatmap();
     }
+
+    function closeStatsScreen() { document.getElementById('stats-screen').classList.remove('open'); }
+
+    window.addEventListener('resize', function () {
+      var sc = document.getElementById('stats-screen');
+      if (sc && sc.classList.contains('open')) renderHeatmap();
+    });
 
     // ===== GAJI HARIAN & KASBON KARYAWAN (digabung dari EDIT_GAJI_KARYAWAN_NEW.html) =====
     var GK_CFG = {
@@ -3601,7 +3696,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v25';
+    var APP_VERSION = 'Q.v28';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -3660,7 +3755,8 @@
             '<span id="qty-sub-preview" class="text-[color:var(--pd)] font-bold">' + formatRp(0) + '</span>' +
           '</div>' +
           '<button type="button" onclick="confirmAddToCart(' + prodIndex + ')" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Masukkan ke Keranjang</button>' +
-        '</div>'
+        '</div>',
+        true
       );
       setTimeout(function () {
         var inp = document.getElementById('inp-prod-qty');
@@ -5821,7 +5917,7 @@
       if (cw && !cw.classList.contains('hidden')) { confirmNo(); return true; }
       var mw = document.getElementById('modal-wrap');
       if (mw && !mw.classList.contains('hidden')) { closeModal(); return true; }
-      var layers = [['detail-screen', closeDetailScreen], ['kas-hari-screen', closeKasHariIniScreen], ['estimasi-screen', closeEstimasiScreen], ['cust-screen', closeCustScreen], ['arsip-screen', closeArsipScreen]];
+      var layers = [['stats-screen', closeStatsScreen], ['detail-screen', closeDetailScreen], ['kas-hari-screen', closeKasHariIniScreen], ['estimasi-screen', closeEstimasiScreen], ['cust-screen', closeCustScreen], ['arsip-screen', closeArsipScreen]];
       for (var i = 0; i < layers.length; i++) {
         var el = document.getElementById(layers[i][0]);
         if (el && el.classList.contains('open')) { layers[i][1](); return true; }
