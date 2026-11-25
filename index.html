@@ -11,6 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
@@ -92,6 +93,13 @@
     }
     #cust-screen.open { display: flex; }
     #cust-screen, #cust-screen button, #cust-screen input { font-family: 'Inter', sans-serif; }
+    #gk-screen {
+      position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 440px; background: #ffffff; z-index: 45;
+      display: none; flex-direction: column; font-family: 'Inter', sans-serif;
+    }
+    #gk-screen.open { display: flex; }
+    #gk-screen button, #gk-screen input { font-family: 'Inter', sans-serif; }
     #arsip-screen {
       position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
       width: 100%; max-width: 440px; background: var(--bg); z-index: 45;
@@ -450,7 +458,7 @@
                 <path d="M27.8 31h6.4" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
               </svg>
             </span>
-            <span class="text-[11.5px] font-medium text-slate-900">Absensi</span>
+            <span class="text-[11.5px] font-medium text-slate-900">Gaji/Absensi</span>
           </button>
 
           <button type="button" onclick="openMenuModal('pengaturan')" class="owner-only card-box py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
@@ -785,6 +793,68 @@
       </div>
     </div>
     <div id="estimasi-body" class="flex-1 overflow-y-auto bg-white pb-8"></div>
+  </div>
+
+  <!-- LAYAR PENUH GAJI HARIAN & KASBON KARYAWAN -->
+  <div id="gk-screen">
+    <div class="bg-white px-4 py-3 border-b border-slate-200 flex items-center justify-between gap-2 shrink-0">
+      <div class="flex items-center gap-3.5 min-w-0">
+        <button type="button" onclick="closeGkScreen()" class="p-1.5 -ml-1.5 rounded-full hover:bg-slate-100 text-slate-700 shrink-0" title="Kembali">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+        </button>
+        <h2 class="text-[18px] font-normal text-slate-800 truncate">Gaji Harian &amp; Kasbon</h2>
+      </div>
+      <div id="gk-status" class="text-[10px] px-2.5 py-1 rounded-full border bg-amber-50 border-amber-200 text-amber-700 shrink-0">Memuat</div>
+    </div>
+    <div id="gk-body" class="flex-1 overflow-y-auto bg-slate-50 pb-8">
+      <div class="p-3.5 bg-white border-b border-slate-200">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-[11px] font-bold text-slate-500 tracking-wider">KARYAWAN</div>
+          <button type="button" onclick="gkAddEmp()" class="px-3 py-1.5 rounded-full bg-[color:var(--p)] text-white text-[11px] font-bold">+ Tambah</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="gkStepEmp(-1)" class="w-10 h-10 text-xl shrink-0 inline-flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 active:scale-95">&lsaquo;</button>
+          <div class="flex-1 min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-2.5 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div id="gk-avatar" class="w-9 h-9 rounded-full bg-[color:var(--p)] text-white flex items-center justify-center font-extrabold shrink-0">?</div>
+              <div class="min-w-0"><div id="gk-name" class="text-[14px] font-extrabold text-slate-900 truncate">Memuat...</div><div id="gk-hp" class="text-[10.5px] text-slate-500 truncate"></div></div>
+            </div>
+            <div class="flex gap-1.5 shrink-0">
+              <button type="button" onclick="gkEditEmp()" class="w-8 h-8 text-[13px] inline-flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 active:scale-95" title="Edit">&#9998;</button>
+              <button type="button" onclick="gkDelEmp()" class="w-8 h-8 text-[13px] text-rose-600 inline-flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 active:scale-95" title="Hapus">&#128465;</button>
+            </div>
+          </div>
+          <button type="button" onclick="gkStepEmp(1)" class="w-10 h-10 text-xl shrink-0 inline-flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 active:scale-95">&rsaquo;</button>
+        </div>
+        <div id="gk-chips" class="flex gap-1.5 overflow-x-auto mt-2.5 pb-0.5"></div>
+      </div>
+
+      <div class="p-3.5">
+        <div class="text-[11px] font-bold text-slate-500 tracking-wider mb-1.5">KASBON SEBELUMNYA - <span id="gk-name2">-</span></div>
+        <div class="flex gap-2">
+          <input id="gk-prev" type="text" inputmode="numeric" placeholder="0" oninput="gkPrevInput(this)" class="flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-bold text-slate-900 outline-none" />
+          <button type="button" onclick="gkSavePrev()" class="px-4 rounded-xl bg-[color:var(--pdd)] text-white text-[11px] font-bold">SIMPAN</button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mt-3">
+          <div class="card-box p-2.5"><div class="text-[9px] font-bold text-slate-400">TOTAL GAJI</div><div id="gk-tg" class="text-[12.5px] font-extrabold text-slate-900 mt-1">Rp 0</div></div>
+          <div class="card-box p-2.5"><div class="text-[9px] font-bold text-slate-400">TOTAL KASBON</div><div id="gk-tk" class="text-[12.5px] font-extrabold text-rose-600 mt-1">Rp 0</div><div id="gk-tkb" class="text-[8px] text-slate-400 mt-0.5 leading-tight"></div></div>
+          <div class="rounded-xl p-2.5 bg-[color:var(--p)] text-white"><div class="text-[9px] font-bold text-white/70">DITERIMA</div><div id="gk-ts" class="text-[12.5px] font-extrabold mt-1">Rp 0</div></div>
+        </div>
+
+        <div class="grid grid-cols-[1fr_auto] gap-2 mt-3">
+          <button type="button" onclick="gkSendSlip()" class="py-3 rounded-xl bg-emerald-600 text-white font-bold text-[13px]">Kirim Slip Gaji via WhatsApp</button>
+          <button type="button" onclick="gkCopySlip()" class="px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-700 font-bold text-[12px]">Salin</button>
+        </div>
+
+        <div class="flex items-center justify-between mt-4 mb-2.5 bg-white rounded-full p-1 border border-slate-200">
+          <button type="button" onclick="gkChangeMonth(-1)" class="w-9 h-9 text-lg inline-flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 active:scale-95">&lsaquo;</button>
+          <div id="gk-month" class="font-bold text-[11px] tracking-wider text-slate-800 text-center px-2"></div>
+          <button type="button" onclick="gkChangeMonth(1)" class="w-9 h-9 text-lg inline-flex items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 active:scale-95">&rsaquo;</button>
+        </div>
+        <div id="gk-list" class="space-y-1.5"></div>
+      </div>
+    </div>
   </div>
 
   <!-- LAYAR PENUH KAS HARI INI -->
@@ -2745,65 +2815,6 @@
       openTutupKasModal();
     }
 
-    var GJ = { month: '', names: [] };
-
-    function openGajiModal() {
-      var now = new Date();
-      var m = GJ.month || (now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2));
-      openModal('Gaji & Komisi',
-        '<div class="space-y-3 text-xs"><input type="month" id="gj-month" value="' + m + '" onchange="renderGaji()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />' +
-        '<div id="gj-body" class="space-y-2"></div>' +
-        '<div class="text-[11px] text-slate-400">Gaji pokok = jumlah hari hadir x gaji per hari. Komisi = persen dari omset (total order masuk) pada hari karyawan hadir, dibagi rata antar karyawan yang hadir hari itu.</div></div>');
-      renderGaji();
-    }
-
-    function renderGaji() {
-      var m = document.getElementById('gj-month').value;
-      GJ.month = m;
-      var cfg = state.meta.gaji = state.meta.gaji || {};
-      var att = {}, byDate = {};
-      (state.meta.absensi || []).forEach(function (r) {
-        if (String(r.date).slice(0, 7) !== m) return;
-        (att[r.name] = att[r.name] || {})[r.date] = 1;
-        (byDate[r.date] = byDate[r.date] || {})[r.name] = 1;
-      });
-      var br = state.meta.activeBranch, omDay = {};
-      state.orders.forEach(function (o) {
-        if ((o.branch || br) !== br) return;
-        var k = String(o.createdAt || '').slice(0, 10);
-        if (k.slice(0, 7) === m) omDay[k] = (omDay[k] || 0) + orderTotal(o);
-      });
-      var share = {};
-      Object.keys(byDate).forEach(function (dt) {
-        var ns = Object.keys(byDate[dt]);
-        ns.forEach(function (n) { share[n] = (share[n] || 0) + (omDay[dt] || 0) / ns.length; });
-      });
-      var names = Object.keys(att), totAll = 0;
-      GJ.names = names;
-      var html = names.map(function (n, i) {
-        var c = cfg[n] || { harian: 0, komisi: 0 }, hadir = Object.keys(att[n]).length;
-        var pokok = hadir * (Number(c.harian) || 0), kom = Math.round((share[n] || 0) * (Number(c.komisi) || 0) / 100), tot = pokok + kom;
-        totAll += tot;
-        return '<div class="p-2.5 rounded-xl border border-slate-200 space-y-2"><div class="flex justify-between"><b class="text-slate-900">' + esc(n) + '</b><span class="text-slate-500">Hadir ' + hadir + ' hari</span></div>' +
-          '<div class="grid grid-cols-2 gap-2"><div><div class="text-[11px] text-slate-500 mb-0.5">Gaji per hari (Rp)</div><input type="tel" value="' + (Number(c.harian) || 0) + '" onchange="gajiSet(' + i + ',\'harian\',this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300" /></div>' +
-          '<div><div class="text-[11px] text-slate-500 mb-0.5">Komisi (%)</div><input type="tel" value="' + (Number(c.komisi) || 0) + '" onchange="gajiSet(' + i + ',\'komisi\',this.value)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300" /></div></div>' +
-          '<div class="flex justify-between text-slate-600"><span>Gaji pokok</span><span>' + formatRp(pokok) + '</span></div>' +
-          '<div class="flex justify-between text-slate-600"><span>Komisi (dari omset ' + formatRp(Math.round(share[n] || 0)) + ')</span><span>' + formatRp(kom) + '</span></div>' +
-          '<div class="flex justify-between font-bold"><span>Total</span><span class="text-[color:var(--pd)]">' + formatRp(tot) + '</span></div></div>';
-      }).join('') || '<div class="text-center text-slate-400 py-4">Belum ada absensi pada bulan ini</div>';
-      document.getElementById('gj-body').innerHTML = html + (names.length ? '<div class="flex justify-between font-bold p-2.5 rounded-xl bg-[color:var(--t1)] border border-[color:var(--t2)]"><span>Total gaji & komisi</span><span class="text-[color:var(--pd)]">' + formatRp(totAll) + '</span></div>' : '');
-    }
-
-    function gajiSet(i, field, val) {
-      var n = GJ.names[i];
-      if (n === undefined) return;
-      var cfg = state.meta.gaji = state.meta.gaji || {};
-      cfg[n] = cfg[n] || { harian: 0, komisi: 0 };
-      cfg[n][field] = chkNum(val, field === 'komisi');
-      persistAll();
-      renderGaji();
-    }
-
     // Mode offline: daftarkan service worker (butuh file sw.js di folder yang sama) + penanda status offline
     window.addEventListener('load', function () {
       try {
@@ -2822,8 +2833,26 @@
     // ===== SETRIKA HARI INI =====
     function isIronItem(it) { return /komplit|setrika|seprai|satuan/i.test(String(it.name || '')); }
 
-    function openIronModal() {
-      var today = getLocalDateStr(new Date()), br = state.meta.activeBranch;
+    var ironViewDate = null;
+
+    function formatIronDateLabel(ds) {
+      var p = String(ds || '').split('-');
+      if (p.length !== 3) return ds;
+      var dt = new Date(Date.UTC(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)));
+      var hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      var bln = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+      return hari[dt.getUTCDay()] + ', ' + dt.getUTCDate() + ' ' + bln[dt.getUTCMonth()] + ' ' + dt.getUTCFullYear();
+    }
+
+    function stepIronDate(delta) {
+      ironViewDate = addDaysToDateStr(ironViewDate || getLocalDateStr(new Date()), delta);
+      openIronModal(true);
+    }
+
+    function openIronModal(keepDate) {
+      var realToday = getLocalDateStr(new Date());
+      if (keepDate !== true || !ironViewDate) ironViewDate = realToday;
+      var today = ironViewDate, br = state.meta.activeBranch;
       syncAllOrdersEstimation();
       var rows = [];
       state.orders.forEach(function (o) {
@@ -2836,11 +2865,20 @@
         var lines = r.its.map(function (it) {
           return '<div class="text-slate-600">' + esc(it.name) + ' &bull; ' + formatQty(trunc2(it.qty)) + ' ' + esc(it.unit || '') + '</div>';
         }).join('');
-        return '<div class="flex items-start justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 break-words">' + esc(r.o.customer) + '</div><div class="text-[11px] text-slate-400">' + esc(r.o.id) + ' &bull; ' + esc(r.o.estimation || '') + '</div>' + lines + '</div>' +
+        return '<div class="flex items-start justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 break-words">' + esc(r.o.customer) + '</div><div class="text-[11px] text-slate-400">' + esc(r.o.id) + ' &bull; ' + esc(r.o.estimation || '') + ' &bull; Ambil: ' + esc(formatIronDateLabel(r.o.estimatedFinishDate)) + '</div>' + lines + '</div>' +
           '<button type="button" onclick="confirmIronHide(\'' + esc(r.o.id) + '\')" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 font-bold border border-rose-200">Hapus</button></div>';
-      }).join('') || '<div class="text-center text-slate-500 py-6">Belum ada setrikaan yang jatuh tempo hari ini</div>';
+      }).join('') || '<div class="text-center text-slate-500 py-6">Belum ada setrikaan yang jatuh tempo pada tanggal ini</div>';
+      var btnCls = 'px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50';
+      var isToday = today === realToday;
+      var nav = '<div class="flex items-center justify-between gap-2">' +
+        '<button type="button" onclick="stepIronDate(-1)" class="' + btnCls + '">&lsaquo; Prev</button>' +
+        '<div class="flex-1 text-center"><div class="text-[10.5px] text-slate-400">Estimasi Pengambilan</div>' +
+        '<div class="font-bold text-slate-900 text-[13px]">' + esc(formatIronDateLabel(today)) + '</div>' +
+        (isToday ? '<div class="text-[10.5px] font-semibold text-[color:var(--pd)]">Hari ini</div>' : '<button type="button" onclick="openIronModal()" class="text-[10.5px] font-semibold text-[color:var(--pd)] underline">Kembali ke hari ini</button>') +
+        '</div>' +
+        '<button type="button" onclick="stepIronDate(1)" class="' + btnCls + '">Next &rsaquo;</button></div>';
       openModal('Setrika Hari Ini',
-        '<div class="space-y-2 text-xs"><div class="font-semibold text-slate-600">' + rows.length + ' order jatuh tempo hari ini (' + today + ')</div>' + html +
+        '<div class="space-y-2 text-xs">' + nav + '<div class="font-semibold text-slate-600">' + rows.length + ' order estimasi pengambilan ' + (isToday ? 'hari ini' : 'pada tanggal ini') + '</div>' + html +
         '<div class="text-[11px] text-slate-400">Tombol Hapus hanya menghilangkan order dari daftar ini, order tidak terhapus.</div></div>');
     }
 
@@ -2849,7 +2887,7 @@
       if (!o) return;
       o.skipIron = true;
       persistAll();
-      openIronModal();
+      openIronModal(true);
       showToast('Dihapus dari daftar setrika');
     }
 
@@ -2876,45 +2914,322 @@
       renderHeatmap();
     }
 
-    // ===== ABSENSI KARYAWAN =====
-    function absNow() {
-      var d = new Date(), p = function (n) { return ('0' + n).slice(-2); };
-      return { date: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()), time: p(d.getHours()) + ':' + p(d.getMinutes()) };
+    // ===== GAJI HARIAN & KASBON KARYAWAN (digabung dari EDIT_GAJI_KARYAWAN_NEW.html) =====
+    var GK_CFG = {
+      apiKey: "AIzaSyBt4BqLSpb5vHiE7XUmFO3AmB3wdzoGgBc",
+      authDomain: "gaji-queen-laundry-4cfdd.firebaseapp.com",
+      databaseURL: "https://gaji-queen-laundry-4cfdd-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "gaji-queen-laundry-4cfdd",
+      storageBucket: "gaji-queen-laundry-4cfdd.firebasestorage.app",
+      messagingSenderId: "543137880530",
+      appId: "1:543137880530:web:739d44862a5bd710cad00b"
+    };
+    var GK = { db: null, started: false, cur: new Date(), emps: {}, ids: [], idx: 0, id: null, data: {}, prev: 0, ref: null, timers: {}, mode: null, dirty: {}, prevDirty: {}, needRender: false, fo: false, ver: 0 };
+
+    function gkMonthKey() { var d = GK.cur; return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2); }
+    function gkNum(v) { return parseInt(String(v).replace(/[^0-9]/g, ''), 10) || 0; }
+    function gkFmt(n) { return Number(n || 0).toLocaleString('id-ID'); }
+    function gkStatus(txt, ok) {
+      var el = document.getElementById('gk-status'); if (!el) return;
+      el.textContent = txt;
+      el.className = 'text-[10px] px-2.5 py-1 rounded-full border shrink-0 ' + (ok ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-amber-50 border-amber-200 text-amber-700');
     }
 
+    function openGkScreen() {
+      if (ownerOnly()) return;
+      closeModal();
+      document.getElementById('gk-screen').classList.add('open');
+      if (!GK.fo) {
+        GK.fo = true;
+        document.getElementById('gk-list').addEventListener('focusout', function () {
+          setTimeout(function () {
+            var l = document.getElementById('gk-list'), ae = document.activeElement;
+            if (GK.needRender && !(ae && l.contains(ae))) { GK.needRender = false; gkRenderDays(); }
+          }, 0);
+        });
+      }
+      gkInit();
+      gkRenderEmp();
+      gkListen();
+    }
+    function closeGkScreen() { document.getElementById('gk-screen').classList.remove('open'); }
+
+    function gkConnect(cb) {
+      if (GK.db) { cb(true); return; }
+      if (typeof firebase === 'undefined') { GK.err = 'Firebase tidak termuat (cek internet)'; cb(false); return; }
+      var go = function () {
+        try {
+          var app = firebase.apps.filter(function (a) { return a.name === 'gajiKaryawan'; })[0] || firebase.initializeApp(GK_CFG, 'gajiKaryawan');
+          GK.db = firebase.database(app);
+          cb(true);
+        } catch (e) { GK.err = e.message; cb(false); }
+      };
+      if (firebase.database) { go(); return; }
+      var sc = document.createElement('script');
+      sc.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js';
+      sc.onload = function () { if (firebase.database) go(); else { GK.err = 'Modul database tidak tersedia'; cb(false); } };
+      sc.onerror = function () { GK.err = 'Gagal mengunduh modul database (cek internet)'; cb(false); };
+      document.head.appendChild(sc);
+    }
+
+    function gkInit() {
+      if (GK.started) return;
+      GK.started = true;
+      try {
+        var local = JSON.parse(localStorage.getItem('ql_employees') || 'null');
+        if (local && Object.keys(local).length) { GK.emps = local; GK.ids = Object.keys(local); GK.id = GK.ids[0]; GK.idx = 0; }
+      } catch (e) {}
+      gkStatus('Menghubungkan...', false);
+      gkConnect(function (ok) {
+        if (!ok) { GK.started = false; gkStatus('Offline', false); showToast('Belum terhubung ke server: ' + (GK.err || 'tidak diketahui')); return; }
+        GK.db.ref('queen-laundry-karyawan/list').on('value', function (snap) {
+          var val = snap.val() || {};
+          GK.emps = val;
+          try { localStorage.setItem('ql_employees', JSON.stringify(val)); } catch (e) {}
+          GK.ids = Object.keys(val);
+          if (!GK.id || GK.ids.indexOf(GK.id) === -1) { GK.id = GK.ids[0] || null; }
+          GK.idx = Math.max(0, GK.ids.indexOf(GK.id));
+          gkStatus('Online', true);
+          gkRenderEmp();
+          gkListen();
+        }, function (err) { gkStatus('Akses ditolak', false); showToast('Gagal memuat karyawan: ' + (err && err.message ? err.message : 'tidak ada izin')); });
+      });
+    }
+
+    function gkRenderEmp() {
+      var e = GK.id ? GK.emps[GK.id] : null;
+      document.getElementById('gk-name').textContent = e ? e.nama : (GK.ids.length ? 'Pilih karyawan' : 'Belum ada karyawan');
+      document.getElementById('gk-name2').textContent = e ? e.nama : '-';
+      document.getElementById('gk-hp').textContent = e ? (e.hp ? 'HP: ' + e.hp : 'Nomor HP belum diisi') : '';
+      document.getElementById('gk-avatar').textContent = e ? String(e.nama || '?').charAt(0).toUpperCase() : '?';
+      document.getElementById('gk-chips').innerHTML = GK.ids.map(function (id, i) {
+        var on = id === GK.id;
+        return '<button type="button" onclick="gkPick(' + i + ')" class="shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold border ' + (on ? 'bg-[color:var(--p)] text-white border-transparent' : 'bg-white text-slate-600 border-slate-200') + '">' + esc(GK.emps[id].nama) + '</button>';
+      }).join('');
+    }
+    function gkPick(i) { GK.idx = i; GK.id = GK.ids[i]; gkRenderEmp(); gkListen(); }
+    function gkStepEmp(d) { if (!GK.ids.length) return; gkPick((GK.idx + d + GK.ids.length) % GK.ids.length); }
+
+    function gkSaveEmps(cb) {
+      try { localStorage.setItem('ql_employees', JSON.stringify(GK.emps)); } catch (e) {}
+      if (!GK.db) { showToast('Offline: tersimpan lokal saja'); if (cb) cb(); return; }
+      GK.db.ref('queen-laundry-karyawan/list').set(GK.emps).then(function () { if (cb) cb(); }).catch(function (e) { showToast('Tersimpan lokal: ' + e.message); if (cb) cb(); });
+    }
+    function gkNameModal(title, val, mode, hp) {
+      GK.mode = mode;
+      openModal(title, '<div class="space-y-3 text-xs">' +
+        '<input id="gk-name-in" type="text" value="' + esc(val || '') + '" placeholder="Nama karyawan" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />' +
+        '<input id="gk-hp-in" type="tel" inputmode="numeric" value="' + esc(hp || '') + '" placeholder="Nomor HP / WA (contoh 08123456789)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />' +
+        '<button type="button" onclick="gkNameSave()" class="w-full py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Simpan</button></div>');
+      setTimeout(function () { var i = document.getElementById('gk-name-in'); if (i) i.focus(); }, 100);
+    }
+    function gkAddEmp() { gkNameModal('Tambah Karyawan Baru', '', 'add', ''); }
+    function gkEditEmp() { if (!GK.id) { showToast('Pilih karyawan dulu'); return; } gkNameModal('Edit Karyawan', GK.emps[GK.id].nama, 'edit', GK.emps[GK.id].hp); }
+    function gkNameSave() {
+      var val = document.getElementById('gk-name-in').value.trim();
+      var hp = document.getElementById('gk-hp-in').value.trim();
+      if (!val) { showToast('Nama tidak boleh kosong'); return; }
+      if (hp && !normalizeWhatsAppNumber(hp)) { showToast('Nomor HP tidak valid'); return; }
+      if (GK.mode === 'add') {
+        var id = val.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').slice(0, 15) + '-' + Date.now().toString().slice(-4);
+        GK.emps[id] = { nama: val, hp: hp, created: Date.now() };
+        GK.id = id;
+      } else if (GK.id) {
+        GK.emps[GK.id].nama = val; GK.emps[GK.id].hp = hp; GK.emps[GK.id].updated = Date.now();
+      }
+      GK.ids = Object.keys(GK.emps); GK.idx = Math.max(0, GK.ids.indexOf(GK.id));
+      closeModal();
+      gkSaveEmps(function () { gkRenderEmp(); gkListen(); });
+    }
+    function gkDelEmp() {
+      if (!GK.id) { showToast('Pilih karyawan dulu'); return; }
+      var id = GK.id;
+      askConfirm('Hapus Karyawan', 'Hapus "' + esc(GK.emps[id].nama) + '" dari daftar? Data gaji tetap aman.', function () {
+        delete GK.emps[id];
+        GK.ids = Object.keys(GK.emps); GK.id = GK.ids[0] || null; GK.idx = 0;
+        gkSaveEmps(function () { gkRenderEmp(); gkListen(); });
+      });
+    }
+
+    function gkPath() { return 'queen-laundry-sync-v2/' + gkMonthKey() + '/' + GK.id; }
+    function gkCacheGet(path) { try { return JSON.parse(localStorage.getItem('gk_cache_' + path) || 'null') || {}; } catch (e) { return {}; } }
+    function gkCacheSet(path, data) { try { localStorage.setItem('gk_cache_' + path, JSON.stringify(data)); } catch (e) {} }
+    function gkListen() {
+      if (GK.ref) { GK.ref.off(); GK.ref = null; }
+      if (!GK.id) {
+        document.getElementById('gk-list').innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Pilih atau tambah karyawan dulu</div>';
+        GK.data = {}; GK.prev = 0; gkTotals(); gkMonthLabel(); return;
+      }
+      GK.data = gkCacheGet(gkPath());
+      var lp = 0; try { lp = parseInt(localStorage.getItem('gk_prev_' + gkPath()), 10) || 0; } catch (e) {}
+      GK.prev = lp;
+      var pi0 = document.getElementById('gk-prev'); if (document.activeElement !== pi0) pi0.value = lp ? gkFmt(lp) : '';
+      gkRenderDays();
+      if (!GK.db) { gkStatus('Offline', false); return; }
+      var path = gkPath();
+      GK.ref = GK.db.ref(path);
+      GK.ref.on('value', function (snap) {
+        if (path !== gkPath()) return;
+        var raw = snap.val() || {}, meta = raw._meta || {};
+        // Kasbon sebelumnya: jangan timpa nilai yang belum disimpan, dan jangan reset ke 0 bila server belum punya nilainya
+        if (!GK.prevDirty[path] && meta.kasbonSebelumnya !== undefined) {
+          GK.prev = parseInt(meta.kasbonSebelumnya, 10) || 0;
+          try { localStorage.setItem('gk_prev_' + path, String(GK.prev)); } catch (e) {}
+          var pi = document.getElementById('gk-prev');
+          if (document.activeElement !== pi) pi.value = GK.prev ? gkFmt(GK.prev) : '';
+        }
+        // Data harian: gabungkan data server, tapi pertahankan isian lokal yang belum terkirim
+        var dirty = GK.dirty[path] || {}, merged = {};
+        Object.keys(raw).forEach(function (k) { if (k !== '_meta') merged[k] = raw[k]; });
+        Object.keys(dirty).forEach(function (k) { if (GK.data[k]) merged[k] = GK.data[k]; else delete merged[k]; });
+        GK.data = merged;
+        gkCacheSet(path, GK.data);
+        var ae = document.activeElement;
+        if (ae && document.getElementById('gk-list').contains(ae)) { GK.needRender = true; gkTotals(); return; }
+        gkRenderDays();
+      }, function (err) { gkStatus('Akses ditolak', false); showToast('Gagal memuat gaji: ' + (err && err.message ? err.message : 'tidak ada izin')); });
+    }
+    function gkMonthLabel() {
+      var e = GK.id ? GK.emps[GK.id] : null;
+      document.getElementById('gk-month').textContent = GK.cur.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }).toUpperCase() + (e ? ' \u2022 ' + e.nama : '');
+    }
+    function gkChangeMonth(d) { GK.cur = new Date(GK.cur.getFullYear(), GK.cur.getMonth() + d, 1); gkListen(); }
+
+    function gkRenderDays() {
+      GK.needRender = false;
+      gkMonthLabel();
+      var y = GK.cur.getFullYear(), m = GK.cur.getMonth(), days = new Date(y, m + 1, 0).getDate(), out = '';
+      for (var i = 1; i <= days; i++) {
+        var key = ('0' + i).slice(-2), it = GK.data[key] || {}, g = parseInt(it.gaji, 10) || 0, k = parseInt(it.kasbon, 10) || 0, has = g > 0 || k > 0;
+        out += '<div class="rounded-2xl p-2 flex items-center gap-2 ' + (has ? 'bg-white border border-[color:var(--p)]/40' : 'bg-white/70 border border-slate-200') + '">' +
+          '<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-extrabold ' + (has ? 'bg-[color:var(--p)] text-white' : 'bg-slate-100 text-slate-500') + '">' + key + '</div>' +
+          '<div class="flex-1 min-w-0 grid grid-cols-[1fr_1fr_auto] gap-1.5 items-end">' +
+            '<div class="min-w-0"><div class="text-[8px] font-bold text-slate-400 mb-0.5">GAJI</div><input id="gk-g-' + key + '" type="text" inputmode="numeric" placeholder="0" value="' + (g ? gkFmt(g) : '') + '" oninput="gkDayInput(\'' + key + '\')" class="w-full min-w-0 px-2 py-2 rounded-lg border border-slate-300 bg-white text-[12px] font-bold text-slate-900 outline-none" /></div>' +
+            '<div class="min-w-0"><div class="text-[8px] font-bold text-rose-400 mb-0.5">KASBON</div><input id="gk-k-' + key + '" type="text" inputmode="numeric" placeholder="0" value="' + (k ? gkFmt(k) : '') + '" oninput="gkDayInput(\'' + key + '\')" class="w-full min-w-0 px-2 py-2 rounded-lg border border-slate-300 bg-white text-[12px] font-bold text-rose-700 outline-none" /></div>' +
+            '<div class="min-w-[64px] text-right"><div class="text-[8px] font-bold text-slate-400 mb-0.5">SISA</div><div id="gk-s-' + key + '" class="px-1.5 py-2 rounded-lg text-[11px] font-extrabold text-center ' + (g ? 'bg-[color:var(--pdd)] text-white' : 'bg-slate-100 text-slate-400') + '">' + (g ? gkFmt(g - k) : '-') + '</div></div>' +
+          '</div></div>';
+      }
+      document.getElementById('gk-list').innerHTML = out;
+      gkTotals();
+    }
+
+    function gkDayInput(key) {
+      var gi = document.getElementById('gk-g-' + key), ki = document.getElementById('gk-k-' + key);
+      var g = gkNum(gi.value), k = gkNum(ki.value);
+      gi.value = g ? gkFmt(g) : ''; ki.value = k ? gkFmt(k) : '';
+      var s = document.getElementById('gk-s-' + key);
+      s.textContent = g ? gkFmt(g - k) : '-';
+      s.className = 'px-1.5 py-2 rounded-lg text-[11px] font-extrabold text-center ' + (g ? 'bg-[color:var(--pdd)] text-white' : 'bg-slate-100 text-slate-400');
+      if (g || k) GK.data[key] = { gaji: String(g || ''), kasbon: String(k || '') }; else delete GK.data[key];
+      gkTotals();
+      var path = gkPath();
+      gkCacheSet(path, GK.data);
+      var ver = ++GK.ver;
+      (GK.dirty[path] = GK.dirty[path] || {})[key] = ver;
+      clearTimeout(GK.timers[path + '|' + key]);
+      GK.timers[path + '|' + key] = setTimeout(function () {
+        gkConnect(function (ok) {
+          if (!ok) { showToast('Tersimpan di perangkat, belum ke server: ' + (GK.err || 'offline')); return; }
+          var ref = GK.db.ref(path + '/' + key);
+          var op = (g || k) ? ref.set({ gaji: String(g || ''), kasbon: String(k || ''), updated: Date.now() }) : ref.remove();
+          op.then(function () { if (GK.dirty[path] && GK.dirty[path][key] === ver) delete GK.dirty[path][key]; }).catch(function (e) { gkStatus('Gagal simpan', false); showToast('Gagal simpan ke server: ' + e.message); });
+        });
+      }, 700);
+    }
+    function gkPrevInput(el) {
+      GK.prev = gkNum(el.value); el.value = GK.prev ? gkFmt(GK.prev) : '';
+      if (GK.id) { var p = gkPath(); GK.prevDirty[p] = true; try { localStorage.setItem('gk_prev_' + p, String(GK.prev)); } catch (e) {} }
+      gkTotals();
+    }
+    function gkSavePrev() {
+      if (!GK.id) { showToast('Pilih karyawan dulu'); return; }
+      var path = gkPath(), val = GK.prev || 0;
+      try { localStorage.setItem('gk_prev_' + path, String(val)); } catch (e) {}
+      gkConnect(function (ok) {
+        if (!ok) { showToast('Tersimpan di perangkat, belum ke server: ' + (GK.err || 'offline')); return; }
+        GK.db.ref(path + '/_meta').set({ kasbonSebelumnya: String(val || ''), updated: Date.now() })
+          .then(function () { if (GK.prev === val) delete GK.prevDirty[path]; showToast('Kasbon sebelumnya tersimpan: Rp ' + gkFmt(val)); })
+          .catch(function (e) { showToast('Gagal menyimpan: ' + e.message); });
+      });
+    }
+    function gkTotals() {
+      var g = 0, k = 0;
+      Object.keys(GK.data).forEach(function (d) { g += parseInt(GK.data[d].gaji, 10) || 0; k += parseInt(GK.data[d].kasbon, 10) || 0; });
+      var tk = k + (GK.prev || 0);
+      document.getElementById('gk-tg').textContent = 'Rp ' + gkFmt(g);
+      document.getElementById('gk-tk').textContent = 'Rp ' + gkFmt(tk);
+      document.getElementById('gk-tkb').textContent = 'Harian ' + gkFmt(k) + ' + Lama ' + gkFmt(GK.prev || 0);
+      document.getElementById('gk-ts').textContent = 'Rp ' + gkFmt(g - tk);
+    }
+
+    // ===== SLIP GAJI WHATSAPP =====
+    var GK_ADDR = 'Jl. Tidung 10 Stpk 8 No. 114, Makassar';
+    var GK_BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    function gkSlipText() {
+      var e = GK.emps[GK.id] || {}, y = GK.cur.getFullYear(), m = GK.cur.getMonth();
+      var rp = function (n) { return 'Rp ' + gkFmt(n); };
+      var lines = [], g = 0, k = 0, hari = 0;
+      Object.keys(GK.data).sort().forEach(function (d) {
+        var it = GK.data[d], gj = parseInt(it.gaji, 10) || 0, kb = parseInt(it.kasbon, 10) || 0;
+        if (!gj && !kb) return;
+        g += gj; k += kb; if (gj) hari++;
+        lines.push('\u2022 ' + parseInt(d, 10) + ' ' + GK_BLN[m].slice(0, 3) + ' ' + y + '  :  ' + rp(gj) + (kb ? '  (kasbon ' + rp(kb) + ')' : ''));
+      });
+      var prev = GK.prev || 0, potong = k + prev, net = g - potong, sep = '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501';
+      var out = [
+        '*' + String(state.meta.outlet || 'Queen Laundry').toUpperCase() + '*',
+        GK_ADDR,
+        sep,
+        '*SLIP GAJI KARYAWAN*',
+        'Periode : ' + GK_BLN[m] + ' ' + y,
+        'Nama    : ' + (e.nama || '-'),
+        sep,
+        '*Rincian Gaji Harian*'
+      ].concat(lines.length ? lines : ['(belum ada data pada periode ini)'], [
+        sep,
+        'Total Gaji (' + hari + ' hari kerja) : ' + rp(g),
+        'Kasbon Harian : ' + rp(k),
+        'Kasbon Sebelumnya : ' + rp(prev),
+        'Total Potongan Kasbon : ' + rp(potong),
+        sep,
+        '*GAJI DITERIMA : ' + rp(Math.max(net, 0)) + '*'
+      ]);
+      if (net < 0) out.push('Sisa kasbon dibawa ke periode berikutnya : ' + rp(-net));
+      out.push(sep,
+        'Terima kasih.',
+        '',
+        '*Manajemen ' + (state.meta.outlet || 'Queen Laundry') + '*');
+      return out.join('\n');
+    }
+    function gkHasData() { return Object.keys(GK.data).some(function (d) { return (parseInt(GK.data[d].gaji, 10) || 0) || (parseInt(GK.data[d].kasbon, 10) || 0); }); }
+    function gkSendSlip() {
+      if (!GK.id) { showToast('Pilih karyawan dulu'); return; }
+      var e = GK.emps[GK.id] || {};
+      var ph = normalizeWhatsAppNumber(e.hp);
+      if (!ph) { showToast('Isi nomor HP karyawan dulu'); gkEditEmp(); return; }
+      if (!gkHasData()) { showToast('Belum ada data gaji pada bulan ini'); return; }
+      launchWhatsAppUrl(ph, gkSlipText(), null);
+    }
+    function gkCopySlip() {
+      if (!GK.id) { showToast('Pilih karyawan dulu'); return; }
+      var t = gkSlipText();
+      try {
+        navigator.clipboard.writeText(t).then(function () { showToast('Slip gaji disalin'); }, function () { showToast('Gagal menyalin'); });
+      } catch (err) { showToast('Gagal menyalin'); }
+    }
+
+    // ===== ABSENSI KARYAWAN =====
     function openAbsensiModal(keepName) {
       var list = state.meta.absensi = state.meta.absensi || [];
-      var names = [];
-      list.forEach(function (r) { if (names.indexOf(r.name) === -1) names.push(r.name); });
       var rows = list.slice().sort(function (a, b) { return (b.date + b.masuk).localeCompare(a.date + a.masuk); }).slice(0, 40).map(function (r) {
         return '<div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border border-slate-200"><div class="min-w-0"><div class="font-bold text-slate-900 truncate">' + esc(r.name) + '</div><div class="text-slate-500">' + esc(r.date) + ' &bull; Masuk ' + esc(r.masuk) + ' &bull; Pulang ' + (r.pulang ? esc(r.pulang) : '-') + '</div></div><button type="button" onclick="confirmAbsDel(\'' + esc(r.id) + '\')" class="text-rose-600 font-bold px-2 text-base">&times;</button></div>';
       }).join('') || '<div class="text-center text-slate-400 py-3">Belum ada absensi</div>';
-      openModal('Absensi Karyawan',
+      openModal('Gaji/Absensi Karyawan',
         '<div class="space-y-3 text-xs">' +
-          '<input id="abs-name" list="abs-names" value="' + esc(keepName || '') + '" placeholder="Nama karyawan" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm" />' +
-          '<datalist id="abs-names">' + names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
-          '<div class="grid grid-cols-2 gap-2"><button type="button" onclick="absAction(\'in\')" class="py-2.5 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Absen Masuk</button><button type="button" onclick="absAction(\'out\')" class="py-2.5 rounded-xl bg-[color:var(--pdd)] text-white font-bold text-sm">Absen Pulang</button></div>' +
-          '<button type="button" onclick="openGajiModal()" class="w-full py-2.5 rounded-xl bg-[color:var(--pdd)] text-white font-bold text-sm">Gaji & Komisi</button>' +
-          '<div class="font-semibold text-slate-600">Riwayat terbaru</div><div class="space-y-2">' + rows + '</div>' +
+          '<button type="button" onclick="openGkScreen()" class="w-full py-2.5 px-2 rounded-xl bg-[color:var(--p)] text-white font-bold text-sm">Gaji Harian & Kasbon</button>' +
+          '<div class="border-t border-slate-200"></div>' +
+          '<div class="font-semibold text-slate-600">Riwayat absensi terbaru</div><div class="space-y-2">' + rows + '</div>' +
         '</div>');
-    }
-
-    function absAction(t) {
-      var name = document.getElementById('abs-name').value.trim();
-      if (!name) { showToast('Isi nama karyawan'); return; }
-      var n = absNow(), list = state.meta.absensi = state.meta.absensi || [];
-      var rec = list.find(function (r) { return r.name.toLowerCase() === name.toLowerCase() && r.date === n.date && !r.pulang; });
-      if (t === 'in') {
-        if (rec) { showToast(name + ' sudah absen masuk hari ini'); return; }
-        list.push({ id: 'A' + Date.now(), name: name, date: n.date, masuk: n.time, pulang: '' });
-        showToast('Absen masuk ' + name + ' ' + n.time);
-      } else {
-        if (!rec) { showToast('Belum ada absen masuk untuk ' + name); return; }
-        rec.pulang = n.time;
-        showToast('Absen pulang ' + name + ' ' + n.time);
-      }
-      persistAll();
-      openAbsensiModal(name);
     }
 
     function absDel(id) {
@@ -3002,7 +3317,7 @@
       }
 
       if (menu === 'absensi') {
-        openAbsensiModal();
+        openGkScreen();
         return;
       }
 
@@ -3259,7 +3574,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v23';
+    var APP_VERSION = 'Q.v24';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
