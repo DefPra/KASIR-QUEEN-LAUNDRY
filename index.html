@@ -3107,10 +3107,10 @@
           ready.push({ o: o, idx: idx, days: days, stage: stage, due: stage > last, inProcess: !isDone });
         }
       });
-      // Urut terbaru -> terlama berdasarkan waktu order masuk; posisi tidak berubah saat status/pengingat berubah
+      // Urut terlama -> terbaru berdasarkan waktu order masuk; posisi tidak berubah saat status/pengingat berubah
       ready.sort(function (a, b) {
-        var c = String(b.o.createdAt || '').localeCompare(String(a.o.createdAt || ''));
-        return c || (a.idx - b.idx);
+        var c = String(a.o.createdAt || '').localeCompare(String(b.o.createdAt || ''));
+        return c || (b.idx - a.idx);
       });
       late.sort(function (a, b) { return b.days - a.days; });
       return { ready: ready, late: late };
@@ -3199,7 +3199,7 @@
         '<div class="space-y-2 text-xs">' +
         '<div class="font-semibold text-slate-600">' + due + ' cucian perlu diingatkan &bull; ' + d.ready.length + ' menunggu diambil</div>' +
         rows +
-        '<div class="text-[11px] text-slate-400">Urutan: pelanggan terbaru di atas. Pengingat bertahap saat cucian siap (H+0), lalu H+3, H+7, dan H+14. Pesan WA disiapkan otomatis, Anda tinggal menekan kirim di WhatsApp. Cucian tetap tampil walau status masih Proses selama tanggal estimasinya sudah tercapai. Ubah ke Selesai bila sudah siap. Setelah status Ambil, cucian otomatis hilang dari daftar ini.</div>' +
+        '<div class="text-[11px] text-slate-400">Urutan: pelanggan terlama di atas. Pengingat bertahap saat cucian siap (H+0), lalu H+3, H+7, dan H+14. Pesan WA disiapkan otomatis, Anda tinggal menekan kirim di WhatsApp. Cucian tetap tampil walau status masih Proses selama tanggal estimasinya sudah tercapai. Ubah ke Selesai bila sudah siap. Setelah status Ambil, cucian otomatis hilang dari daftar ini.</div>' +
         '</div>');
       if (keepScroll && mc) mc.scrollTop = keepScroll;
     }
@@ -4000,7 +4000,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v37';
+    var APP_VERSION = 'Q.v38';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
