@@ -3107,7 +3107,11 @@
           ready.push({ o: o, idx: idx, days: days, stage: stage, due: stage > last, inProcess: !isDone });
         }
       });
-      ready.sort(function (a, b) { return (b.due - a.due) || (b.days - a.days); });
+      // Urut terbaru -> terlama berdasarkan waktu order masuk; posisi tidak berubah saat status/pengingat berubah
+      ready.sort(function (a, b) {
+        var c = String(b.o.createdAt || '').localeCompare(String(a.o.createdAt || ''));
+        return c || (a.idx - b.idx);
+      });
       late.sort(function (a, b) { return b.days - a.days; });
       return { ready: ready, late: late };
     }
@@ -3120,16 +3124,36 @@
       el.classList.toggle('hidden', n === 0);
     }
 
+    function remindEstText(o) {
+      var m = String(o.estimatedFinishDate || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return '';
+      var bln = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      return Number(m[3]) + ' ' + bln[Number(m[2]) - 1] + ' ' + m[1];
+    }
+
     function remindMessage(o, days, stage) {
       var outlet = state.meta.outlet || 'Queen Laundry';
-      var L = ['Halo Kak ' + (o.customer || '') + ','];
+      var L = ['Halo Bapak/Ibu ' + (o.customer || '') + ','];
       if (stage <= 0 || days <= 0) {
-        L.push('Cucian Kakak di ' + outlet + ' (ID ' + (o.id || '') + ') sudah selesai dan siap diambil.');
+        L.push('Cucian Bapak/Ibu di ' + outlet + ' (ID ' + (o.id || '') + ') sudah selesai dan siap diambil.');
       } else {
-        L.push('Kami ingatkan, cucian Kakak di ' + outlet + ' (ID ' + (o.id || '') + ') sudah siap diambil sejak ' + days + ' hari yang lalu.');
+        L.push('Kami ingatkan, cucian Bapak/Ibu di ' + outlet + ' (ID ' + (o.id || '') + ') sudah siap diambil sejak ' + days + ' hari yang lalu.');
         if (stage === 2) L.push('Mohon diambil segera agar tidak menumpuk.');
         if (stage >= 3) L.push('Mohon segera diambil, atau hubungi kami jika ada kendala.');
       }
+      L.push('');
+      var est = remindEstText(o);
+      if (est) L.push('Estimasi selesai : ' + est);
+      var total = orderTotal(o), paid = Math.min(total, orderPaid(o)), sisa = orderSisa(o);
+      L.push('Total harga : ' + formatRp(total));
+      if (sisa > 0) {
+        if (paid > 0) L.push('Sudah dibayar : ' + formatRp(paid));
+        L.push('Yang harus dibayar : *' + formatRp(sisa) + '*');
+        L.push('Status : *Belum Lunas*');
+      } else {
+        L.push('Status : *Lunas*');
+      }
+      L.push('');
       L.push('Terima kasih.');
       L.push(outlet);
       return L.join('\n');
@@ -3141,6 +3165,8 @@
     }
 
     function openRemindModal() {
+      var mc = document.getElementById('modal-content'), mw = document.getElementById('modal-wrap'), mh = document.getElementById('modal-head');
+      var keepScroll = (mc && mw && mh && !mw.classList.contains('hidden') && mh.textContent === 'Pengingat Cucian') ? mc.scrollTop : 0;
       var d = remindBuild();
       var due = d.ready.filter(function (r) { return r.due; }).length;
       var rows = d.ready.map(function (r) {
@@ -3151,7 +3177,9 @@
         var age = r.inProcess
           ? (r.days <= 0 ? 'Estimasi selesai hari ini' : ('Lewat estimasi ' + r.days + ' hari'))
           : (r.days <= 0 ? 'Siap hari ini' : ('Siap ' + r.days + ' hari'));
-        var procTag = r.inProcess ? ' <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 font-semibold text-[10.5px] align-middle">Status: Proses</span>' : '';
+        var procTag = r.inProcess
+          ? ' <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 font-semibold text-[10.5px] align-middle">Status: Proses</span>'
+          : ' <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold text-[10.5px] align-middle">Status: Selesai</span>';
         return '<div class="p-2.5 rounded-xl border ' + (r.due ? 'border-amber-300 bg-amber-50/40' : 'border-slate-200') + '">' +
           '<div class="flex items-start justify-between gap-2">' +
             '<div class="min-w-0" style="cursor:pointer" onclick="closeModal(); openDetailScreenByIndex(' + r.idx + ')">' +
@@ -3171,8 +3199,9 @@
         '<div class="space-y-2 text-xs">' +
         '<div class="font-semibold text-slate-600">' + due + ' cucian perlu diingatkan &bull; ' + d.ready.length + ' menunggu diambil</div>' +
         rows +
-        '<div class="text-[11px] text-slate-400">Pengingat bertahap saat cucian siap (H+0), lalu H+3, H+7, dan H+14. Pesan WA disiapkan otomatis, Anda tinggal menekan kirim di WhatsApp. Cucian tetap tampil walau status masih Proses selama tanggal estimasinya sudah tercapai. Ubah ke Selesai bila sudah siap, dan Ambil saat sudah diambil.</div>' +
+        '<div class="text-[11px] text-slate-400">Urutan: pelanggan terbaru di atas. Pengingat bertahap saat cucian siap (H+0), lalu H+3, H+7, dan H+14. Pesan WA disiapkan otomatis, Anda tinggal menekan kirim di WhatsApp. Cucian tetap tampil walau status masih Proses selama tanggal estimasinya sudah tercapai. Ubah ke Selesai bila sudah siap. Setelah status Ambil, cucian otomatis hilang dari daftar ini.</div>' +
         '</div>');
+      if (keepScroll && mc) mc.scrollTop = keepScroll;
     }
 
     function remindSend(id) {
@@ -3971,7 +4000,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v35';
+    var APP_VERSION = 'Q.v37';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -5046,6 +5075,7 @@
       } else if (status === 'Proses') {
         delete o.readyDate; delete o.remindStage; delete o.remindAt; delete o.remindSkip;
       }
+      try { updateRemindBadge(); } catch (e) {}
 
       // Saat status diubah menjadi 'Ambil', transaksi otomatis ditandai lunas
       if (status === 'Ambil') {
