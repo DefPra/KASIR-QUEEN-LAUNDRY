@@ -1595,25 +1595,74 @@
       return city || area || '';
     }
 
-    function reverseGeocodeLocation(lat, lng, forceRefresh) {
-      var nowTs = Date.now();
-      if (!forceRefresh && (nowTs - lastReverseGeocodeAt < 25000)) return;
-      if (typeof fetch !== 'function') return;
-      lastReverseGeocodeAt = nowTs;
+    // ----- Nama lokasi otomatis -----
+    var geoLast = { lat: null, lng: null, at: 0 };
+    var geoRetryTimer = null, geoRetryCount = 0, geoLastRefreshAt = 0, geoAutoWired = false;
 
-      var url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng) + '&zoom=14&addressdetails=1';
-      fetch(url, { headers: { 'Accept': 'application/json' } })
+    function geoDistanceKm(la1, lo1, la2, lo2) {
+      var R = 6371, rad = Math.PI / 180;
+      var dLa = (la2 - la1) * rad, dLo = (lo2 - lo1) * rad;
+      var h = Math.sin(dLa / 2) * Math.sin(dLa / 2) + Math.cos(la1 * rad) * Math.cos(la2 * rad) * Math.sin(dLo / 2) * Math.sin(dLo / 2);
+      return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+    }
+
+    // Cadangan penyedia nama lokasi (dipakai bila Nominatim gagal / diblokir)
+    function formatBigDataCloudName(d) {
+      if (!d) return '';
+      var area = d.locality || '';
+      var city = d.city || d.principalSubdivision || '';
+      if (city && area && city.toLowerCase().indexOf(area.toLowerCase()) === -1 && area.toLowerCase().indexOf(city.toLowerCase()) === -1) {
+        return area + ', ' + city;
+      }
+      return city || area || '';
+    }
+
+    function setAutoLocationName(name, lat, lng) {
+      if (!name) return false;
+      geoLast = { lat: lat, lng: lng, at: Date.now() };
+      geoRetryCount = 0;
+      if (state.location.source === 'manual') return true;
+      state.location.label = name;
+      state.location.source = 'gps';
+      state.location.updatedAt = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      persistAll();
+      renderLocationBadge();
+      return true;
+    }
+
+    function lookupLocationName(lat, lng) {
+      var u1 = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=id&lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng) + '&zoom=14&addressdetails=1';
+      var u2 = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + encodeURIComponent(lat) + '&longitude=' + encodeURIComponent(lng) + '&localityLanguage=id';
+      return fetch(u1, { headers: { 'Accept': 'application/json' } })
         .then(function (res) { return res.ok ? res.json() : null; })
-        .then(function (data) {
-          var placeName = formatReverseGeoName(data);
-          if (placeName && state.location.source !== 'manual') {
-            state.location.label = placeName;
-            state.location.updatedAt = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            persistAll();
-            renderLocationBadge();
-          }
-        })
-        .catch(function () {});
+        .then(formatReverseGeoName)
+        .catch(function () { return ''; })
+        .then(function (n) {
+          if (n) return n;
+          return fetch(u2).then(function (res) { return res.ok ? res.json() : null; })
+            .then(formatBigDataCloudName).catch(function () { return ''; });
+        });
+    }
+
+    function reverseGeocodeLocation(lat, lng, forceRefresh) {
+      if (typeof fetch !== 'function') return;
+      if (state.location.source === 'manual') return;
+      var nowTs = Date.now();
+      var moved = geoLast.lat === null ? Infinity : geoDistanceKm(geoLast.lat, geoLast.lng, lat, lng);
+      var stale = (nowTs - geoLast.at) > 600000;
+      // Cari ulang nama bila: dipaksa, belum pernah berhasil, pindah > 300 m, atau sudah > 10 menit
+      if (!forceRefresh && geoLast.lat !== null && moved < 0.3 && !stale) return;
+      if (!forceRefresh && (nowTs - lastReverseGeocodeAt < 15000)) return;
+      lastReverseGeocodeAt = nowTs;
+      lookupLocationName(lat, lng).then(function (name) {
+        if (name) { setAutoLocationName(name, lat, lng); return; }
+        // Gagal: coba lagi otomatis beberapa kali
+        if (geoRetryCount < 4) {
+          geoRetryCount++;
+          clearTimeout(geoRetryTimer);
+          geoRetryTimer = setTimeout(function () { reverseGeocodeLocation(lat, lng, true); }, 15000 * geoRetryCount);
+        }
+      });
     }
 
     function applyGeolocationPosition(pos, forceGeoLookup) {
@@ -1627,19 +1676,45 @@
       state.location.lng = lng;
       state.location.accuracy = acc;
       state.location.updatedAt = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-      if (state.location.source !== 'manual') {
-        state.location.source = 'gps';
-        if (!state.location.label || state.location.label === 'Makassar') {
-          state.location.label = 'Makassar';
-        }
-      }
+      if (state.location.source !== 'manual') state.location.source = 'gps';
       persistAll();
       renderLocationBadge();
-      reverseGeocodeLocation(lat, lng, Boolean(forceGeoLookup));
+      reverseGeocodeLocation(lat, lng, Boolean(forceGeoLookup) || geoLast.lat === null);
+    }
+
+    // Perbarui posisi + nama lokasi di latar belakang (tanpa notifikasi)
+    function refreshLocationAuto(force) {
+      if (!navigator.geolocation || state.location.source === 'manual') return;
+      var n = Date.now();
+      if (!force && n - geoLastRefreshAt < 30000) return;
+      geoLastRefreshAt = n;
+      try {
+        navigator.geolocation.getCurrentPosition(
+          function (pos) { applyGeolocationPosition(pos, false); },
+          function () {},
+          { enableHighAccuracy: false, timeout: 12000, maximumAge: 30000 }
+        );
+      } catch (e) {}
+    }
+
+    function wireLocationAutoRefresh() {
+      if (geoAutoWired) return;
+      geoAutoWired = true;
+      setInterval(function () { if (!document.hidden) refreshLocationAuto(false); }, 120000);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshLocationAuto(false); });
+      window.addEventListener('focus', function () { refreshLocationAuto(false); });
+      window.addEventListener('online', function () { refreshLocationAuto(true); });
     }
 
     function startRealtimeLocation(showFeedback) {
+      // Sekali: lepaskan kunci "manual" lama agar nama lokasi kembali otomatis
+      if (!state.location.autoV2) {
+        state.location.autoV2 = true;
+        if (state.location.source === 'manual') state.location.source = 'gps';
+        persistAll();
+      }
+      wireLocationAutoRefresh();
+
       if (!navigator.geolocation) {
         if (!state.location.label) state.location.label = 'Makassar';
         renderLocationBadge();
@@ -1651,17 +1726,38 @@
         showToast('Memperbarui lokasi real-time...');
       }
 
+      function onFail(err, retried) {
+        if (err && err.code === 1) {
+          renderLocationBadge();
+          if (showFeedback) showToast('Izin lokasi ditolak. Aktifkan izin lokasi untuk aplikasi ini.');
+          return;
+        }
+        if (!retried) {
+          // GPS presisi tinggi gagal/timeout: coba lagi dengan akurasi rendah (jaringan)
+          try {
+            navigator.geolocation.getCurrentPosition(
+              function (pos) {
+                applyGeolocationPosition(pos, true);
+                if (showFeedback) showToast('Lokasi diperbarui: ' + state.location.label);
+              },
+              function (e2) { onFail(e2, true); },
+              { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }
+            );
+            return;
+          } catch (e) {}
+        }
+        if (!state.location.label) state.location.label = 'Makassar';
+        renderLocationBadge();
+        if (showFeedback) showToast('Gagal membaca lokasi, memakai: ' + state.location.label);
+      }
+
       try {
         navigator.geolocation.getCurrentPosition(
           function (pos) {
             applyGeolocationPosition(pos, true);
             if (showFeedback) showToast('Lokasi diperbarui: ' + state.location.label);
           },
-          function () {
-            if (!state.location.label) state.location.label = 'Makassar';
-            renderLocationBadge();
-            if (showFeedback) showToast('Menggunakan lokasi: ' + state.location.label);
-          },
+          function (err) { onFail(err, false); },
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
         );
 
@@ -1683,7 +1779,7 @@
       var coordText = (typeof loc.lat === 'number' && typeof loc.lng === 'number')
         ? loc.lat.toFixed(5) + ', ' + loc.lng.toFixed(5)
         : '-';
-      var statusText = loc.source === 'gps' ? 'GPS Real-Time' : (loc.source === 'manual' ? 'Manual / Cabang' : 'Default (Makassar)');
+      var statusText = loc.source === 'gps' ? 'GPS Real-Time' : (loc.source === 'manual' ? 'Manual (nama tidak otomatis)' : 'Default (Makassar)');
 
       openModal('Lokasi Real-Time',
         '<div class="space-y-3 text-xs">' +
@@ -3875,7 +3971,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v34';
+    var APP_VERSION = 'Q.v35';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
