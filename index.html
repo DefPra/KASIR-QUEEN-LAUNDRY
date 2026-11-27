@@ -416,6 +416,10 @@
           <button type="button" onclick="openIronModal()" class="w-full bg-[color:var(--p)] hover:bg-[color:var(--pd)] text-white font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition">
             Lihat Setrika Hari Ini
           </button>
+          <button type="button" onclick="openRemindModal()" class="relative w-full mt-2 bg-white border border-[color:var(--p)] text-[color:var(--pd)] font-semibold text-[14px] py-2.5 rounded-xl shadow-xs transition active:bg-[color:var(--t1)]">
+            Pengingat Cucian Siap Diambil
+            <span id="ui-remind-badge" class="hidden absolute -top-2 -right-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-rose-600 text-white text-[11.5px] font-bold leading-[22px] text-center shadow">0</span>
+          </button>
         </section>
 
         <!-- Grid Menu 4x2 dengan Ikon 3D -->
@@ -550,7 +554,6 @@
           </button>
 
           <button type="button" onclick="openMenuModal('pembukuan')" class="owner-only card-box relative py-3 px-1 flex flex-col items-center gap-2 hover:bg-[rgb(var(--t1-rgb)/0.7)] transition">
-            <span class="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-[#c96a46] text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow-2xs">Fitur Baru!</span>
             <span class="icon-3d-plate">
               <svg class="icon-3d-svg" viewBox="0 0 48 48" fill="none">
                 <defs>
@@ -1712,7 +1715,7 @@
       showToast('Lokasi diatur ke: ' + state.location.label);
     }
 
-    var MODAL_FULL_RE = /^(Kelola Produk|Pengaturan Outlet|Setrika Hari Ini|Keranjang Cucian|Transaksi$)/;
+    var MODAL_FULL_RE = /^(Kelola Produk|Pengaturan Outlet|Setrika Hari Ini|Pengingat Cucian|Keranjang Cucian|Transaksi$)/;
 
     function openModal(title, html, full) {
       document.getElementById('modal-head').textContent = title || 'Informasi';
@@ -2512,6 +2515,7 @@
       var outletName = m.outlet || 'Queen Laundry';
       var outletEl = document.getElementById('ui-outlet');
       if (outletEl) outletEl.textContent = outletName;
+      try { updateRemindBadge(); } catch (e) {}
 
       var badgeEl = document.getElementById('tab-context-badge');
       if (badgeEl && state.activeTab === 'home') {
@@ -2972,6 +2976,149 @@
       window.addEventListener('offline', upd);
       upd();
     });
+
+    // ===== PENGINGAT CUCIAN SIAP DIAMBIL =====
+    // Tahap pengingat (hari sejak cucian siap): H+0, H+3, H+7, H+14
+    var REMIND_STAGES = [0, 3, 7, 14];
+
+    function remindDiffDays(fromStr, toStr) {
+      var a = String(fromStr).split('-'), b = String(toStr).split('-');
+      var da = Date.UTC(+a[0], +a[1] - 1, +a[2]), db = Date.UTC(+b[0], +b[1] - 1, +b[2]);
+      return Math.max(0, Math.round((db - da) / 86400000));
+    }
+
+    function remindStageFor(days) {
+      var st = -1;
+      for (var i = 0; i < REMIND_STAGES.length; i++) { if (days >= REMIND_STAGES[i]) st = i; }
+      return st;
+    }
+
+    // Menyusun daftar: order yang belum diambil dan (status Selesai ATAU sudah mencapai tanggal estimasi walau status masih Proses)
+    function remindBuild() {
+      var today = getLocalDateStr(new Date()), br = state.meta.activeBranch, ready = [], late = [];
+      state.orders.forEach(function (o, idx) {
+        if ((o.branch || br) !== br) return;
+        if (o.status === 'Ambil' || o.remindSkip) return;
+        var isDone = o.status === 'Selesai';
+        var estOk = /^\d{4}-\d{2}-\d{2}$/.test(String(o.estimatedFinishDate || '')) && o.estimatedFinishDate <= today;
+        if (isDone || estOk) {
+          var base = String(isDone ? (o.readyDate || o.estimatedFinishDate || o.createdAt || '') : o.estimatedFinishDate).slice(0, 10);
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(base)) return;
+          if (base > today) base = today;
+          var days = remindDiffDays(base, today);
+          var stage = remindStageFor(days);
+          var last = (typeof o.remindStage === 'number') ? o.remindStage : -1;
+          ready.push({ o: o, idx: idx, days: days, stage: stage, due: stage > last, inProcess: !isDone });
+        }
+      });
+      ready.sort(function (a, b) { return (b.due - a.due) || (b.days - a.days); });
+      late.sort(function (a, b) { return b.days - a.days; });
+      return { ready: ready, late: late };
+    }
+
+    function updateRemindBadge() {
+      var el = document.getElementById('ui-remind-badge');
+      if (!el) return;
+      var n = remindBuild().ready.filter(function (r) { return r.due; }).length;
+      el.textContent = n > 99 ? '99+' : String(n);
+      el.classList.toggle('hidden', n === 0);
+    }
+
+    function remindMessage(o, days, stage) {
+      var outlet = state.meta.outlet || 'Queen Laundry';
+      var L = ['Halo Kak ' + (o.customer || '') + ','];
+      if (stage <= 0 || days <= 0) {
+        L.push('Cucian Kakak di ' + outlet + ' (ID ' + (o.id || '') + ') sudah selesai dan siap diambil.');
+      } else {
+        L.push('Kami ingatkan, cucian Kakak di ' + outlet + ' (ID ' + (o.id || '') + ') sudah siap diambil sejak ' + days + ' hari yang lalu.');
+        if (stage === 2) L.push('Mohon diambil segera agar tidak menumpuk.');
+        if (stage >= 3) L.push('Mohon segera diambil, atau hubungi kami jika ada kendala.');
+      }
+      L.push('Terima kasih.');
+      L.push(outlet);
+      return L.join('\n');
+    }
+
+    function remindFmtAt(s) {
+      var m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+      return m ? (m[3] + '/' + m[2]) : '';
+    }
+
+    function openRemindModal() {
+      var d = remindBuild();
+      var due = d.ready.filter(function (r) { return r.due; }).length;
+      var rows = d.ready.map(function (r) {
+        var o = r.o, hasPhone = !!resolveOrderWhatsAppNumber(o).normalized;
+        var chip = r.due
+          ? '<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold text-[10.5px]">Perlu diingatkan</span>'
+          : '<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold text-[10.5px]">Diingatkan ' + esc(remindFmtAt(o.remindAt)) + '</span>';
+        var age = r.inProcess
+          ? (r.days <= 0 ? 'Estimasi selesai hari ini' : ('Lewat estimasi ' + r.days + ' hari'))
+          : (r.days <= 0 ? 'Siap hari ini' : ('Siap ' + r.days + ' hari'));
+        var procTag = r.inProcess ? ' <span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 font-semibold text-[10.5px] align-middle">Status: Proses</span>' : '';
+        return '<div class="p-2.5 rounded-xl border ' + (r.due ? 'border-amber-300 bg-amber-50/40' : 'border-slate-200') + '">' +
+          '<div class="flex items-start justify-between gap-2">' +
+            '<div class="min-w-0" style="cursor:pointer" onclick="closeModal(); openDetailScreenByIndex(' + r.idx + ')">' +
+              '<div class="font-bold text-slate-900 break-words">' + esc(o.customer) + procTag + '</div>' +
+              '<div class="text-[11px] text-slate-500">ID ' + esc(o.id) + ' &bull; ' + age + (o.remindCount ? ' &bull; ' + o.remindCount + 'x diingatkan' : '') + '</div>' +
+            '</div>' + chip +
+          '</div>' +
+          '<div class="flex gap-2 mt-2">' +
+            (hasPhone
+              ? '<button type="button" onclick="remindSend(\'' + esc(o.id) + '\')" class="flex-1 py-2 rounded-lg bg-[color:var(--p)] text-white font-bold text-xs">' + (r.due ? 'Kirim Pengingat WA' : 'Kirim Lagi') + '</button>'
+              : '<button type="button" onclick="closeModal(); openDetailScreenByIndex(' + r.idx + ')" class="flex-1 py-2 rounded-lg bg-slate-100 text-slate-600 font-semibold text-xs border border-slate-300">No. WA kosong, isi dulu</button>') +
+            '<button type="button" onclick="remindSkipAsk(\'' + esc(o.id) + '\')" class="px-3 py-2 rounded-lg bg-rose-50 text-rose-700 font-bold text-xs border border-rose-200">Abaikan</button>' +
+          '</div></div>';
+      }).join('') || '<div class="text-center text-slate-500 py-6">Tidak ada cucian yang menunggu diambil</div>';
+
+      openModal('Pengingat Cucian',
+        '<div class="space-y-2 text-xs">' +
+        '<div class="font-semibold text-slate-600">' + due + ' cucian perlu diingatkan &bull; ' + d.ready.length + ' menunggu diambil</div>' +
+        rows +
+        '<div class="text-[11px] text-slate-400">Pengingat bertahap saat cucian siap (H+0), lalu H+3, H+7, dan H+14. Pesan WA disiapkan otomatis, Anda tinggal menekan kirim di WhatsApp. Cucian tetap tampil walau status masih Proses selama tanggal estimasinya sudah tercapai. Ubah ke Selesai bila sudah siap, dan Ambil saat sudah diambil.</div>' +
+        '</div>');
+    }
+
+    function remindSend(id) {
+      var idx = -1;
+      state.orders.forEach(function (x, i) { if (x.id === id) idx = i; });
+      var o = state.orders[idx];
+      if (!o) return;
+      var r = remindBuild().ready.filter(function (x) { return x.o === o; })[0];
+      if (!r) { showToast('Order tidak lagi menunggu diambil'); openRemindModal(); return; }
+      var resolved = resolveOrderWhatsAppNumber(o);
+      if (!resolved.normalized) { showToast('Nomor WA belum tersedia'); return; }
+      var msg = remindMessage(o, r.days, r.stage);
+      var prevAt = o.waSentAt, prevTo = o.waSentTo;
+      var now = new Date(), pad = function (n) { return String(n).padStart(2, '0'); };
+      o.remindStage = r.stage;
+      o.remindAt = getLocalDateStr(now) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+      o.remindCount = (Number(o.remindCount) || 0) + 1;
+      persistAll();
+      showToast('Membuka WA +' + resolved.normalized + '...');
+      launchWhatsAppUrl(resolved.normalized, msg, o);
+      // Jangan timpa "Nota WA Terakhir" dengan pengiriman pengingat
+      if (prevAt === undefined) delete o.waSentAt; else o.waSentAt = prevAt;
+      if (prevTo === undefined) delete o.waSentTo; else o.waSentTo = prevTo;
+      persistAll();
+      updateRemindBadge();
+      openRemindModal();
+    }
+
+    function remindSkipAsk(id) {
+      var o = state.orders.filter(function (x) { return x.id === id; })[0];
+      if (!o) return;
+      askConfirm('Abaikan Pengingat', 'Hentikan pengingat untuk order <b>' + esc(o.id) + '</b> a.n. ' + esc(o.customer) + '? Order tidak dihapus, hanya hilang dari daftar ini.', function () {
+        o.remindSkip = true;
+        persistAll();
+        updateRemindBadge();
+        openRemindModal();
+        showToast('Pengingat dihentikan untuk order ini');
+      });
+    }
+
+    setInterval(function () { try { updateRemindBadge(); } catch (e) {} }, 300000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) { try { updateRemindBadge(); } catch (e) {} } });
 
     // ===== SETRIKA HARI INI =====
     function isIronItem(it) { return /komplit|setrika|seprai|satuan/i.test(String(it.name || '')); }
@@ -3560,7 +3707,7 @@
       if (menu === 'pembukuan') {
         var masuk = state.orders.reduce(function (s, o) { return s + (o.paid ? Number(o.paidAmount || o.total || 0) : 0); }, 0);
         var keluar = state.expenses.reduce(function (s, x) { return s + Number(x.amount || 0); }, 0);
-        openModal('Pembukuan Kasir (Fitur Baru!)',
+        openModal('Pembukuan Kasir',
           '<div class="space-y-2.5 text-xs">' +
             '<div class="p-3 rounded-xl bg-emerald-50 flex justify-between"><span>Kas Masuk (Order Lunas)</span><strong class="text-emerald-700">' + formatRp(masuk) + '</strong></div>' +
             '<div class="p-3 rounded-xl bg-rose-50 flex justify-between"><span>Kas Keluar (Pengeluaran)</span><strong class="text-rose-700">' + formatRp(keluar) + '</strong></div>' +
@@ -3728,7 +3875,7 @@
       persistAll();
     }
 
-    var APP_VERSION = 'Q.v33';
+    var APP_VERSION = 'Q.v34';
     var PRESS = { t: null, fired: false };
 
     function prodPressStart(i) {
@@ -4794,7 +4941,15 @@
     function setOrderStatus(idx, status, silent) {
       var o = state.orders[idx];
       if (!o) return;
+      var prevStatus = o.status;
       o.status = status;
+      // Pengingat cucian: catat tanggal siap diambil; reset riwayat pengingat jika siklus baru
+      if (status === 'Selesai' && prevStatus !== 'Selesai') {
+        o.readyDate = getLocalDateStr(new Date());
+        delete o.remindStage; delete o.remindAt; delete o.remindSkip;
+      } else if (status === 'Proses') {
+        delete o.readyDate; delete o.remindStage; delete o.remindAt; delete o.remindSkip;
+      }
 
       // Saat status diubah menjadi 'Ambil', transaksi otomatis ditandai lunas
       if (status === 'Ambil') {
